@@ -2,7 +2,8 @@ module.exports = {
   "extends": [
     "next/core-web-vitals",
     "plugin:import/recommended",
-    "prettier"
+    "prettier",
+    "next/babel",
   ],
   "rules": {
     "jsx-a11y/alt-text": "off",

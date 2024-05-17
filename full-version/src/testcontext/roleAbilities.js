@@ -1,32 +1,19 @@
-// JSON OBJECT
-
-// abilities.js
+// roleAbilities.js
 import { PureAbility } from '@casl/ability';
 
 const abilitiesJson = {
   admin: [{ action: 'manage', subject: 'all' }],
-  user: [{ action: 'read', subject: 'all' }],
-  guest: [{ action: 'read', subject: 'Post' }]
+  support: [{ action: 'read', subject: 'Support' }],
+  manager: [{ action: 'read', subject: 'Manager' }],
+  catalog: [{ action: 'read', subject: 'Catalog' }],
+  superadmin: [{ action: 'manage', subject: 'all' }],
 };
 
-// Simulate fetching user data (replace with your actual logic)
-export function getUser() {
-  return {
-    id: 1,
-    name: 'John Doe',
-    admin: false // Change this to false for non-admin user
-  };
-}
-
 export function defineAbilityFor(user) {
-  let rules;
+  const rules = abilitiesJson[user.role] || abilitiesJson.guest;
+  const role = user.role
 
-  if (user?.admin) { // Safely access the admin property
-    rules = abilitiesJson.admin;
-  } else {
-    rules = abilitiesJson.user;
-  }
-
-  // Create an Ability instance using the rules
+  console.log(rules);
+  console.log(role);
   return new PureAbility(rules);
 }

@@ -3,6 +3,7 @@ import CredentialProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { PrismaClient } from '@prisma/client'
+import {users} from "@/app/api/login/users"
 
 const prisma = new PrismaClient()
 
@@ -17,51 +18,69 @@ export const authOptions = {
       // ** For more details on Credentials Provider, visit https://next-auth.js.org/providers/credentials
       name: 'Credentials',
       type: 'credentials',
-
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' }
+      },
+      authorize: async (credentials) => {
+        const user = users.find(user => user.email === credentials.email && user.password === credentials.password);
+        if (user) {
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+            role: user.role,
+            ability: user.ability // Include the ability array here
+          };
+        } else {
+          return null;
+        }
+      }
       /*
        * As we are using our own Sign-in page, we do not need to change
        * username or password attributes manually in following credentials object.
        */
-      credentials: {},
-      async authorize(credentials) {
+      // credentials: {},
+      // async authorize(credentials) {
         /*
          * You need to provide your own logic here that takes the credentials submitted and returns either
          * an object representing a user or value that is false/null if the credentials are invalid.
          * For e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
          * You can also use the `req` object to obtain additional parameters (i.e., the request IP address)
          */
-        const { email, password } = credentials
+        // const { email, password } = credentials
 
-        try {
+        // try {
           // ** Login API Call to match the user credentials and receive user data in response along with his role
-          const res = await fetch(`${process.env.API_URL}/login`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
-          })
+          // const res = await fetch(`${process.env.API_URL}/login`, {
+          //   method: 'POST',
+          //   headers: {
+          //     'Content-Type': 'application/json'
+          //   },
+          //   body: JSON.stringify({ email, password })
+          // })
 
-          const data = await res.json()
+          // const data = await res.json()
 
-          if (res.status === 401) {
-            throw new Error(JSON.stringify(data))
-          }
+          // if (res.status === 401) {
+          //   throw new Error(JSON.stringify(data))
+          // }
 
-          if (res.status === 200) {
+          // if (res.status === 200) {
             /*
              * Please unset all the sensitive information of the user either from API response or before returning
              * user data below. Below return statement will set the user object in the token and the same is set in
              * the session which will be accessible all over the app.
              */
-            return data
-          }
+            // return data
+      //     }
 
-          return null
-        } catch (e) {
-          throw new Error(e.message)
-        }
-      }
+      //     return null
+      //   } catch (e) {
+      //     throw new Error(e.message)
+      //   }
+      // }
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -87,7 +106,7 @@ export const authOptions = {
 
     // ** Seconds - How long until an idle session expires and is no longer valid
     maxAge: 30 * 24 * 60 * 60 // ** 30 days
-  },
+  },  
 
   // ** Please refer to https://next-auth.js.org/configuration/options#pages for more `pages` options
   pages: {
@@ -109,6 +128,7 @@ export const authOptions = {
          */
         token.name = user.name
         token.role = user.role
+        token.ability = user.ability;
       }
 
       return token
@@ -118,6 +138,8 @@ export const authOptions = {
         // ** Add custom params to user in session which are added in `jwt()` callback via `token` parameter
         session.user.name = token.name
         session.user.role = token.role
+        // session.user.ability = token.ability;
+        session.user.ability = token.ability
       }
 
       return session

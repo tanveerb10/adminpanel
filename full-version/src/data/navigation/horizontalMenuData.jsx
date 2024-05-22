@@ -476,7 +476,7 @@ const horizontalMenuData = (dictionary, params) => [
     children: [
       // This is how you will normally render menu item
       {
-        label: dictionary['navigation'].crm,
+        label: dictionary['navigation'].summary,
         icon: 'tabler-circle',
         href: '/dashboards/crm'
       },
@@ -486,7 +486,7 @@ const horizontalMenuData = (dictionary, params) => [
         href: '/dashboards/analytics'
       },
       {
-        label: dictionary['navigation'].eCommerce,
+        label: dictionary['navigation'].reports,
         icon: 'tabler-circle',
         href: '/dashboards/ecommerce'
       }

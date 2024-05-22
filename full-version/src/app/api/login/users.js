@@ -45,7 +45,7 @@ export const users = [
       'payments',
       'cashondelivery',
       'razorpay',
-      'phonepay',
+      'phonepe',
       'shipping',
       'shippingzones',
       'shippingcharges',
@@ -124,6 +124,7 @@ export const users = [
       'cms',
       'seo',
       'pages',
+      'email',
       'templates',
       'sendemails',
       'notifications',
@@ -143,6 +144,7 @@ export const users = [
     image: '/images/avatars/4.png',
     role: 'catalog',
     ability: [
+      'email',
       'products',
       'allproducts',
       'categories',
@@ -175,6 +177,7 @@ export const users = [
     image: '/images/avatars/5.png',
     role: 'superadmin',
     ability: [
+      
       'dashboard',
       'summary',
       'analytics',
@@ -214,7 +217,7 @@ export const users = [
       'payments',
       'cashondelivery',
       'razorpay',
-      'phonepay',
+      'phonepe',
       'shipping',
       'shippingzones',
       'shippingcharges',

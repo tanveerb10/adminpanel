@@ -17,7 +17,7 @@
  */
 const themeConfig = {
   templateName: 'Vuexy',
-  settingsCookieName: 'vuexy-mui-next-demo-1',
+  settingsCookieName: 'theme-cookie',
   mode: 'system', // 'system', 'light', 'dark'
   skin: 'default', // 'default', 'bordered'
   semiDark: false, // true, false

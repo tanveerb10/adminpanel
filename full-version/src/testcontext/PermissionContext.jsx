@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react'
 
 const PermissionsContext = createContext({ role: [] }) // for string change
 
-console.log(PermissionsContext)
+// console.log(PermissionsContext)
 
 export const PermissionsProvider = ({ children }) => {
   const { data: session, status } = useSession()

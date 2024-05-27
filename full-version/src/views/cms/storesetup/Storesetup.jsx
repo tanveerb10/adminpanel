@@ -19,7 +19,7 @@ import { Typography } from '@mui/material'
 // Components Imports
 import CustomTextField from '@core/components/mui/TextField'
 
-const Storesetup = () => {
+const Storesetup = ({initialData}) => {
   const {
     control: storeControl,
     handleSubmit: handleStoreSubmit,
@@ -54,34 +54,15 @@ const Storesetup = () => {
 
   // Hooks
   useEffect(() => {
-    // Simulate fetching data from the database
-    const fetchData = async () => {
-      const data = await fakeApiCall()
+ 
+      resetStoreForm(initialData) // Reset the form with fetched data
+      resetLegalForm(initialData) // Reset the form with fetched data
 
-      setFormData(data)
-      resetStoreForm(data) // Reset the form with fetched data
-      resetLegalForm(data) // Reset the form with fetched data
-    }
 
-    fetchData()
-  }, [resetStoreForm, resetLegalForm])
+    
+  }, [resetStoreForm, resetLegalForm, initialData])
 
-  const fakeApiCall = async () => {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({
-          storeAddress: '123 Main St',
-          storeEmail: 'store@example.com',
-          storeName: 'John',
-          storePhoneNumber: '1234567890',
-          legalAddress: '235 Anderi',
-          legalEmail: 'legal@example.com',
-          legalPhoneNumber: '1234567890',
-          legalName: 'Livein'
-        })
-      }, 5000)
-    })
-  }
+  
 
   const onSubmitStore = data => {
     console.log('Store submitted:', data)

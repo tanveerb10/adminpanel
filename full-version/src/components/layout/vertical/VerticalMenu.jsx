@@ -396,10 +396,10 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           <MenuSection label={dictionary['navigation'].adminsection}>
             <SubMenu label={dictionary['navigation'].admin} icon={<i className='tabler-file-description' />}>
               {hasAbility('adminusers') && (
-                <MenuItem href={`/${locale}/apps/invoice/list`}>{dictionary['navigation'].adminusers}</MenuItem>
+                <MenuItem href={`/${locale}/admin/adminusers`}>{dictionary['navigation'].adminusers}</MenuItem>
               )}
               {hasAbility('adminroles') && (
-                <MenuItem href={`/${locale}/apps/invoice/preview/${id || '4987'}`}>
+                <MenuItem href={`/${locale}/admin/adminroles`}>
                   {dictionary['navigation'].adminroles}
                 </MenuItem>
               )}
@@ -411,10 +411,10 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           <MenuSection label={dictionary['navigation'].customersection}>
             <SubMenu label={dictionary['navigation'].customers} icon={<i className='tabler-user' />}>
               {hasAbility('allcustomers') && (
-                <MenuItem href={`/${locale}/apps/user/list`}>{dictionary['navigation'].allcustomers}</MenuItem>
+                <MenuItem href={`/${locale}/customers/allcustomers`}>{dictionary['navigation'].allcustomers}</MenuItem>
               )}
               {hasAbility('customersegment') && (
-                <MenuItem href={`/${locale}/apps/user/view`}>{dictionary['navigation'].customersegment}</MenuItem>
+                <MenuItem href={`/${locale}/customers/customersegment`}>{dictionary['navigation'].customersegment}</MenuItem>
               )}
             </SubMenu>
           </MenuSection>
@@ -423,23 +423,23 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           <MenuSection label={dictionary['navigation'].productsection}>
             <SubMenu label={dictionary['navigation'].products} icon={<i className='tabler-lock' />}>
               {hasAbility('allproducts') && (
-                <MenuItem href={`/${locale}/apps/roles`}>{dictionary['navigation'].allproducts}</MenuItem>
+                <MenuItem href={`/${locale}/products/allproducts`}>{dictionary['navigation'].allproducts}</MenuItem>
               )}
               {hasAbility('categories') && (
-                <MenuItem href={`/${locale}/apps/permissions`}>{dictionary['navigation'].categories}</MenuItem>
+                <MenuItem href={`/${locale}/products/categories`}>{dictionary['navigation'].categories}</MenuItem>
               )}
 
               {hasAbility('bulkimport') && (
-                <MenuItem href={`/${locale}/pages/user-profile`}>{dictionary['navigation'].bulkimport}</MenuItem>
+                <MenuItem href={`/${locale}/products/bulkimport`}>{dictionary['navigation'].bulkimport}</MenuItem>
               )}
               {hasAbility('inventory') && (
-                <MenuItem href={`/${locale}/pages/account-settings`}>{dictionary['navigation'].inventory}</MenuItem>
+                <MenuItem href={`/${locale}/products/inventory`}>{dictionary['navigation'].inventory}</MenuItem>
               )}
               {hasAbility('metas') && (
-                <MenuItem href={`/${locale}/pages/faq`}>{dictionary['navigation'].metas}</MenuItem>
+                <MenuItem href={`/${locale}/products/metas`}>{dictionary['navigation'].metas}</MenuItem>
               )}
               {hasAbility('tags') && (
-                <MenuItem href={`/${locale}/pages/pricing`}>{dictionary['navigation'].tags}</MenuItem>
+                <MenuItem href={`/${locale}/products/tags`}>{dictionary['navigation'].tags}</MenuItem>
               )}
             </SubMenu>
           </MenuSection>
@@ -448,12 +448,12 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           <MenuSection label={dictionary['navigation'].offersection}>
             <SubMenu label={dictionary['navigation'].offers}>
               {hasAbility('allcoupons') && (
-                <MenuItem href={`/${locale}/pages/misc/coming-soon`} target='_blank'>
+                <MenuItem href={`/${locale}/offers/allcoupons`}>
                   {dictionary['navigation'].allcoupons}
                 </MenuItem>
               )}
               {hasAbility('customercoupons') && (
-                <MenuItem href={`/${locale}/pages/misc/under-maintenance`} target='_blank'>
+                <MenuItem href={`/${locale}/offers/customercoupons`}>
                   {dictionary['navigation'].customercoupons}
                 </MenuItem>
               )}
@@ -464,22 +464,22 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           <MenuSection label={dictionary['navigation'].ordersection}>
             <SubMenu label={dictionary['navigation'].orders}>
               {hasAbility('allorders') && (
-                <MenuItem href={`/${locale}/pages/misc/404-not-found`} target='_blank'>
+                <MenuItem href={`/${locale}/orders/allorders`}>
                   {dictionary['navigation'].allorders}
                 </MenuItem>
               )}
               {hasAbility('bulkprocessing') && (
-                <MenuItem href={`/${locale}/pages/misc/401-not-authorized`} target='_blank'>
+                <MenuItem href={`/${locale}/orders/bulkprocessing`}>
                   {dictionary['navigation'].bulkprocessing}
                 </MenuItem>
               )}
               {hasAbility('transactions') && (
-                <MenuItem href={`/${locale}/pages/auth/login-v1`} target='_blank'>
+                <MenuItem href={`/${locale}/orders/transactions`}>
                   {dictionary['navigation'].transactions}
                 </MenuItem>
               )}
               {hasAbility('archivedorders') && (
-                <MenuItem href={`/${locale}/pages/auth/login-v2`} target='_blank'>
+                <MenuItem href={`/${locale}/orders/archivedorders`}>
                   {dictionary['navigation'].archivedorders}
                 </MenuItem>
               )}
@@ -490,54 +490,54 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           <MenuSection label={dictionary['navigation'].cmssection}>
             <SubMenu label={dictionary['navigation'].cms} icon={<i className='tabler-shield-lock' />}>
               {hasAbility('storesetup') && (
-                <MenuItem href={`/${locale}/pages/auth/register-v1`} target='_blank'>
+                <MenuItem href={`/${locale}/cms/storesetup`}>
                   {dictionary['navigation'].storesetup}
                 </MenuItem>
               )}
               {hasAbility('style') && (
-                <MenuItem href={`/${locale}/pages/auth/register-v2`} target='_blank'>
+                <MenuItem href={`/${locale}/cms/style`}>
                   {dictionary['navigation'].style}
                 </MenuItem>
               )}
               {hasAbility('banners') && (
-                <MenuItem href={`/${locale}/pages/auth/register-multi-steps`} target='_blank'>
+                <MenuItem href={`/${locale}/cms/banners`}>
                   {dictionary['navigation'].banners}
                 </MenuItem>
               )}
               {hasAbility('stories') && (
-                <MenuItem href={`/${locale}/pages/auth/verify-email-v1`} target='_blank'>
+                <MenuItem href={`/${locale}/cms/stories`}>
                   {dictionary['navigation'].stories}
                 </MenuItem>
               )}
               {hasAbility('seo') && (
-                <MenuItem href={`/${locale}/pages/auth/verify-email-v2`} target='_blank'>
+                <MenuItem href={`/${locale}/cms/seo`}>
                   {dictionary['navigation'].seo}
                 </MenuItem>
               )}
               {hasAbility('pages') && (
-                <MenuItem href={`/${locale}/pages/auth/forgot-password-v1`} target='_blank'>
+                <MenuItem href={`/${locale}/cms/pages`}>
                   {dictionary['navigation'].pages}
                 </MenuItem>
               )}
               {hasAbility('media') && (
-                <MenuItem href={`/${locale}/pages/auth/forgot-password-v2`} target='_blank'>
+                <MenuItem href={`/${locale}/cms/media`}>
                   {dictionary['navigation'].media}
                 </MenuItem>
               )}
 
               {hasAbility('google') && (
-                <MenuItem href={`/${locale}/pages/auth/reset-password-v1`} target='_blank'>
+                <MenuItem href={`/${locale}/cms/google`} >
                   {dictionary['navigation'].google}
                 </MenuItem>
               )}
               {hasAbility('facebook') && (
-                <MenuItem href={`/${locale}/pages/auth/reset-password-v2`} target='_blank'>
+                <MenuItem href={`/${locale}/cms/facebook`}>
                   {dictionary['navigation'].facebook}
                 </MenuItem>
               )}
 
               {hasAbility('socialprofiles') && (
-                <MenuItem href={`/${locale}/pages/auth/two-steps-v1`} target='_blank'>
+                <MenuItem href={`/${locale}/cms/socialprofiles`}>
                   {dictionary['navigation'].socialprofiles}
                 </MenuItem>
               )}
@@ -548,18 +548,18 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           <MenuSection label={dictionary['navigation'].paymentsection}>
             <SubMenu label={dictionary['navigation'].payments} icon={<i className='tabler-dots' />}>
               {hasAbility('cashondelivery') && (
-                <MenuItem href={`/${locale}/pages/auth/two-steps-v2`} target='_blank'>
+                <MenuItem href={`/${locale}/payments/cashondelivery`}>
                   {dictionary['navigation'].cashondelivery}
                 </MenuItem>
               )}
 
               {hasAbility('razorpay') && (
-                <MenuItem href={`/${locale}/pages/wizard-examples/checkout`}>
+                <MenuItem href={`/${locale}/payments/razorpay`}>
                   {dictionary['navigation'].razorpay}
                 </MenuItem>
               )}
               {hasAbility('phonepe') && (
-                <MenuItem href={`/${locale}/pages/wizard-examples/property-listing`}>
+                <MenuItem href={`/${locale}/payments/phonepe`}>
                   {dictionary['navigation'].phonepe}
                 </MenuItem>
               )}
@@ -570,17 +570,17 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           <MenuSection label={dictionary['navigation'].shippingsection}>
             <SubMenu label={dictionary['navigation'].shipping} icon={<i className='tabler-chart-bar' />}>
               {hasAbility('shippingzones') && (
-                <MenuItem href={`/${locale}/pages/wizard-examples/create-deal`}>
+                <MenuItem href={`/${locale}/shipping/shippingzones`}>
                   {dictionary['navigation'].shippingzones}
                 </MenuItem>
               )}
               {hasAbility('shippingcharges') && (
-                <MenuItem href={`/${locale}/pages/dialog-examples`} icon={<i className='tabler-square' />}>
+                <MenuItem href={`/${locale}/shipping/shippingcharges`} icon={<i className='tabler-square' />}>
                   {dictionary['navigation'].shippingcharges}
                 </MenuItem>
               )}
               {hasAbility('pincodes') && (
-                <MenuItem href={`/${locale}/pages/widget-examples/basic`}>{dictionary['navigation'].pincodes}</MenuItem>
+                <MenuItem href={`/${locale}/shipping/pincodes`}>{dictionary['navigation'].pincodes}</MenuItem>
               )}
             </SubMenu>
           </MenuSection>
@@ -589,12 +589,12 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           <MenuSection label={dictionary['navigation'].taxsection}>
             <SubMenu label={dictionary['navigation'].taxes} icon={<i className='tabler-chart-donut-2' />}>
               {hasAbility('taxrate') && (
-                <MenuItem href={`/${locale}/pages/widget-examples/advanced`}>
+                <MenuItem href={`/${locale}/taxes/taxrate`}>
                   {dictionary['navigation'].taxrate}
                 </MenuItem>
               )}
               {hasAbility('taxgroup') && (
-                <MenuItem href={`/${locale}/pages/widget-examples/statistics`}>
+                <MenuItem href={`/${locale}/taxes/taxgroup`}>
                   {dictionary['navigation'].taxgroup}
                 </MenuItem>
               )}
@@ -605,17 +605,17 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           <MenuSection label={dictionary['navigation'].emailsection}>
             <SubMenu label={dictionary['navigation'].email}>
               {hasAbility('smtp') && (
-                <MenuItem href={`/${locale}/pages/widget-examples/charts`}>
+                <MenuItem href={`/${locale}/email/smtpsettings`}>
                   {dictionary['navigation'].smtpsettings}
                 </MenuItem>
               )}
               {hasAbility('templates') && (
-                <MenuItem href={`/${locale}/pages/widget-examples/actions`}>
+                <MenuItem href={`/${locale}/email/templates`}>
                   {dictionary['navigation'].templates}
                 </MenuItem>
               )}
               {hasAbility('sendemails') && (
-                <MenuItem href={`/${locale}/forms/form-layouts`} icon={<i className='tabler-layout' />}>
+                <MenuItem href={`/${locale}/email/sendemails`} icon={<i className='tabler-layout' />}>
                   {dictionary['navigation'].sendemails}
                 </MenuItem>
               )}
@@ -627,20 +627,20 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           <MenuSection label={dictionary['navigation'].notificationsection}>
             <SubMenu label={dictionary['navigation'].notifications} icon={<i className='tabler-box' />}>
               {hasAbility('firebasesetup') && (
-                <MenuItem href={`/${locale}/forms/form-wizard`} icon={<i className='tabler-git-merge' />}>
+                <MenuItem href={`/${locale}/notifications/firebasesetup`} icon={<i className='tabler-git-merge' />}>
                   {dictionary['navigation'].firebasesetup}
                 </MenuItem>
               )}
               {hasAbility('smstemplates') && (
-                <MenuItem href={`/${locale}/react-table`} icon={<i className='tabler-table' />}>
+                <MenuItem href={`/${locale}/notifications/smstemplates`} icon={<i className='tabler-table' />}>
                   {dictionary['navigation'].smstemplates}
                 </MenuItem>
               )}
               {hasAbility('sendnotification') && (
                 <MenuItem
                   icon={<i className='tabler-checkbox' />}
-                  href={`/${locale}/forms/form-wizard`}
-                  target='_blank'
+                  href={`/${locale}/notifications/sendnotifications`}
+              
                 >
                   {dictionary['navigation'].sendnotifications}
                 </MenuItem>
@@ -652,10 +652,10 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           <MenuSection label={dictionary['navigation'].smssection}>
             <SubMenu label={dictionary['navigation'].sms}>
               {hasAbility('smssetup') && (
-                <MenuItem href={`/${locale}/charts/apex-charts`}>{dictionary['navigation'].smssetup}</MenuItem>
+                <MenuItem href={`/${locale}/sms/smssetup`}>{dictionary['navigation'].smssetup}</MenuItem>
               )}
               {hasAbility('smstemplates') && (
-                <MenuItem href={`/${locale}/charts/recharts`}>{dictionary['navigation'].smstemplate}</MenuItem>
+                <MenuItem href={`/${locale}/sms/smstemplate`}>{dictionary['navigation'].smstemplate}</MenuItem>
               )}
             </SubMenu>
           </MenuSection>
@@ -666,8 +666,8 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
               {hasAbility('delhivery') && (
                 <MenuItem
                   icon={<i className='tabler-checkbox' />}
-                  href={`/${locale}/forms/form-wizard`}
-                  target='_blank'
+                  href={`/${locale}/shippers/delhiverysetup`}
+           
                 >
                   {dictionary['navigation'].delhiverysetup}
                 </MenuItem>
@@ -675,8 +675,8 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
               {hasAbility('bluedart') && (
                 <MenuItem
                   icon={<i className='tabler-checkbox' />}
-                  href={`/${locale}/forms/form-wizard`}
-                  target='_blank'
+                  href={`/${locale}/shippers/bluedartsetup`}
+             
                 >
                   {dictionary['navigation'].bluedartsetup}
                 </MenuItem>
@@ -684,8 +684,8 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
               {hasAbility('shiprocket') && (
                 <MenuItem
                   icon={<i className='tabler-checkbox' />}
-                  href={`/${locale}/forms/form-wizard`}
-                  target='_blank'
+                  href={`/${locale}/shippers/shiprocketsetup`}
+             
                 >
                   {dictionary['navigation'].shiprocketsetup}
                 </MenuItem>
@@ -693,8 +693,8 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
               {hasAbility('shipdelight') && (
                 <MenuItem
                   icon={<i className='tabler-checkbox' />}
-                  href={`/${locale}/forms/form-wizard`}
-                  target='_blank'
+                  href={`/${locale}/shippers/shipdelightsetup`}
+                  
                 >
                   {dictionary['navigation'].shipdelightsetup}
                 </MenuItem>

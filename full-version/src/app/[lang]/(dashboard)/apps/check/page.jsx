@@ -598,6 +598,25 @@ const handleImgReset = () =>{
           </div>
         )}
       </div>
+      <div>
+
+  <Image className="rounded" height={100} width={100} alt={"Logo"} src={imgSrc}/>
+
+      <div>
+      <Button component='label' variant='contained' htmlFor='website-logo-upload'>
+    Upload New Logo
+                <input
+                  hidden
+                  type='file'   
+                  value={fileInput}
+                  accept='image/png, image/jpeg'
+                  onChange={handleFileInputChange}
+                  id='website-logo-upload'
+                />
+           </Button>
+        <Button onClick={handleImgReset} variant='tonal' color='secondary'>Reset</Button>
+     </div>
+      </div>
     </ScrollWrapper>
   )
 }

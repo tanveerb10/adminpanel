@@ -5,7 +5,7 @@ import { useState } from 'react'
 
 // Next Imports
 import Link from 'next/link'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useParams, useSearchParams } from 'next/navigation'
 
 // MUI Imports
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -20,11 +20,12 @@ import Divider from '@mui/material/Divider'
 import Alert from '@mui/material/Alert'
 
 // Third-party Imports
-import { signIn } from 'next-auth/react'
 import { Controller, useForm } from 'react-hook-form'
 import { valibotResolver } from '@hookform/resolvers/valibot'
 import { object, minLength, string, email } from 'valibot'
 import classnames from 'classnames'
+
+import { setCookie } from 'cookies-next'
 
 // Component Imports
 import Logo from '@components/layout/shared/Logo'
@@ -39,6 +40,8 @@ import { useSettings } from '@core/hooks/useSettings'
 
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
+
+import { apiClient } from '@/utils/apiClient'
 
 // Styled Custom Components
 const LoginIllustration = styled('img')(({ theme }) => ({
@@ -75,7 +78,7 @@ const schema = object({
 const Login = ({ mode }) => {
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
-  const [errorState, setErrorState] = useState(null)
+  const [sendAlert, setSendAlert] = useState('')
 
   // Vars
   const darkImg = '/images/pages/auth-mask-dark.png'
@@ -86,8 +89,8 @@ const Login = ({ mode }) => {
   const borderedLightIllustration = '/images/illustrations/auth/v2-login-light-border.png'
 
   // Hooks
-  const router = useRouter()
   const searchParams = useSearchParams()
+  const router = useRouter()
   const { lang: locale } = useParams()
   const { settings } = useSettings()
   const theme = useTheme()
@@ -101,8 +104,8 @@ const Login = ({ mode }) => {
   } = useForm({
     resolver: valibotResolver(schema),
     defaultValues: {
-      email: 'admin@vuexy.com',
-      password: 'admin'
+      email: 'admin@livein.in',
+      password: 'Livein@20243$'
     }
   })
 
@@ -116,27 +119,35 @@ const Login = ({ mode }) => {
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
 
-  const onSubmit = async data => {
-    const res = await signIn('credentials', {
-      email: data.email,
-      password: data.password,
-      redirect: false
-    })
+  // onSubmit function
+  const onSubmit = async ({ email, password }) => {
+    try {
+      const response = await apiClient.post('/admin/admins/adminlogin', { email, password })
 
-    if (res && res.ok && res.error === null) {
-      // Vars
-      const redirectURL = searchParams.get('redirectTo') ?? '/'
+      if (response) {
+        const { accessToken, refreshToken } = await response.data
 
-      router.push(getLocalizedUrl(redirectURL, locale))
-    } else {
-      if (res?.error) {
-        const error = JSON.parse(res.error)
+        console.log(accessToken, 'refresh ', refreshToken)
+        setCookie('accessToken', accessToken)
+        setCookie('refreshToken', refreshToken)
 
-        setErrorState(error)
+        console.log('saved')
+      } else {
+        ;('you are not authenticated')
       }
+      if (response && response.status == 200 && response.error == null) {
+        console.log(document.cookie)
+
+        const redirectURL = searchParams.get('redirectTo') ?? '/apps/check'
+
+        router.push(getLocalizedUrl(redirectURL, locale))
+      } else {
+        console.log('you are not authenticated')
+      }
+    } catch (err) {
+      setSendAlert(err.message)
     }
   }
-
   return (
     <div className='flex bs-full justify-center'>
       <div
@@ -159,12 +170,7 @@ const Login = ({ mode }) => {
             <Typography variant='h4'>{`Welcome to ${themeConfig.templateName}! 👋🏻`}</Typography>
             <Typography>Please sign-in to your account and start the adventure</Typography>
           </div>
-          <Alert icon={false} className='bg-[var(--mui-palette-primary-lightOpacity)]'>
-            <Typography variant='body2' color='primary'>
-              Email: <span className='font-medium'>admin@vuexy.com</span> / Pass:{' '}
-              <span className='font-medium'>admin</span>
-            </Typography>
-          </Alert>
+
           <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-6'>
             <Controller
               name='email'
@@ -180,11 +186,10 @@ const Login = ({ mode }) => {
                   placeholder='Enter your email'
                   onChange={e => {
                     field.onChange(e.target.value)
-                    errorState !== null && setErrorState(null)
                   }}
-                  {...((errors.email || errorState !== null) && {
+                  {...(errors.email && {
                     error: true,
-                    helperText: errors?.email?.message || errorState?.message[0]
+                    helperText: errors?.email?.message
                   })}
                 />
               )}
@@ -203,7 +208,6 @@ const Login = ({ mode }) => {
                   type={isPasswordShown ? 'text' : 'password'}
                   onChange={e => {
                     field.onChange(e.target.value)
-                    errorState !== null && setErrorState(null)
                   }}
                   InputProps={{
                     endAdornment: (
@@ -232,23 +236,8 @@ const Login = ({ mode }) => {
             <Button fullWidth variant='contained' type='submit'>
               Login
             </Button>
-            <div className='flex justify-center items-center flex-wrap gap-2'>
-              <Typography>New on our platform?</Typography>
-              <Typography component={Link} href={getLocalizedUrl('/register', locale)} color='primary'>
-                Create an account
-              </Typography>
-            </div>
-            <Divider className='gap-2'>or</Divider>
-            <Button
-              color='secondary'
-              className='self-center text-textPrimary'
-              startIcon={<img src='/images/logos/google.png' alt='Google' width={22} />}
-              sx={{ '& .MuiButton-startIcon': { marginInlineEnd: 3 } }}
-              onClick={() => signIn('google')}
-            >
-              Sign in with Google
-            </Button>
           </form>
+          {sendAlert && <Alert severity='error'>{sendAlert}</Alert>}
         </div>
       </div>
     </div>

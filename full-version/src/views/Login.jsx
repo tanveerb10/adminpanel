@@ -2,7 +2,6 @@
 
 // React Imports
 import { useState } from 'react'
-
 // Next Imports
 import Link from 'next/link'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
@@ -16,7 +15,6 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Checkbox from '@mui/material/Checkbox'
 import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import Divider from '@mui/material/Divider'
 import Alert from '@mui/material/Alert'
 
 // Third-party Imports
@@ -118,7 +116,7 @@ const Login = ({ mode }) => {
   )
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
-
+  // console.log(token);
   // onSubmit function
   const onSubmit = async ({ email, password }) => {
     try {
@@ -126,19 +124,13 @@ const Login = ({ mode }) => {
 
       if (response) {
         const { accessToken, refreshToken } = await response.data
-
-        console.log(accessToken, 'refresh ', refreshToken)
         setCookie('accessToken', accessToken)
         setCookie('refreshToken', refreshToken)
-
-        console.log('saved')
       } else {
-        ;('you are not authenticated')
+        ('you are not authenticated')
       }
       if (response && response.status == 200 && response.error == null) {
-        console.log(document.cookie)
-
-        const redirectURL = searchParams.get('redirectTo') ?? '/apps/check'
+        const redirectURL = searchParams.get('redirectTo') ?? '/'
 
         router.push(getLocalizedUrl(redirectURL, locale))
       } else {

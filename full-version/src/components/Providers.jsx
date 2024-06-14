@@ -4,8 +4,7 @@ import { QueryProvider } from '@/contexts/AuthProvider'
 import { VerticalNavProvider } from '@menu/contexts/verticalNavContext'
 import { SettingsProvider } from '@core/contexts/settingsContext'
 import ThemeProvider from '@components/theme'
-import { PermissionsProvider } from '@/testcontext/PermissionContext'
-import { AbilityProvider } from '@/testcontext/AbilityContext'
+import { AuthProvider } from '@/contexts/AuthContext'
 
 // Config Imports
 import themeConfig from '@configs/themeConfig'
@@ -29,16 +28,14 @@ const Providers = props => {
   return (
     <QueryProvider>
       <VerticalNavProvider>
-        <PermissionsProvider>
-          <AbilityProvider>
-            <SettingsProvider settingsCookie={settingsCookie} mode={mode} demoName={demoName}>
-              <ThemeProvider direction={direction} systemMode={systemMode}>
-                {children}
-                <AppReactToastify position={themeConfig.toastPosition} hideProgressBar />
-              </ThemeProvider>
-            </SettingsProvider>
-          </AbilityProvider>
-        </PermissionsProvider>
+        <AuthProvider>
+          <SettingsProvider settingsCookie={settingsCookie} mode={mode} demoName={demoName}>
+            <ThemeProvider direction={direction} systemMode={systemMode}>
+              {children}
+              <AppReactToastify position={themeConfig.toastPosition} hideProgressBar />
+            </ThemeProvider>
+          </SettingsProvider>
+        </AuthProvider>
       </VerticalNavProvider>
     </QueryProvider>
   )

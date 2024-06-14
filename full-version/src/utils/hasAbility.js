@@ -1,9 +1,9 @@
-import { useAbility } from '@/testcontext/AbilityContext'
+import { useAuth } from '@/contexts/AuthContext'
 
 export const hasAbility = requiredAbility => {
-    const { ability } = useAbility()
-    if (ability) {
-      return ability.can(requiredAbility, 'all')
-    }
-    return false
+  const { ability } = useAuth()
+  if (ability) {
+    return ability.can(requiredAbility, 'all')
   }
+  return false
+}

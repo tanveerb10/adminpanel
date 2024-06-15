@@ -3,7 +3,10 @@ import axios from 'axios';
 import CryptoJS from 'crypto-js';
 
 // Secret key
-export const secret = process.env.Secret_KEY
+export const secret = process.env.NEXT_PUBLIC_SECRET_KEY
+
+// Debugging: Log the secret to ensure it's loaded correctly
+console.log("Secret Key:", secret);
 
 // Function to generate nonce
 export const generateNonce = () => CryptoJS.lib.WordArray.random(16).toString();

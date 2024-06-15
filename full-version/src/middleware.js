@@ -60,7 +60,7 @@ export async function middleware(request) {
   let isUserLoggedIn = !!token
 
   if (token) {
-    const secret = process.env.Secret_KEY
+    const secret = process.env.NEXT_PUBLIC_SECRET_KEY
     const payloaddata = JSON.stringify({})
     const nonce = CryptoJS.lib.WordArray.random(16).toString()
     const timestamp = Date.now().toString()

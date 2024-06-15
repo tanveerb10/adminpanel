@@ -322,7 +322,6 @@ import CustomChip from '@core/components/mui/Chip'
 // Hook Imports
 import { useSettings } from '@core/hooks/useSettings'
 import useVerticalNav from '@menu/hooks/useVerticalNav'
-// import { useAbility } from '@/testcontext/AbilityContext'
 
 // Styled Component Imports
 import StyledVerticalNavExpandIcon from '@menu/styles/vertical/StyledVerticalNavExpandIcon'
@@ -344,12 +343,12 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
   const verticalNavOptions = useVerticalNav()
   const { settings } = useSettings()
   const params = useParams()
-  const { isBreakpointReached } = useVerticalNav()
+  const { isBreakpointReached, transitionDuration } = verticalNavOptions
   
 
   // Vars
-  const { transitionDuration } = verticalNavOptions
-  const { lang: locale, id } = params
+  // const { transitionDuration } = verticalNavOptions
+  const { lang: locale} = params
   const ScrollWrapper = isBreakpointReached ? 'div' : PerfectScrollbar
 
   return (
@@ -392,13 +391,13 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
             )}
           </SubMenu>
         )}
-        {hasAbility('admin') && (
+        {hasAbility('admins') && (
           <MenuSection label={dictionary['navigation'].adminsection}>
             <SubMenu label={dictionary['navigation'].admin} icon={<i className='tabler-file-description' />}>
               {hasAbility('adminusers') && (
                 <MenuItem href={`/${locale}/admin/adminusers`}>{dictionary['navigation'].adminusers}</MenuItem>
               )}
-              {hasAbility('adminroles') && (
+              {hasAbility('roles') && (
                 <MenuItem href={`/${locale}/admin/adminroles`}>
                   {dictionary['navigation'].adminroles}
                 </MenuItem>

@@ -3,8 +3,8 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // Component Imports
-import RoleCards from './RoleCards'
-import RolesTable from './RolesTable'
+import RoleCards from '../../admin/adminroles/RoleCards'
+import RolesTable from '../../admin/adminroles/RolesTable'
 
 const Roles = ({ userData }) => {
   return (

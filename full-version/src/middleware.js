@@ -12,11 +12,12 @@ import { i18n } from '@configs/i18n'
 // Util Imports
 import { getLocalizedUrl, isUrlMissingLocale } from '@/utils/i18n'
 import { ensurePrefix, withoutSuffix } from '@/utils/string'
-import { apiClient } from '@/utils/apiClient'
+// import { apiClient } from '@/utils/apiClient'
+import axios from 'axios'
 
 // Constants
 const HOME_PAGE_URL = '/dashboards/crm'
-const VERIFY_TOKEN_API_URL = '/admin/admins/protected'
+const VERIFY_TOKEN_API_URL = 'http://165.232.189.68/admin/admins/protected'
 
 const getLocale = request => {
   const urlLocale = i18n.locales.find(locale => request.nextUrl.pathname.startsWith(`/${locale}`))
@@ -72,17 +73,21 @@ export async function middleware(request) {
     const signature = generateSignature(payloaddata, secret, nonce, timestamp)
     // console.log(signature)
     try {
-      const response = await apiClient.post(
+      console.log(`accessToken=${token}`)
+      const response = await axios.post(
         VERIFY_TOKEN_API_URL,
         {},
         {
           headers: {
+            'Content-Type': 'application/json',
             'livein-key': 'livein-key',
-            "Nonce": nonce,
-            "Timestamp": timestamp,
-            "Signature": signature,
-            'Cookie': `accessToken=${token}`,
+            'Nonce': nonce,
+            'Timestamp': timestamp,
+            'Signature': signature,
+            'Cookie': `accessToken=${token}`
+            
           }
+          // withCredentials: true
         }
       )
       if (response.status !== 200) {
@@ -99,13 +104,110 @@ export async function middleware(request) {
 
       console.log('Login successful')
     } catch (error) {
-      console.error('Verification Error:', error)
+      console.error('Verification Error')
       isUserLoggedIn = false
     }
+
+    // try {
+    //   const response = await axios.post(
+    //     VERIFY_TOKEN_API_URL,
+    //     {}, // Add your payload here if needed
+    //     {
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         'livein-key': 'livein-key',
+    //         'Nonce': nonce,
+    //         'Timestamp': timestamp,
+    //         'Signature': signature,
+    //       },
+    //       withCredentials: true, // Send cookies with the request
+    //     }
+    //   );
+
+    //   if (response.status !== 200) {
+    //     throw new Error(`HTTP error! Status: ${response.status}`);
+    //   }
+
+    //   const verificationResponse = response.data;
+    //   const isUserLoggedIn = verificationResponse.success;
+
+    //   if (!isUserLoggedIn) {
+    //     console.log('Login unsuccessful (verification failed)');
+    //   } else {
+    //     console.log('Login successful');
+    //   }
+    // } catch (error) {
+    //   console.error('Verification Error:');
+    //   isUserLoggedIn = false
+    // }
+
+    //   try {
+    //     const response = await axios.post(
+    //       VERIFY_TOKEN_API_URL,
+    //       {}, // Add your payload here if needed
+    //       {
+    //         headers: {
+    //           'Content-Type': 'application/json',
+    //           'livein-key': 'livein-key',
+    //           'Nonce': nonce,
+    //           'Timestamp': timestamp,
+    //           'Signature': signature,
+    //         },
+    //         withCredentials: true, // Ensure cookies are sent with the request
+    //       }
+    //     );
+
+    //     if (response.status !== 200) {
+    //       throw new Error(`HTTP error! Status: ${response.status}`);
+    //     }
+
+    //     const verificationResponse = response.data;
+    //     isUserLoggedIn = verificationResponse.success;
+
+    //     if (!isUserLoggedIn) {
+    //       console.log('Login unsuccessful (verification failed)');
+    //     } else {
+    //       console.log('Login successful');
+    //     }
+    //   } catch (error) {
+    //     console.error('Verification Error:', error);
+    //     isUserLoggedIn = false;
+    //   }
+
+    // try {
+    //   const response = await fetch(VERIFY_TOKEN_API_URL, {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'livein-key': 'livein-key',
+    //       'Nonce': nonce,
+    //       'Timestamp': timestamp,
+    //       'Signature': signature,
+    //     },
+    //     credentials: 'include', // Send cookies with the request
+    //     body: JSON.stringify({}), // Add your payload here if needed
+    //   });
+
+    //   if (!response.ok) {
+    //     throw new Error(`HTTP error! Status: ${response.status}`);
+    //   }
+
+    //   const verificationResponse = await response.json();
+    //   isUserLoggedIn = verificationResponse.success;
+
+    //   if (!isUserLoggedIn) {
+    //     console.log('Login unsuccessful (verification failed)');
+    //   } else {
+    //     console.log('Login successful');
+    //   }
+    // } catch (error) {
+    //   console.error('Verification Error:', error);
+    //   // isUserLoggedIn = false;
+    // }
   }
 
   console.log('Is User Logged In: ', isUserLoggedIn)
-  
+
   // Guest routes (Routes that can be accessed by guest users who are not logged in)
   const guestRoutes = ['login', 'register', 'forgot-password']
 
@@ -157,4 +259,3 @@ export const config = {
     '/((?!api|_next/static|_next/image|favicon.ico|.+?/hook-examples|.+?/menu-examples|images|next.svg|vercel.svg).*)'
   ]
 }
-

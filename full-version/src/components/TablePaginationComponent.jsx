@@ -3,24 +3,29 @@ import Pagination from '@mui/material/Pagination'
 import Typography from '@mui/material/Typography'
 
 const TablePaginationComponent = ({ table }) => {
+  // Ensure table and its properties are defined before accessing them
+  const filteredRowCount = table?.getFilteredRowModel()?.rows.length ?? 0;
+  const pageIndex = table?.getState()?.pagination.pageIndex ?? 0;
+  const pageSize = table?.getState()?.pagination.pageSize ?? 10; // Default page size example
+  
   return (
     <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
       <Typography color='text.disabled'>
         {`Showing ${
-          table.getFilteredRowModel().rows.length === 0
+          filteredRowCount === 0
             ? 0
-            : table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1
+            : pageIndex * pageSize + 1
         }
-        to ${Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, table.getFilteredRowModel().rows.length)} of ${table.getFilteredRowModel().rows.length} entries`}
+        to ${Math.min((pageIndex + 1) * pageSize, filteredRowCount)} of ${filteredRowCount} entries`}
       </Typography>
       <Pagination
         shape='rounded'
         color='primary'
         variant='tonal'
-        count={Math.ceil(table.getFilteredRowModel().rows.length / table.getState().pagination.pageSize)}
-        page={table.getState().pagination.pageIndex + 1}
+        count={Math.ceil(filteredRowCount / pageSize)}
+        page={pageIndex + 1}
         onChange={(_, page) => {
-          table.setPageIndex(page - 1)
+          table?.setPageIndex(page - 1);
         }}
         showFirstButton
         showLastButton

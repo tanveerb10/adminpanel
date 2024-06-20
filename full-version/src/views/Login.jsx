@@ -20,10 +20,11 @@ import Alert from '@mui/material/Alert'
 // Third-party Imports
 import { Controller, useForm } from 'react-hook-form'
 import { valibotResolver } from '@hookform/resolvers/valibot'
-import { object, minLength, string, email } from 'valibot'
+import { object, minLength, string, email, strict } from 'valibot'
 import classnames from 'classnames'
 
 import { setCookie } from 'cookies-next'
+import Cookies from 'js-cookie'
 
 // Component Imports
 import Logo from '@components/layout/shared/Logo'
@@ -39,7 +40,8 @@ import { useSettings } from '@core/hooks/useSettings'
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
 
-import { apiClient } from '@/utils/apiClient'
+// import { apiClient } from '@/utils/apiClient'
+import {apiAuthentication} from '@/utils/apiAuthentication'
 
 // Styled Custom Components
 const LoginIllustration = styled('img')(({ theme }) => ({
@@ -120,12 +122,14 @@ const Login = ({ mode }) => {
   // onSubmit function
   const onSubmit = async ({ email, password }) => {
     try {
-      const response = await apiClient.post('/admin/admins/adminlogin', { email, password })
+      const response = await apiAuthentication.post('/admin/admins/adminlogin', { email, password })
 
       if (response) {
         const { accessToken, refreshToken } = await response.data
         setCookie('accessToken', accessToken)
         setCookie('refreshToken', refreshToken)
+        // Cookies.set('accessToken',accessToken, {secure:true, sameSite:'strict'})
+        // Cookies.set('refreshToken',refreshToken, {secure:true, sameSite:'strict'})
       } else {
         ('you are not authenticated')
       }

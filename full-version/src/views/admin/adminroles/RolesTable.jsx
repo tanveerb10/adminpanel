@@ -100,7 +100,7 @@ const userStatusObj = {
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const RolesTable = ({ tableData }) => {
+const RolesTable = ({ tableData, totalAdmin }) => {
   // States
   const [role, setRole] = useState('')
   const [rowSelection, setRowSelection] = useState({})
@@ -294,6 +294,10 @@ const RolesTable = ({ tableData }) => {
             <MenuItem value='50'>50</MenuItem>
           </CustomTextField>
         </div>
+        <div> <Typography >
+          Total Admins: {totalAdmin}
+          </Typography>
+          </div>
         <div className='flex gap-4 flex-col !items-start is-full sm:flex-row sm:is-auto sm:items-center'>
           <DebouncedInput
             value={globalFilter ?? ''}

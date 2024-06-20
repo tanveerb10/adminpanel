@@ -15,7 +15,7 @@ import RoleDialog from '@components/dialogs/role-dialog'
 import OpenDialogOnElementClick from '@components/dialogs/OpenDialogOnElementClick'
 import Link from '@components/Link'
 
-const RoleCards = ({ totalAdmin, cardData }) => {
+const RoleCards = ({ cardData }) => {
   // Vars
   const typographyProps = {
     children: 'Edit Role',
@@ -62,23 +62,6 @@ const RoleCards = ({ totalAdmin, cardData }) => {
       </Grid>
     )
   }
-  const allAdminCard = {
-    className: 'cursor-pointer bs-full',
-    children: (
-      <Grid container className='bs-full'>
-        <Grid item xs={5}>
-          <div className='flex items-center justify-center bs-full'>
-            <Typography variant='h5'>TOTAL ADMINS</Typography>
-          </div>
-        </Grid>
-        <Grid item xs={5}>
-          <div className='flex items-center justify-end bs-full'>
-            <Typography variant='h2'>{totalAdmin}</Typography>
-          </div>
-        </Grid>
-      </Grid>
-    )
-  }
 
   return (
     <>
@@ -116,22 +99,7 @@ const RoleCards = ({ totalAdmin, cardData }) => {
         <Grid item xs={12} sm={6} lg={4}>
           <OpenDialogOnElementClick element={Card} elementProps={CardProps} dialog={RoleDialog} />
         </Grid>
-        <Grid item xs={12} sm={6} lg={4}>
-          <Card>
-            <CardContent className='flex gap-4'>
-              <Grid item xs={5}>
-                <div className='flex items-center justify-center bs-full'>
-                  <Typography variant='h5'>TOTAL ADMINS</Typography>
-                </div>
-              </Grid>
-              <Grid item xs={5}>
-                <div className='flex items-center justify-end bs-full'>
-                  <Typography variant='h2'>{totalAdmin}</Typography>
-                </div>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
+      
       </Grid>
     </>
   )

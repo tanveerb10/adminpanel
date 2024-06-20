@@ -52,7 +52,7 @@ const Adminroles = ({ userData }) => {
         </Typography>
       </Grid>
       <Grid item xs={12}>
-        <RoleCards totalAdmin={totalAdmin} cardData={cardData} />
+        <RoleCards cardData={cardData}/>
       </Grid>
       <Grid item xs={12} className='!pbs-12'>
         <Typography variant='h4' className='mbe-1'>
@@ -61,7 +61,7 @@ const Adminroles = ({ userData }) => {
         <Typography>Find all company&#39;s administrator accounts and their associate roles.</Typography>
       </Grid>
       <Grid item xs={12}>
-        <RolesTable tableData={tableData} />
+        <RolesTable tableData={tableData} totalAdmin={totalAdmin}/>
       </Grid>
     </Grid>
   )

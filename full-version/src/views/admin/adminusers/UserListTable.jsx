@@ -85,25 +85,15 @@ const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...prop
   return <CustomTextField {...props} value={value} onChange={e => setValue(e.target.value)} />
 }
 
-// Vars
-const userRoleObj = {
-  admin: { icon: 'tabler-crown', color: 'error' },
-  author: { icon: 'tabler-device-desktop', color: 'warning' },
-  editor: { icon: 'tabler-edit', color: 'info' },
-  maintainer: { icon: 'tabler-chart-pie', color: 'success' },
-  subscriber: { icon: 'tabler-user', color: 'primary' }
-}
-
 const userStatusObj = {
   active: 'success',
-  pending: 'warning',
   inactive: 'secondary'
 }
 
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const UserListTable = ({ tableData }) => {
+const UserListTable = ({ tableData, totalAdmin }) => {
   // States
   const [addUserOpen, setAddUserOpen] = useState(false)
   const [rowSelection, setRowSelection] = useState({})
@@ -156,27 +146,23 @@ const UserListTable = ({ tableData }) => {
         header: 'Role',
         cell: ({ row }) => (
           <div className='flex items-center gap-2'>
-            <Icon
-              className={userRoleObj[row.original.role].icon}
-              sx={{ color: `var(--mui-palette-${userRoleObj[row.original.role].color}-main)` }}
-            />
             <Typography className='capitalize' color='text.primary'>
               {row.original.role}
             </Typography>
           </div>
         )
       }),
-      columnHelper.accessor('currentPlan', {
-        header: 'Plan',
+      columnHelper.accessor('contact', {
+        header: 'Contact',
         cell: ({ row }) => (
           <Typography className='capitalize' color='text.primary'>
-            {row.original.currentPlan}
+            {row.original.contact}
           </Typography>
         )
       }),
-      columnHelper.accessor('billing', {
-        header: 'Billing',
-        cell: ({ row }) => <Typography>{row.original.billing}</Typography>
+      columnHelper.accessor('city', {
+        header: 'City',
+        cell: ({ row }) => <Typography>{row.original.city}</Typography>
       }),
       columnHelper.accessor('status', {
         header: 'Status',
@@ -283,6 +269,13 @@ const UserListTable = ({ tableData }) => {
             <MenuItem value='25'>25</MenuItem>
             <MenuItem value='50'>50</MenuItem>
           </CustomTextField>
+
+          <div> 
+          Total Admins: 
+            <Chip variant='outlined' icon={totalAdmin} label= {totalAdmin} color='warning' size='small' className='ml-2'/>
+         
+          </div>
+
           <div className='flex flex-col sm:flex-row is-full sm:is-auto items-start sm:items-center gap-4'>
             <DebouncedInput
               value={globalFilter ?? ''}

@@ -8,7 +8,6 @@ import Typography from '@mui/material/Typography'
 import Avatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
 import IconButton from '@mui/material/IconButton'
-import Button from '@mui/material/Button'
 
 // Component Imports
 import RoleDialog from '@components/dialogs/role-dialog'
@@ -36,31 +35,6 @@ const RoleCards = ({ cardData }) => {
         </CustomAvatar>
       )
     }
-  }
-  const CardProps = {
-    className: 'cursor-pointer bs-full',
-    children: (
-      <Grid container className='bs-full'>
-        <Grid item xs={5}>
-          <div className='flex items-end justify-center bs-full'>
-            <img alt='add-role' src='/images/illustrations/characters/5.png' height={130} />
-          </div>
-        </Grid>
-        <Grid item xs={7}>
-          <CardContent>
-            <div className='flex flex-col items-end gap-4 text-right'>
-              <Button variant='contained' size='small'>
-                Add Role
-              </Button>
-              <Typography>
-                Add new role, <br />
-                if it doesn&#39;t exist.
-              </Typography>
-            </div>
-          </CardContent>
-        </Grid>
-      </Grid>
-    )
   }
 
   return (
@@ -96,10 +70,6 @@ const RoleCards = ({ cardData }) => {
             </Card>
           </Grid>
         ))}
-        <Grid item xs={12} sm={6} lg={4}>
-          <OpenDialogOnElementClick element={Card} elementProps={CardProps} dialog={RoleDialog} />
-        </Grid>
-      
       </Grid>
     </>
   )

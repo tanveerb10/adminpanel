@@ -18,6 +18,11 @@ import IconButton from '@mui/material/IconButton'
 import { Button } from '@mui/material'
 import TablePagination from '@mui/material/TablePagination'
 import { styled } from '@mui/material/styles'
+import Grid from '@mui/material'
+
+// Component Imports
+import RoleDialog from '@components/dialogs/role-dialog'
+import OpenDialogOnElementClick from '@components/dialogs/OpenDialogOnElementClick'
 
 // Third-party Imports
 import classnames from 'classnames'
@@ -279,6 +284,15 @@ const RolesTable = ({ tableData, totalAdmin }) => {
     setData(filteredData)
   }, [role, tableData, setData])
 
+  const CardProps = {
+    className: 'cursor-pointer bs-full',
+    children: (
+      <Button variant='contained' size='small'>
+        Add Role
+      </Button>
+    )
+  }
+
   return (
     <Card>
       <CardContent className='flex justify-between flex-col gap-4 items-start md:flex-row md:items-center'>
@@ -295,10 +309,9 @@ const RolesTable = ({ tableData, totalAdmin }) => {
             <MenuItem value='50'>50</MenuItem>
           </CustomTextField>
         </div>
-        <div> <Typography >
-          Total Admins: {totalAdmin}
-          </Typography>
-          </div>
+        <div>
+          <Typography>Total Admins: {totalAdmin}</Typography>
+        </div>
         <div className='flex gap-4 flex-col !items-start is-full sm:flex-row sm:is-auto sm:items-center'>
           <DebouncedInput
             value={globalFilter ?? ''}
@@ -321,12 +334,9 @@ const RolesTable = ({ tableData, totalAdmin }) => {
             <MenuItem value='marketing'>Marketing</MenuItem>
             <MenuItem value='support'>Support</MenuItem>
           </CustomTextField>
-  
-</div>
-<div>
-          <Button variant='contained' size='small'>
-                Add Role
-              </Button>
+        </div>
+        <div>
+          <OpenDialogOnElementClick element={Card} elementProps={CardProps} dialog={RoleDialog} />
         </div>
       </CardContent>
       <div className='overflow-x-auto'>

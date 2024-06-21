@@ -69,23 +69,23 @@ const AddUserDrawer = ({ open, handleClose }) => {
       <div>
         <form onSubmit={handleSubmit} className='flex flex-col gap-6 p-6'>
           <CustomTextField
-            label='Full Name'
+            label='First Name'
             fullWidth
-            placeholder='John Doe'
+            placeholder='vishal'
             value={formData.fullName}
             onChange={e => setFormData({ ...formData, fullName: e.target.value })}
           />
           <CustomTextField
-            label='Username'
+            label='Last Name'
             fullWidth
-            placeholder='johndoe'
+            placeholder='sinha'
             value={formData.username}
             onChange={e => setFormData({ ...formData, username: e.target.value })}
           />
           <CustomTextField
             label='Email'
             fullWidth
-            placeholder='johndoe@gmail.com'
+            placeholder='vishalsinha@gmail.com'
             value={formData.email}
             onChange={e => setFormData({ ...formData, email: e.target.value })}
           />
@@ -114,7 +114,7 @@ const AddUserDrawer = ({ open, handleClose }) => {
             label='Contact'
             type='number'
             fullWidth
-            placeholder='(397) 294-5153'
+            placeholder='865-294-5153'
             value={formData.contact}
             onChange={e => setFormData({ ...formData, contact: e.target.value })}
           />
@@ -126,25 +126,12 @@ const AddUserDrawer = ({ open, handleClose }) => {
             onChange={e => setFormData({ ...formData, role: e.target.value })}
             label='Select Role'
           >
+       
+            <MenuItem value='superadmin'>SuperAdmin</MenuItem>
             <MenuItem value='admin'>Admin</MenuItem>
-            <MenuItem value='author'>Author</MenuItem>
-            <MenuItem value='editor'>Editor</MenuItem>
-            <MenuItem value='maintainer'>Maintainer</MenuItem>
-            <MenuItem value='subscriber'>Subscriber</MenuItem>
-          </CustomTextField>
-          <CustomTextField
-            select
-            fullWidth
-            id='select-plan'
-            value={formData.plan}
-            onChange={e => setFormData({ ...formData, plan: e.target.value })}
-            label='Select Plan'
-            inputProps={{ placeholder: 'Select Plan' }}
-          >
-            <MenuItem value='basic'>Basic</MenuItem>
-            <MenuItem value='company'>Company</MenuItem>
-            <MenuItem value='enterprise'>Enterprise</MenuItem>
-            <MenuItem value='team'>Team</MenuItem>
+            <MenuItem value='catalog'>Catalog</MenuItem>
+            <MenuItem value='marketing'>Marketing</MenuItem>
+            <MenuItem value='support'>Support</MenuItem>
           </CustomTextField>
           <CustomTextField
             select
@@ -154,10 +141,10 @@ const AddUserDrawer = ({ open, handleClose }) => {
             onChange={e => setFormData({ ...formData, status: e.target.value })}
             label='Select Status'
           >
-            <MenuItem value='pending'>Pending</MenuItem>
             <MenuItem value='active'>Active</MenuItem>
             <MenuItem value='inactive'>Inactive</MenuItem>
           </CustomTextField>
+
           <div className='flex items-center gap-4'>
             <Button variant='contained' type='submit'>
               Submit

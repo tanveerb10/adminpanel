@@ -15,6 +15,7 @@ import Chip from '@mui/material/Chip'
 import Typography from '@mui/material/Typography'
 import Checkbox from '@mui/material/Checkbox'
 import IconButton from '@mui/material/IconButton'
+import { Button } from '@mui/material'
 import TablePagination from '@mui/material/TablePagination'
 import { styled } from '@mui/material/styles'
 
@@ -280,7 +281,7 @@ const RolesTable = ({ tableData, totalAdmin }) => {
 
   return (
     <Card>
-      <CardContent className='flex justify-between flex-col gap-4 items-start sm:flex-row sm:items-center'>
+      <CardContent className='flex justify-between flex-col gap-4 items-start md:flex-row md:items-center'>
         <div className='flex items-center gap-2'>
           <Typography>Show</Typography>
           <CustomTextField
@@ -320,6 +321,12 @@ const RolesTable = ({ tableData, totalAdmin }) => {
             <MenuItem value='marketing'>Marketing</MenuItem>
             <MenuItem value='support'>Support</MenuItem>
           </CustomTextField>
+  
+</div>
+<div>
+          <Button variant='contained' size='small'>
+                Add Role
+              </Button>
         </div>
       </CardContent>
       <div className='overflow-x-auto'>

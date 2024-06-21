@@ -1,31 +1,30 @@
 // React Imports
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 
 // MUI Imports
-import CardContent from '@mui/material/CardContent'
-import Grid from '@mui/material/Grid'
-import MenuItem from '@mui/material/MenuItem'
+import CardContent from '@mui/material/CardContent';
+import Grid from '@mui/material/Grid';
+import MenuItem from '@mui/material/MenuItem';
 
 // Component Imports
-import CustomTextField from '@core/components/mui/TextField'
+import CustomTextField from '@core/components/mui/TextField';
 
-const TableFilters = ({ setData, tableData }) => {
+      
+
+const TableFilters = ({ setData, tableData, roleData }) => {
   // States
-  const [role, setRole] = useState('')
-  const [plan, setPlan] = useState('')
-  const [status, setStatus] = useState('')
+  const [role, setRole] = useState('');
+  const [status, setStatus] = useState('');
 
   useEffect(() => {
     const filteredData = tableData?.filter(user => {
-      if (role && user.role !== role) return false
-      if (plan && user.currentPlan !== plan) return false
-      if (status && user.status !== status) return false
+      if (role && user.role !== role) return false;
+      if (status && user.status !== status) return false;
+      return true;
+    });
 
-      return true
-    })
-
-    setData(filteredData)
-  }, [role, plan, status, tableData, setData])
+    setData(filteredData);
+  }, [role, status, tableData, setData]);
 
   return (
     <CardContent>
@@ -39,15 +38,15 @@ const TableFilters = ({ setData, tableData }) => {
             onChange={e => setRole(e.target.value)}
             SelectProps={{ displayEmpty: true }}
           >
-                 <MenuItem value=''>Select Role</MenuItem>
-            <MenuItem value='superadmin'>SuperAdmin</MenuItem>
-            <MenuItem value='admin'>Admin</MenuItem>
-            <MenuItem value='catalog'>Catalog</MenuItem>
-            <MenuItem value='marketing'>Marketing</MenuItem>
-            <MenuItem value='support'>Support</MenuItem>
+            <MenuItem value=''>Select Role</MenuItem>
+            {roleData?.allRole?.map(role => (
+              <MenuItem value={role.role_name} key={role._id}>
+                {role.role_name}
+              </MenuItem>
+            ))}
           </CustomTextField>
         </Grid>
-     
+
         <Grid item xs={12} sm={4}>
           <CustomTextField
             select
@@ -58,14 +57,13 @@ const TableFilters = ({ setData, tableData }) => {
             SelectProps={{ displayEmpty: true }}
           >
             <MenuItem value=''>Select Status</MenuItem>
-            
             <MenuItem value='active'>Active</MenuItem>
             <MenuItem value='inactive'>Inactive</MenuItem>
           </CustomTextField>
         </Grid>
       </Grid>
     </CardContent>
-  )
-}
+  );
+};
 
-export default TableFilters
+export default TableFilters;

@@ -39,30 +39,15 @@ const TableFilters = ({ setData, tableData }) => {
             onChange={e => setRole(e.target.value)}
             SelectProps={{ displayEmpty: true }}
           >
-            <MenuItem value=''>Select Role</MenuItem>
+                 <MenuItem value=''>Select Role</MenuItem>
+            <MenuItem value='superadmin'>SuperAdmin</MenuItem>
             <MenuItem value='admin'>Admin</MenuItem>
-            <MenuItem value='author'>Author</MenuItem>
-            <MenuItem value='editor'>Editor</MenuItem>
-            <MenuItem value='maintainer'>Maintainer</MenuItem>
-            <MenuItem value='subscriber'>Subscriber</MenuItem>
+            <MenuItem value='catalog'>Catalog</MenuItem>
+            <MenuItem value='marketing'>Marketing</MenuItem>
+            <MenuItem value='support'>Support</MenuItem>
           </CustomTextField>
         </Grid>
-        <Grid item xs={12} sm={4}>
-          <CustomTextField
-            select
-            fullWidth
-            id='select-plan'
-            value={plan}
-            onChange={e => setPlan(e.target.value)}
-            SelectProps={{ displayEmpty: true }}
-          >
-            <MenuItem value=''>Select Plan</MenuItem>
-            <MenuItem value='basic'>Basic</MenuItem>
-            <MenuItem value='company'>Company</MenuItem>
-            <MenuItem value='enterprise'>Enterprise</MenuItem>
-            <MenuItem value='team'>Team</MenuItem>
-          </CustomTextField>
-        </Grid>
+     
         <Grid item xs={12} sm={4}>
           <CustomTextField
             select
@@ -73,7 +58,7 @@ const TableFilters = ({ setData, tableData }) => {
             SelectProps={{ displayEmpty: true }}
           >
             <MenuItem value=''>Select Status</MenuItem>
-            <MenuItem value='pending'>Pending</MenuItem>
+            
             <MenuItem value='active'>Active</MenuItem>
             <MenuItem value='inactive'>Inactive</MenuItem>
           </CustomTextField>

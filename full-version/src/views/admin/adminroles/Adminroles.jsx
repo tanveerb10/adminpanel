@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import RolesTable from './RolesTable'
 import RoleCards from './RoleCards'
 
-const Adminroles = ({ userData }) => {
+const Adminroles = ({ userData, roleData }) => {
   // Transform the data
   const tableData = userData.allAdmin.map(admin => ({
     fullName: `${admin.firstname} ${admin.lastname}`,
@@ -61,7 +61,7 @@ const Adminroles = ({ userData }) => {
         <Typography>Find all company&#39;s administrator accounts and their associate roles.</Typography>
       </Grid>
       <Grid item xs={12}>
-        <RolesTable tableData={tableData} totalAdmin={totalAdmin}/>
+        <RolesTable tableData={tableData} totalAdmin={totalAdmin} roleData={roleData}/>
       </Grid>
     </Grid>
   )

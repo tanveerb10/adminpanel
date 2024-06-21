@@ -106,7 +106,7 @@ const userStatusObj = {
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const RolesTable = ({ tableData, totalAdmin }) => {
+const RolesTable = ({ tableData, totalAdmin, roleData }) => {
   // States
   const [role, setRole] = useState('')
   const [rowSelection, setRowSelection] = useState({})
@@ -330,12 +330,14 @@ const RolesTable = ({ tableData, totalAdmin }) => {
             className='is-[160px]'
             SelectProps={{ displayEmpty: true }}
           >
+  
+   
             <MenuItem value=''>Select Role</MenuItem>
-            <MenuItem value='superadmin'>SuperAdmin</MenuItem>
-            <MenuItem value='admin'>Admin</MenuItem>
-            <MenuItem value='catalog'>Catalog</MenuItem>
-            <MenuItem value='marketing'>Marketing</MenuItem>
-            <MenuItem value='support'>Support</MenuItem>
+            {roleData?.allRole?.map(role => (
+              <MenuItem value={role.role_name} key={role._id}>
+                {role.role_name}
+              </MenuItem>
+            ))}
           </CustomTextField>
         </div>
         <div>

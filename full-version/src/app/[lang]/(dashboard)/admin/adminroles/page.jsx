@@ -17,7 +17,7 @@ const generateSignature = (payloaddata, secret, nonce, timestamp) => {
 }
 
 // Function to get data using Fetch API
-const getData = async (setUserData, setError, setLoading) => {
+const getData = async (setUserData, setError, setRoleData,setLoading) => {
   const secret = process.env.NEXT_PUBLIC_SECRET_KEY
   const token = Cookies.get('accessToken')
 
@@ -67,15 +67,44 @@ const getData = async (setUserData, setError, setLoading) => {
   } finally {
     setLoading(false)
   }
+
+  
+  try {
+    const roleResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'livein-key': 'livein-key',
+        'Nonce': nonce,
+        'Timestamp': timestamp,
+        'Signature': signature,
+        'Authorization': `Bearer ${token}` // Include the token in the Authorization header
+      }
+      // credentials: 'include',
+    })
+
+    if (!roleResponse.ok) {
+      throw new Error(`Failed to fetch userData, status: ${roleResponse.status}`)
+    }
+
+    const rData = await roleResponse.json()
+    setRoleData(rData)
+  } catch (error) {
+    console.error('Error fetching data:', error)
+    setError(error.message)
+  } finally {
+    setLoading(false)
+  }
 }
 
 const Page = () => {
   const [userData, setUserData] = useState(null)
+  const [roleData, setRoleData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    getData(setUserData, setError, setLoading)
+    getData(setUserData, setError, setRoleData ,setLoading)
   }, [])
 
   if (loading) {
@@ -86,7 +115,7 @@ const Page = () => {
     return <div>Error: {error}</div>
   }
 
-  return <Adminroles userData={userData} />
+  return <Adminroles userData={userData} roleData={roleData} />
 }
 
 export default Page

@@ -93,7 +93,7 @@ const userStatusObj = {
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const UserListTable = ({ tableData, totalAdmin }) => {
+const UserListTable = ({ tableData, totalAdmin,roleData }) => {
   // States
   const [addUserOpen, setAddUserOpen] = useState(false)
   const [rowSelection, setRowSelection] = useState({})
@@ -257,7 +257,7 @@ const UserListTable = ({ tableData, totalAdmin }) => {
     <>
       <Card>
         <CardHeader title='Filters' className='pbe-4' />
-        <TableFilters setData={setData} tableData={tableData} />
+        <TableFilters setData={setData} tableData={tableData} roleData={roleData} />
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select
@@ -272,7 +272,7 @@ const UserListTable = ({ tableData, totalAdmin }) => {
 
           <div> 
           Total Admins: 
-            <Chip variant='outlined' icon={totalAdmin} label= {totalAdmin} color='warning' size='small' className='ml-2'/>
+            <Chip variant='outlined' label= {totalAdmin} color='warning' size='small' className='ml-2'/>
          
           </div>
 

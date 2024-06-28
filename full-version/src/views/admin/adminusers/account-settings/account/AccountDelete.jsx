@@ -52,7 +52,7 @@ const AccountDelete = () => {
                 <FormControlLabel control={<Checkbox {...field} />} label='I confirm my account deactivation' />
               )}
             />
-            {errors.checkbox && <FormHelperText error>Please confirm you want to delete account</FormHelperText>}
+            {errors.checkbox && <FormHelperText error>Please confirm you want to delete this account</FormHelperText>}
           </FormControl>
           <Button variant='contained' color='error' type='submit' disabled={!checkboxValue}>
             Deactivate Account

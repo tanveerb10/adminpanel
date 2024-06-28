@@ -310,10 +310,8 @@ const RolesTable = ({ tableData, totalAdmin, roleData }) => {
           </CustomTextField>
         </div>
         <div>
-
           Total Admins:
           <Chip variant='outlined' icon={totalAdmin} label={totalAdmin} color='warning' size='small' className='ml-2' />
-
         </div>
         <div className='flex gap-4 flex-col !items-start is-full sm:flex-row sm:is-auto sm:items-center'>
           <DebouncedInput
@@ -330,11 +328,9 @@ const RolesTable = ({ tableData, totalAdmin, roleData }) => {
             className='is-[160px]'
             SelectProps={{ displayEmpty: true }}
           >
-  
-   
             <MenuItem value=''>Select Role</MenuItem>
             {roleData?.allRole?.map(role => (
-              <MenuItem value={role.role_name} key={role._id}>
+              <MenuItem value={role.role_name} key={role.role_id}>
                 {role.role_name}
               </MenuItem>
             ))}

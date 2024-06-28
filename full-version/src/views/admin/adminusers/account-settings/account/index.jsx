@@ -5,15 +5,17 @@ import Grid from '@mui/material/Grid'
 import AccountDetails from './AccountDetails'
 import AccountDelete from './AccountDelete'
 
-const Account = () => {
+const Account = ({ adminDetail, roleData, isAddAdmin }) => {
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
-        <AccountDetails />
+        <AccountDetails adminDetail={adminDetail} roleData={roleData} isAddAdmin={isAddAdmin} />
       </Grid>
-      <Grid item xs={12}>
-        <AccountDelete />
-      </Grid>
+      {!isAddAdmin && (
+        <Grid item xs={12}>
+          <AccountDelete />
+        </Grid>
+      )}
     </Grid>
   )
 }

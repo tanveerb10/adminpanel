@@ -3,10 +3,10 @@ import Grid from '@mui/material/Grid'
 
 // Component Imports
 import ChangePasswordCard from './ChangePasswordCard'
-import TwoFactorAuthenticationCard from './TwoFactorAuthenticationCard'
-import CreateApiKey from './CreateApiKey'
-import ApiKeyList from './ApiKeyList'
-import RecentDevicesTable from './RecentDevicesTable'
+// import TwoFactorAuthenticationCard from './TwoFactorAuthenticationCard'
+// import CreateApiKey from './CreateApiKey'
+// import ApiKeyList from './ApiKeyList'
+// import RecentDevicesTable from './RecentDevicesTable'
 
 const Security = () => {
   return (
@@ -14,7 +14,7 @@ const Security = () => {
       <Grid item xs={12}>
         <ChangePasswordCard />
       </Grid>
-      <Grid item xs={12}>
+      {/* <Grid item xs={12}>
         <TwoFactorAuthenticationCard />
       </Grid>
       <Grid item xs={12}>
@@ -25,7 +25,7 @@ const Security = () => {
       </Grid>
       <Grid item xs={12}>
         <RecentDevicesTable />
-      </Grid>
+      </Grid> */}
     </Grid>
   )
 }

@@ -15,7 +15,8 @@ const Adminusers = ({ userData, roleData }) => {
     city: admin.city,
     status: admin.status ? 'active' : 'inactive',
     avatar: admin.profile_image,
-    avatarColor: 'primary' // You can set avatar color based on any logic if required
+    avatarColor: 'primary', // You can set avatar color based on any logic if required
+    id : admin._id
   }))
   const totalAdmin = userData.adminsCount
   return (

@@ -9,6 +9,7 @@ import CustomTextField from '@core/components/mui/TextField'
 import Cookies from 'js-cookie'
 import CryptoJS from 'crypto-js'
 import { useParams } from 'next/navigation'
+import { toast } from 'react-toastify'
 
 // STATES OF INDIA
 let states = [
@@ -67,7 +68,6 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin }) => {
   const [selectedRole, setSelectedRole] = useState(adminDetail?.role?.role_name || '')
   const [isNewPasswordShown, setIsNewPasswordShown] = useState(false)
   const [formData, setFormData] = useState(adminDetail || {})
-
 
   const validationSchema = yup.object().shape({
     firstname: yup.string().required('First name is required'),
@@ -154,7 +154,7 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin }) => {
     setSelectedRole(newRole) // Update state for selected role
   }
   const { id } = useParams()
-  const handleFormSubmit = async (formData) => {
+  const handleFormSubmit = async formData => {
     const secret = process.env.NEXT_PUBLIC_SECRET_KEY
     const token = Cookies.get('accessToken')
 
@@ -176,12 +176,12 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin }) => {
     const signature = generateSignature(JSON.stringify(formData), secret, nonce, timestamp)
 
     const apiUrl = isAddAdmin
-    ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/adminsignup`
+      ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/adminsignup`
       : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/updateadmin/${id}`
 
     try {
       const response = await fetch(apiUrl, {
-        method: isAddAdmin ?  'POST' : 'PUT',
+        method: isAddAdmin ? 'POST' : 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'livein-key': 'livein-key',
@@ -198,11 +198,18 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin }) => {
       }
 
       const responseData = await response.json()
+      // responseData.success(toast.success('success'))
+      if (responseData.success || responseData.status) {
+        isAddAdmin ? toast.success('Admin added successfully!') : toast.success('Admin Updated successfully!')
+      } else {
+        isAddAdmin ? toast.error('Unsuccessful to add admin') : 'unsuccessful to update admin'
+      }
+
       console.log('Data submitted successfully:', responseData)
 
       // Handle success scenario (e.g., show success message, redirect, etc.)
     } catch (error) {
-      console.error('Error submitting data:', error.message)
+      toast.error('Error submitting data:', error.message)
       // Handle error scenario (e.g., show error message to the user)
     }
   }

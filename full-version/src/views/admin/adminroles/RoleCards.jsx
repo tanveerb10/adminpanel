@@ -10,7 +10,7 @@ import AvatarGroup from '@mui/material/AvatarGroup'
 import IconButton from '@mui/material/IconButton'
 
 // Component Imports
-import RoleDialog from '@components/dialogs/role-dialog'
+import RoleDialog from '@components/dialogs/role-dialog/RoleDialog'
 import OpenDialogOnElementClick from '@components/dialogs/OpenDialogOnElementClick'
 import Link from '@components/Link'
 

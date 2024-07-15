@@ -21,7 +21,7 @@ import { styled } from '@mui/material/styles'
 import Grid from '@mui/material'
 
 // Component Imports
-import RoleDialog from '@components/dialogs/role-dialog'
+import RoleDialog from '@components/dialogs/role-dialog/RoleDialog'
 import OpenDialogOnElementClick from '@components/dialogs/OpenDialogOnElementClick'
 
 // Third-party Imports

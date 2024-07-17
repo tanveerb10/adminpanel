@@ -1,15 +1,14 @@
 import React from 'react';
 import { TableRow, TableCell, Checkbox, Box, Typography, TextField } from '@mui/material';
-// import { OpenDialogOnElementClick, VariantDialog } from 'your-component-library'; // Adjust imports as necessary
+
 import VariantDialog from '@/views/products/allproducts/product-settings/VariantDialog'
-import OpenDialogOnElementClick from '@/components/dialogs/OpenDialogOnElementClick'
-import Link from '@/components/Link';
-// import Typography from '@mui/material';
+import OpenDialogOnElementClick from '@components/dialogs/OpenDialogOnElementClick'
+import Link from '@/components/Link'
 
 const CombinationRow = ({ combination, selectedItems, handleSelectItems }) => {
   const typographyProps = {
     children: combination.combination,
-    component: Link, // Adjust if using a Link component
+    component: Link, 
     color: 'primary',
     onClick: (e) => e.preventDefault()
   };
@@ -43,3 +42,39 @@ const CombinationRow = ({ combination, selectedItems, handleSelectItems }) => {
 };
 
 export default CombinationRow;
+
+
+// ======================================working===========================
+
+// import React from 'react';
+// import { TableRow, TableCell, Checkbox, TextField, IconButton } from '@mui/material';
+
+// export default function CombinationRow({ combination, selectedItems, handleSelectItems }) {
+//   return (
+//     <TableRow>
+//       <TableCell align='left'>
+//         <Checkbox
+//           checked={selectedItems[combination.combination]}
+//           onChange={() => handleSelectItems(combination.combination)}
+//         />
+//       </TableCell>
+//       <TableCell component='th' scope='row'>
+//         {combination.combination}
+//       </TableCell>
+//       <TableCell align='right'>
+//         <TextField
+//           value={combination.price}
+//           onChange={() => {}}
+//           size='small'
+//         />
+//       </TableCell>
+//       <TableCell align='right'>
+//         <TextField
+//           value={combination.quantity}
+//           onChange={() => {}}
+//           size='small'
+//         />
+//       </TableCell>
+//     </TableRow>
+//   );
+// }

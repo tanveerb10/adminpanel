@@ -15,6 +15,7 @@ import OpenDialogOnElementClick from '@components/dialogs/OpenDialogOnElementCli
 import Link from '@components/Link'
 
 const RoleCards = ({ cardData }) => {
+  console.log({cardData})
   // Vars
   const typographyProps = {
     children: 'Edit Role',

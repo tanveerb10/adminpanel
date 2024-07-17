@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 // MUI Imports
 import Dialog from '@mui/material/Dialog'
@@ -12,8 +12,28 @@ import DialogCloseButton from '@/components/dialogs/DialogCloseButton'
 import Button from '@mui/material/Button'
 
 export default function VariantDialog({ open, setOpen }) {
+  const [dialogData, setDialogData] = useState({
+    price: '',
+    sku: '',
+    weight: '',
+    compareAtPrice: '',
+    inventoryQty: '',
+    taxes: ''
+  })
+
   const handleClose = () => {
     setOpen(false)
+  }
+
+  const [variantData, setVariantData] = useState([])
+  console.log(variantData)
+  const handleChange = e => {
+    const { name, value } = e.target
+    setDialogData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = () => {
+    setVariantData((prev)=>[...prev, dialogData])
   }
   return (
     <Dialog open={open} onClose={handleClose} PaperProps={{ sx: { overflow: 'visible' } }}>
@@ -23,13 +43,37 @@ export default function VariantDialog({ open, setOpen }) {
       {/* <Card> */}
       <DialogTitle> Edit </DialogTitle>
       <DialogContent>
-        <CustomTextField fullWidth label='Price' />
-        <CustomTextField fullWidth label='SKU (stock keep unit)' />
-        <CustomTextField fullWidth label='Weight' />
-        <CustomTextField fullWidth label='Compare at Price' />
-        <CustomTextField fullWidth label='Inventory Qty' />
-        
-        <CustomTextField select fullWidth label='Taxable'>
+        <CustomTextField fullWidth label='Price' value={variantData.price} name='price' onChange={handleChange} />
+        <CustomTextField
+          fullWidth
+          label='SKU (stock keep unit)'
+          value={variantData.sku}
+          name='sku'
+          onChange={handleChange}
+        />
+        <CustomTextField fullWidth label='Weight' value={variantData.weight} name='weight' onChange={handleChange} />
+        <CustomTextField
+          fullWidth
+          label='Compare at Price'
+          value={variantData.compareAtPrice}
+          name='compareAtPrice'
+          onChange={handleChange}
+        />
+        <CustomTextField
+          fullWidth
+          label='Inventory Qty'
+          value={variantData.inventoryQty}
+          name='inventoryQty'
+          onChange={handleChange}
+        />
+        <CustomTextField
+          select
+          fullWidth
+          label='Taxable'
+          value={variantData.taxes}
+          name='taxes'
+          onChange={handleChange}
+        >
           <MenuItem value='true'>True</MenuItem>
           <MenuItem value='false'>False</MenuItem>
         </CustomTextField>
@@ -38,7 +82,7 @@ export default function VariantDialog({ open, setOpen }) {
         <Button onClick={handleClose} variant='tonal' color='secondary' className='max-sm:mis-0'>
           Discard
         </Button>
-        <Button type='submit' variant='contained' onClick={handleClose}>
+        <Button type='submit' variant='contained' onClick={handleSubmit}>
           Done
         </Button>
       </DialogActions>

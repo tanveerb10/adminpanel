@@ -1,6 +1,6 @@
 'use client'
-import { Grid } from '@mui/material'
-import React, { useEffect } from 'react'
+import { Button, Grid } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 // import ProductSettings from '@/views/products/allproducts/product-settings/index'
 import ProductAddHeader from '@/views/products/allproducts/product-settings/add/ProductAddHeader'
 import ProductInformation from '@/views/products/allproducts/product-settings/add/ProductInformation'
@@ -41,6 +41,19 @@ export default function Page() {
   //   { label: 'Monty Python and the Holy Grail', year: 1975 }
   // ]
   
+  
+  const [productData, setProductData] = useState({
+    title: "",
+    description: "",
+    images: [],
+    brand: "",
+    categories: [],
+    published: "",
+    tags: [],
+    countryOfOrigin: "",
+    variants:[]
+  })
+
   useEffect(() => {
     const brandUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands`
     // const tagUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/tags/${id}`
@@ -53,6 +66,9 @@ export default function Page() {
       })
   }, [])
 
+  const handleSaveProduct = () => {
+    console.log('Product Data',productData)
+  }
   return (
     <Grid container spacing={6}>
       {/* ============================================================== */}
@@ -63,36 +79,44 @@ export default function Page() {
       <Grid item xs={12}>
         <ProductAddHeader />
       </Grid>
-      <Grid item xs={12} md={8}>
         <Grid container spacing={6}>
           <Grid item xs={12}>
-            <ProductInformation />
+            <ProductInformation setProductData={ setProductData} />
           </Grid>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <ProductImage />
+          </Grid> */}
+          <Grid item xs={12}>
+            <ProductVariants setProductData={setProductData} />
           </Grid>
           <Grid item xs={12}>
-            <ProductVariants />
+            <ProductImage setProductData={ setProductData} />
           </Grid>
           <Grid item xs={12}>
+            <ProductOrganize setProductData={ setProductData} />
+          </Grid>
+          {/* <Grid item xs={12}>
             <ProductInventory />
-          </Grid>
+          </Grid> */}
         </Grid>
-      </Grid>
-      <Grid item xs={12} md={4}>
-        <Grid container spacing={6}>
-          <Grid item xs={12}>
+      {/* <Grid item xs={12} md={8}>
+      </Grid> */}
+      {/* <Grid item xs={12} md={4}> */}
+        {/* <Grid container spacing={6}> */}
+          {/* <Grid item xs={12}>
                 <ProductPricing />
-              </Grid>
-          <Grid item xs={12}>
-            <ProductOrganize />
-          </Grid>
-        </Grid>
-      </Grid>
-         <Grid>
+              </Grid> */}
+          
+        {/* </Grid> */}
+
+      {/* </Grid> */}
+         {/* <Grid>
             <ProductVariants />
-          </Grid>
+          </Grid> */}
       {/* <Testing/> */}
+      <Grid item xs={12}>
+<Button variant='contained' onClick={handleSaveProduct}>Save Product</Button>
+      </Grid>
     </Grid>
   )
 }

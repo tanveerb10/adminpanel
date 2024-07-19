@@ -5,7 +5,11 @@ import VariantDialog from '@/views/products/allproducts/product-settings/Variant
 import OpenDialogOnElementClick from '@components/dialogs/OpenDialogOnElementClick'
 import Link from '@/components/Link'
 
-const CombinationRow = ({ combination, selectedItems, handleSelectItems }) => {
+const CombinationRow = ({ combination, selectedItems, handleSelectItems, onSave }) => {
+  const handleDialogSave = (newData) => {
+    console.log("newData combination", newData, combination.combination)
+    onSave(combination.combination, newData)
+  }
   const typographyProps = {
     children: combination.combination,
     component: Link, 
@@ -28,7 +32,7 @@ const CombinationRow = ({ combination, selectedItems, handleSelectItems }) => {
           element={Typography}
           elementProps={typographyProps}
           dialog={VariantDialog}
-          dialogProps={{ title: 'check' }}
+          dialogProps={{ title: 'Edit',onSave:handleDialogSave }}
         />
       </TableCell>
       <TableCell align='right'>

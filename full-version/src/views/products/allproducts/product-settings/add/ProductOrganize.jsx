@@ -59,7 +59,7 @@ const ProductOrganize = ({ setProductData }) => {
     // const { name, value } = e.target
     setSelectedOption(prev=>({...prev,[name]:newValue}))
 }
-console.log(selectedOption)
+// console.log(selectedOption)
   // const handleArrayChange = (list) => {
   //   console.log({list})
   //   setProductData(prev=>({...prev,"categories":[...list]}))

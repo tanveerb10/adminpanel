@@ -5,13 +5,13 @@ import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
+import DialogCloseButton from '@/components/dialogs/DialogCloseButton'
 import CustomTextField from '@/@core/components/mui/TextField'
 import MenuItem from '@mui/material/MenuItem'
 // import { CardHeader, Card, CardContent } from '@mui/material'
-import DialogCloseButton from '@/components/dialogs/DialogCloseButton'
 import Button from '@mui/material/Button'
 
-export default function VariantDialog({ open, setOpen }) {
+export default function VariantDialog({ open, setOpen, onSave }) {
   const [dialogData, setDialogData] = useState({
     price: '',
     sku: '',
@@ -25,44 +25,42 @@ export default function VariantDialog({ open, setOpen }) {
     setOpen(false)
   }
 
-  const [variantData, setVariantData] = useState([])
-  console.log(variantData)
   const handleChange = e => {
     const { name, value } = e.target
     setDialogData(prev => ({ ...prev, [name]: value }))
   }
 
   const handleSubmit = () => {
-    setVariantData((prev)=>[...prev, dialogData])
+    onSave(dialogData)
+    setOpen(false)
   }
   return (
     <Dialog open={open} onClose={handleClose} PaperProps={{ sx: { overflow: 'visible' } }}>
       <DialogCloseButton onClick={() => setOpen(false)} disableRipple>
         <i className='tabler-x' />
       </DialogCloseButton>
-      {/* <Card> */}
       <DialogTitle> Edit </DialogTitle>
       <DialogContent>
-        <CustomTextField fullWidth label='Price' value={variantData.price} name='price' onChange={handleChange} />
+        <CustomTextField fullWidth label='Price' value={dialogData.price} name='price' onChange={handleChange} />
         <CustomTextField
           fullWidth
           label='SKU (stock keep unit)'
-          value={variantData.sku}
+          value={dialogData.sku}
           name='sku'
           onChange={handleChange}
         />
-        <CustomTextField fullWidth label='Weight' value={variantData.weight} name='weight' onChange={handleChange} />
+        <CustomTextField fullWidth label='Weight' value={dialogData.weight} name='weight' onChange={handleChange} />
         <CustomTextField
           fullWidth
           label='Compare at Price'
-          value={variantData.compareAtPrice}
+          value={dialogData.compareAtPrice}
           name='compareAtPrice'
           onChange={handleChange}
         />
         <CustomTextField
           fullWidth
           label='Inventory Qty'
-          value={variantData.inventoryQty}
+          value={dialogData.inventoryQty}
           name='inventoryQty'
           onChange={handleChange}
         />
@@ -70,7 +68,7 @@ export default function VariantDialog({ open, setOpen }) {
           select
           fullWidth
           label='Taxable'
-          value={variantData.taxes}
+          value={dialogData.taxes}
           name='taxes'
           onChange={handleChange}
         >
@@ -86,7 +84,6 @@ export default function VariantDialog({ open, setOpen }) {
           Done
         </Button>
       </DialogActions>
-      {/* </Card> */}
     </Dialog>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { useEffect, useReducer } from 'react'
+import { useEffect, useReducer, memo } from 'react'
 
 // MUI Imports
 import Grid from '@mui/material/Grid'
@@ -17,6 +17,7 @@ import CustomTextField from '@core/components/mui/TextField'
 import CustomCheckboxAutocomplete from '@/libs/components/CustomCheckboxAutocomplete'
 import Typography from '@mui/material/Typography'
 import VariantCombinationTable from './VariantCombinationTable'
+import debounce from 'lodash.debounce'
 
 // const ProductVariants = () => {
 //   // States
@@ -615,21 +616,21 @@ import VariantCombinationTable from './VariantCombinationTable'
 const initialState = {
   options: [{ type: 'Size', values: [''] }],
   variants: []
-}
+};
 
 const reducer = (state, action) => {
   switch (action.type) {
     case 'ADD_OPTION':
-      return { ...state, options: [...state.options, { type: 'Size', values: [''] }] }
+      return { ...state, options: [...state.options, { type: 'Size', values: [''] }] };
     case 'DELETE_OPTION':
-      return { ...state, options: state.options.filter((_, index) => index !== action.index) }
+      return { ...state, options: state.options.filter((_, index) => index !== action.index) };
     case 'UPDATE_OPTION_TYPE':
       return {
         ...state,
         options: state.options.map((option, index) =>
           index === action.index ? { ...option, type: action.optionType } : option
         )
-      }
+      };
     case 'UPDATE_OPTION_VALUE':
       return {
         ...state,
@@ -643,14 +644,14 @@ const reducer = (state, action) => {
               }
             : option
         )
-      }
+      };
     case 'ADD_OPTION_VALUE':
       return {
         ...state,
         options: state.options.map((option, index) =>
           index === action.optionIndex ? { ...option, values: [...option.values, ''] } : option
         )
-      }
+      };
     case 'DELETE_OPTION_VALUE':
       return {
         ...state,
@@ -659,36 +660,36 @@ const reducer = (state, action) => {
             ? { ...option, values: option.values.filter((_, valueIndex) => valueIndex !== action.valueIndex) }
             : option
         )
-      }
+      };
     case 'GENERATE_VARIANTS':
-      return { ...state, variants: generateVariants(state.options) }
+      return { ...state, variants: generateVariants(state.options) };
     default:
-      return state
+      return state;
   }
-}
+};
 
-const generateVariants = options => {
-  if (options.length === 0) return []
+const generateVariants = (options) => {
+  if (options.length === 0) return [];
 
-  const [firstOption, ...restOptions] = options
-  const firstValues = firstOption.values.filter(Boolean)
+  const [firstOption, ...restOptions] = options;
+  const firstValues = firstOption.values.filter(Boolean);
 
   if (restOptions.length === 0) {
-    return firstValues.map(value => ({ [firstOption.type]: value }))
+    return firstValues.map(value => ({ [firstOption.type]: value }));
   }
 
-  const restVariants = generateVariants(restOptions)
+  const restVariants = generateVariants(restOptions);
 
-  return firstValues.flatMap(value => restVariants.map(variant => ({ [firstOption.type]: value, ...variant })))
-}
+  return firstValues.flatMap(value => restVariants.map(variant => ({ [firstOption.type]: value, ...variant })));
+};
 
 const ProductVariants = ({ setProductData }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  
+
   useEffect(() => {
     dispatch({ type: 'GENERATE_VARIANTS' });
   }, [state.options]);
-  
+
   useEffect(() => {
     setProductData(prev => ({ ...prev, variants: state.variants }));
   }, [state.variants, setProductData]);
@@ -697,18 +698,22 @@ const ProductVariants = ({ setProductData }) => {
     dispatch({ type: 'UPDATE_OPTION_TYPE', index, optionType });
   };
 
-  const handleOptionValueChange = (optionIndex, valueIndex, value) => {
+  const debouncedOptionValueChange = debounce((dispatch, optionIndex, valueIndex, value) => {
     dispatch({ type: 'UPDATE_OPTION_VALUE', optionIndex, valueIndex, value });
+  }, 300);
+
+  const handleOptionValueChange = (optionIndex, valueIndex, value) => {
+    debouncedOptionValueChange(dispatch, optionIndex, valueIndex, value);
     if (value.length === 1 && valueIndex === state.options[optionIndex].values.length - 1) {
       dispatch({ type: 'ADD_OPTION_VALUE', optionIndex });
     }
   };
 
-  const OptionInput = ({ option, optionIndex, onOptionTypeChange, onOptionValueChange, onDeleteOption, onDeleteOptionValue }) => (
+  const OptionInput = memo(({ option, optionIndex, onOptionTypeChange, onOptionValueChange, onDeleteOption, onDeleteOptionValue }) => (
     <Grid item xs={12} className="repeater-item">
       <Grid container spacing={6}>
         <Grid item xs={12} md={4}>
-          <CustomTextField
+          <TextField
             select
             fullWidth
             label="Option Name"
@@ -717,14 +722,14 @@ const ProductVariants = ({ setProductData }) => {
           >
             <MenuItem value="Size">Size</MenuItem>
             <MenuItem value="Color">Color</MenuItem>
-            <MenuItem value="Weight">material</MenuItem>
-          </CustomTextField>
+            <MenuItem value="Material">Material</MenuItem>
+          </TextField>
         </Grid>
-        <Grid item xs={12} md={8} alignSelf="end">
+        <Grid item xs={12} md={8}>
           <Typography>Option Value</Typography>
           <div className="flex flex-col items-center gap-6">
             {option.values.map((value, valueIndex) => (
-              <CustomTextField
+              <TextField
                 key={valueIndex}
                 fullWidth
                 placeholder="Enter Variant Value"
@@ -734,7 +739,7 @@ const ProductVariants = ({ setProductData }) => {
                   endAdornment: (
                     <InputAdornment position="end">
                       {valueIndex > 0 && (
-                        <IconButton onClick={() => onDeleteOptionValue(valueIndex)} className="min-is-fit">
+                        <IconButton onClick={() => onDeleteOptionValue(optionIndex, valueIndex)} className="min-is-fit">
                           <i className="tabler-x" />
                         </IconButton>
                       )}
@@ -746,7 +751,7 @@ const ProductVariants = ({ setProductData }) => {
             <Button
               variant="outlined"
               color="error"
-              onClick={onDeleteOption}
+              onClick={() => onDeleteOption(optionIndex)}
               endIcon={<i className="tabler-trash" />}
             >
               Delete
@@ -755,8 +760,8 @@ const ProductVariants = ({ setProductData }) => {
         </Grid>
       </Grid>
     </Grid>
-  );
-  console.log(state.variants)
+  ));
+
   return (
     <Grid container className="flex flex-col gap-3">
       <Card>

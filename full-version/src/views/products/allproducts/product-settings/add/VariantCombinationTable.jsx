@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { KeyboardArrowUp as KeyboardArrowUpIcon, KeyboardArrowDown as KeyboardArrowDownIcon } from '@mui/icons-material'
+// import { KeyboardArrowUp as KeyboardArrowUpIcon, KeyboardArrowDown as KeyboardArrowDownIcon } from '@mui/icons-material'
 // import { createDataStructure } from '@/utils/productVariantCombination'
 // import { createDataStructure, cleanData, cleanCombinationData } from '@/utils/productVariantCombination'
 import {
@@ -13,7 +13,7 @@ import {
   Checkbox,
   TableBody,
   TextField,
-  IconButton,
+  // IconButton,
   Box,
   Button,
   Collapse,
@@ -21,17 +21,19 @@ import {
   Card,
   CardContent
 } from '@mui/material'
+import CustomTextField from '@/@core/components/mui/TextField'
 // import VariantRow from '@/views/products/allproducts/product-settings/add/VariantRow'
 import { useEffect, useState } from 'react'
 import AddVariantDialog from '@/views/products/allproducts/product-settings/add/AddVariantDialog'
 import EditVariantDialog from '@/views/products/allproducts/product-settings/add/EditVariantDialog'
 import AddCombinationDialog from './AddCombinationDialog'
-import EditCombinationDialog from './EditCombinationDialog'
+// import EditCombinationDialog from './EditCombinationDialog'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import DialogCloseButton from '@/components/dialogs/DialogCloseButton'
+import CombinationForm from "./CombinationForm"
 
 // export default function VariantCombinationTable({ data, onSave }) {
 
@@ -1441,7 +1443,7 @@ const createDataStructure = (data) => {
   };
 };
 
-const VariantRow = ({ variant, combinations, open, onToggle, selectedItems, handleSelectItems, onSave }) => {
+const VariantRow = ({ variant, combinations, selectedItems, handleSelectItems, onSave }) => {
   const [variantData, setVariantData] = useState({
     ...variant,
     price: variant.price || 0,
@@ -1450,8 +1452,8 @@ const VariantRow = ({ variant, combinations, open, onToggle, selectedItems, hand
   });
 
   const [addCombinationDialogOpen, setAddCombinationDialogOpen] = useState(false);
-  const [editCombinationDialogOpen, setEditCombinationDialogOpen] = useState(false);
-  const [currentCombination, setCurrentCombination] = useState(null);
+  // const [editCombinationDialogOpen, setEditCombinationDialogOpen] = useState(false);
+  
 
   if (!variant) {
     console.error('Variant is undefined:', variant);
@@ -1475,17 +1477,17 @@ const VariantRow = ({ variant, combinations, open, onToggle, selectedItems, hand
     }));
   };
 
-  const handleCombinationChange = (index, field, value) => {
-    console.log(`Updating combination at index: ${index}, field: ${field}, with value: ${value}`);
+  // const handleCombinationChange = (index, field, value) => {
+  //   console.log(`Updating combination at index: ${index}, field: ${field}, with value: ${value}`);
 
-    const updatedCombinations = variantData.combinations.map((comb, i) =>
-      i === index ? { ...comb, [field]: value } : comb
-    );
-    setVariantData(prevState => ({
-      ...prevState,
-      combinations: updatedCombinations,
-    }));
-  };
+  //   const updatedCombinations = variantData.combinations.map((comb, i) =>
+  //     i === index ? { ...comb, [field]: value } : comb
+  //   );
+  //   setVariantData(prevState => ({
+  //     ...prevState,
+  //     combinations: updatedCombinations,
+  //   }));
+  // };
 
   useEffect(() => {
     onSave(variant.variant, variantData);
@@ -1499,39 +1501,38 @@ const VariantRow = ({ variant, combinations, open, onToggle, selectedItems, hand
     }));
   };
 
-  const handleEditCombination = (updatedCombination) => {
-    const updatedCombinations = variantData.combinations.map(comb =>
-      comb.combination === updatedCombination.combination ? updatedCombination : comb
-    );
-    setVariantData(prevState => ({
-      ...prevState,
-      combinations: updatedCombinations,
-    }));
-  };
+  // const handleEditCombination = (updatedCombination) => {
+  //   const updatedCombinations = variantData.combinations.map(comb =>
+  //     comb.combination === updatedCombination.combination ? updatedCombination : comb
+  //   );
+  //   setVariantData(prevState => ({
+  //     ...prevState,
+  //     combinations: updatedCombinations,
+  //   }));
+  // };
 
   const openAddCombinationDialog = () => {
     setAddCombinationDialogOpen(true);
-  };
-
-  const openEditCombinationDialog = (combination) => {
-    setCurrentCombination(combination);
-    setEditCombinationDialogOpen(true);
   };
 
   const closeAddCombinationDialog = () => {
     setAddCombinationDialogOpen(false);
   };
 
-  const closeEditCombinationDialog = () => {
-    setEditCombinationDialogOpen(false);
-  };
 
+  const handelRowClick = (e) => {
+    if (e.target.type !== "checkbox" && e.target.type !=="file") {
+      openAddCombinationDialog()
+    }
+  }
+  
   console.log(variant, 'variant');
   console.log(combinations);
 
+
   return (
     <>
-      <TableRow>
+      <TableRow onClick={handelRowClick}>
         <TableCell>
           <Checkbox
             checked={selectedItems[variant.variant] || false}
@@ -1539,18 +1540,39 @@ const VariantRow = ({ variant, combinations, open, onToggle, selectedItems, hand
           />
         </TableCell>
         <TableCell>
-          {variant.variant}
-          <IconButton size='small' onClick={onToggle}>
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
+          <input type="file" accept="image/*" onChange={(e) => handleChange('image', e.target.files[0])} />
         </TableCell>
         <TableCell>
-          <Button variant='contained' onClick={openAddCombinationDialog}>
-            Add Combination
+          {variant.variant}
+          {/* <IconButton size='small' onClick={onToggle}>
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton> */}
+        </TableCell>
+        <TableCell>
+              <CustomTextField
+                label='Price'
+                value={variantData.price}
+                onChange={e => handleChange('price', e.target.value)}
+                fullWidth
+              />
+            </TableCell>
+            <TableCell>
+              <CustomTextField
+                label='Quantity'
+                disabled
+                value={variantData.quantity}
+                onChange={e => handleChange('quantity', e.target.value)}
+                fullWidth
+              />
+            </TableCell>
+          
+        <TableCell>
+          <Button variant='contained' onClick={(e) => { e.stopPropagation(); openAddCombinationDialog()  }}>
+            Add value
           </Button>
         </TableCell>
       </TableRow>
-      {open && (
+      {/* {open && (
         <>
           <TableRow>
             <TableCell colSpan={3}>
@@ -1617,20 +1639,20 @@ const VariantRow = ({ variant, combinations, open, onToggle, selectedItems, hand
             </React.Fragment>
           ))}
         </>
-      )}
+      )} */}
       <AddCombinationDialog
         open={addCombinationDialogOpen}
         onClose={closeAddCombinationDialog}
         onSave={handleAddCombination}
       />
-      {currentCombination && (
+      {/* {currentCombination && (
         <EditCombinationDialog
           open={editCombinationDialogOpen}
           onClose={closeEditCombinationDialog}
           combination={currentCombination}
           onSave={handleEditCombination}
         />
-      )}
+      )} */}
     </>
   );
 };
@@ -1646,11 +1668,12 @@ console.log(cleanedData, 'cleanedData');
   
   
   const [openStates, setOpenStates] = useState({});
-  const [allExpanded, setAllExpanded] = useState(false);
+  // const [allExpanded, setAllExpanded] = useState(false);
   const [selectedItems, setSelectedItems] = useState({});
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  // const [addDialogOpen, setAddDialogOpen] = useState(false);
+  // const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [currentVariant, setCurrentVariant] = useState(null);
+  
 
   const handleSelectItems = (itemId) => {
     setSelectedItems(prevState => ({
@@ -1675,16 +1698,16 @@ console.log(cleanedData, 'cleanedData');
     setOpenStates(prevState => ({ ...prevState, [variant]: !prevState[variant] }));
   };
 
-  const handleExpandCollapseAll = () => {
-    const newAllExpanded = !allExpanded;
-    setAllExpanded(newAllExpanded);
-    setOpenStates(
-      structuredData.values.reduce((acc, variantObj) => {
-        acc[variantObj.variant] = newAllExpanded;
-        return acc;
-      }, {})
-    );
-  };
+  // const handleExpandCollapseAll = () => {
+  //   const newAllExpanded = !allExpanded;
+  //   setAllExpanded(newAllExpanded);
+  //   setOpenStates(
+  //     structuredData.values.reduce((acc, variantObj) => {
+  //       acc[variantObj.variant] = newAllExpanded;
+  //       return acc;
+  //     }, {})
+  //   );
+  // };
 
   const handleVariantSave = (variantId, newData) => {
     const updatedVariants = data.map(variant => (variant.variant === variantId ? { ...variant, ...newData } : variant));
@@ -1692,31 +1715,41 @@ console.log(cleanedData, 'cleanedData');
     console.log('updatedVariants', updatedVariants);
   };
 
-  const handleAddVariant = (newVariant) => {
-    const updatedVariants = [...data, { ...newVariant, combinations: [] }];
-    onSave(updatedVariants);
-  };
 
-  const handleEditVariant = (updatedVariant) => {
-    handleVariantSave(updatedVariant.variant, updatedVariant);
-  };
+  const openDialog = variant => {
+    setCurrentVariant(variant)
+    setDialogOpen(true)
+  }
 
-  const openAddDialog = () => {
-    setAddDialogOpen(true);
-  };
+  const closeDialog = () => {
+    setDialogOpen(false)
+    setCurrentVariant(null)
+  }
+  // const handleAddVariant = (newVariant) => {
+  //   const updatedVariants = [...data, { ...newVariant, combinations: [] }];
+  //   onSave(updatedVariants);
+  // };
 
-  const openEditDialog = (variant) => {
-    setCurrentVariant(variant);
-    setEditDialogOpen(true);
-  };
+  // const handleEditVariant = (updatedVariant) => {
+  //   handleVariantSave(updatedVariant.variant, updatedVariant);
+  // };
 
-  const closeAddDialog = () => {
-    setAddDialogOpen(false);
-  };
+  // const openAddDialog = () => {
+  //   setAddDialogOpen(true);
+  // };
 
-  const closeEditDialog = () => {
-    setEditDialogOpen(false);
-  };
+  // const openEditDialog = (variant) => {
+  //   setCurrentVariant(variant);
+  //   setEditDialogOpen(true);
+  // };
+
+  // const closeAddDialog = () => {
+  //   setAddDialogOpen(false);
+  // };
+
+  // const closeEditDialog = () => {
+  //   setEditDialogOpen(false);
+  // };
 
   if (!structuredData.values || structuredData.values.length === 0 || !structuredData.type) {
     return (
@@ -1730,9 +1763,9 @@ console.log(cleanedData, 'cleanedData');
 
   return (
     <Grid container className='mt-5 p-3'>
-      <Button variant='contained' onClick={openAddDialog}>
+      {/* <Button variant='contained' onClick={openAddDialog}>
         Add Variant
-      </Button>
+      </Button> */}
       <TableContainer component={Paper}>
         <Table aria-label='collapsible table'>
           <TableHead>
@@ -1746,12 +1779,17 @@ console.log(cleanedData, 'cleanedData');
                   onChange={handleSelectAll}
                 />
               </TableCell>
-              <TableCell align='right'>
-                Variant
-                <IconButton aria-label='expand all' size='small' onClick={handleExpandCollapseAll}>
-                  {allExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                </IconButton>
-              </TableCell>
+              <TableCell>Image</TableCell>
+            <TableCell>Variant's</TableCell>
+            <TableCell>Price</TableCell>
+            <TableCell>Quantity</TableCell>
+            <TableCell>Action</TableCell>
+              {/* <TableCell align='right'>
+                Variant */}
+                {/* <IconButton aria-label='expand all' size='small' onClick={handleExpandCollapseAll}> */}
+                  {/* {allExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />} */}
+                {/* </IconButton> */}
+              {/* </TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -1769,16 +1807,17 @@ console.log(cleanedData, 'cleanedData');
             ))}
           </TableBody>
         </Table>
+       
       </TableContainer>
-      <AddVariantDialog open={addDialogOpen} onClose={closeAddDialog} onSave={handleAddVariant} />
-      {currentVariant && (
+      {/* <AddVariantDialog open={addDialogOpen} onClose={closeAddDialog} onSave={handleAddVariant} /> */}
+      {/* {currentVariant && (
         <EditVariantDialog
           open={editDialogOpen}
           onClose={closeEditDialog}
           variant={currentVariant}
           onSave={handleEditVariant}
         />
-      )}
+      )} */}
     </Grid>
   );
 }

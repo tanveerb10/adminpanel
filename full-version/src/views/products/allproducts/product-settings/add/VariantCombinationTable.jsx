@@ -1,7 +1,4 @@
 import * as React from 'react'
-// import { KeyboardArrowUp as KeyboardArrowUpIcon, KeyboardArrowDown as KeyboardArrowDownIcon } from '@mui/icons-material'
-// import { createDataStructure } from '@/utils/productVariantCombination'
-// import { createDataStructure, cleanData, cleanCombinationData } from '@/utils/productVariantCombination'
 import {
   Grid,
   TableContainer,
@@ -25,11 +22,11 @@ import CustomTextField from '@/@core/components/mui/TextField'
 import { useEffect, useState } from 'react'
 import AddCombinationDialog from './AddCombinationDialog'
 // import EditCombinationDialog from './EditCombinationDialog'
-import Dialog from '@mui/material/Dialog'
-import DialogTitle from '@mui/material/DialogTitle'
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
-import DialogCloseButton from '@/components/dialogs/DialogCloseButton'
+// import Dialog from '@mui/material/Dialog'
+// import DialogTitle from '@mui/material/DialogTitle'
+// import DialogContent from '@mui/material/DialogContent'
+// import DialogActions from '@mui/material/DialogActions'
+// import DialogCloseButton from '@/components/dialogs/DialogCloseButton'
 
 // import CombinationForm from "./CombinationForm"
 
@@ -1245,20 +1242,6 @@ import DialogCloseButton from '@/components/dialogs/DialogCloseButton'
 
 // ===================================================second best try===================================
 
-const cleanData = (data) => {
-  console.log(data, 'data before cleaning');
-  return data.map(item => {
-    const cleanedItem = { ...item };
-    if (Array.isArray(cleanedItem.combinations)) {
-      cleanedItem.combinations = cleanedItem.combinations.filter(combination => {
-        return combination.combination && combination.price !== undefined && combination.quantity !== undefined;
-      });
-    } else {
-      cleanedItem.combinations = [];
-    }
-    return cleanedItem;
-  });
-};
 
 // const cleanData = (data) => {
 //   return data.map(item => {
@@ -1407,6 +1390,21 @@ const cleanData = (data) => {
 //   return structuredData;
 // };
 
+const cleanData = (data) => {
+  console.log(data, 'data before cleaning');
+  return data.map(item => {
+    const cleanedItem = { ...item };
+    if (Array.isArray(cleanedItem.combinations)) {
+      cleanedItem.combinations = cleanedItem.combinations.filter(combination => {
+        return combination.combination && combination.price !== undefined && combination.quantity !== undefined;
+      });
+    } else {
+      cleanedItem.combinations = [];
+    }
+    return cleanedItem;
+  });
+};
+
 const createDataStructure = (data) => {
   console.log(data, 'data before structuring');
   return {
@@ -1493,15 +1491,46 @@ const VariantRow = ({ variant, combinations, selectedItems, handleSelectItems, o
     onSave(variant.variant, variantData);
   }, [variantData]);
 
-  const handleAddCombination = (newCombination) => {
-    const updatedCombinations = [...variantData.combinations, newCombination];
-    setVariantData(prevState => ({
-      ...prevState,
-      combinations: updatedCombinations,
-    }));
-    onSave(variantData)
-  };
+  // const handleAddCombination = (newCombination) => {
+  //   const updatedCombinations = [...variantData.combinations, newCombination];
+  //   setVariantData(prevState => ({
+  //     ...prevState,
+  //     combinations: updatedCombinations,
+  //   }));
+  //   // onSave(variantData)
+  //   onSave(variant.variant,{...variantData,combinations:updatedCombinations})
+  // };
 
+  const handleAddCombination = (newCombination) => {
+    console.log('Adding new combination:', newCombination);
+    
+    const updatedCombinations = [...variantData.combinations, newCombination];
+    const updatedVariantData = {
+      ...variantData,
+      combinations: updatedCombinations,
+    };
+  
+    console.log('Updated combinations:', updatedCombinations);
+    console.log('Updated variantData before saving:', updatedVariantData);
+  
+    setVariantData(updatedVariantData);
+    
+    // Call onSave with the updated data
+    onSave(variant.variant, updatedVariantData);
+  };
+  
+  const handleVariantSave = (variantId, newData) => {
+    console.log('Saving variant:', variantId, newData);
+    
+    const updatedVariants = productVariantData.map(variant => 
+      variant.variant === variantId ? { ...variant, ...newData } : variant
+    );
+    
+    console.log('Updated Variants......:', updatedVariants);
+    
+    setAllVariants(updatedVariants);
+    onSave(updatedVariants);
+  };
   // const handleEditCombination = (updatedCombination) => {
   //   const updatedCombinations = variantData.combinations.map(comb =>
   //     comb.combination === updatedCombination.combination ? updatedCombination : comb
@@ -1641,11 +1670,7 @@ const VariantRow = ({ variant, combinations, selectedItems, handleSelectItems, o
           ))}
         </>
       )} */}
-      <AddCombinationDialog
-        open={addCombinationDialogOpen}
-        onClose={closeAddCombinationDialog}
-        onSave={handleAddCombination}
-      />
+      
       {/* {currentCombination && (
         <EditCombinationDialog
           open={editCombinationDialogOpen}
@@ -1654,6 +1679,11 @@ const VariantRow = ({ variant, combinations, selectedItems, handleSelectItems, o
           onSave={handleEditCombination}
         />
       )} */}
+      <AddCombinationDialog
+        open={addCombinationDialogOpen}
+        onClose={closeAddCombinationDialog}
+        onSave={handleAddCombination}
+      />
     </>
   );
 };
@@ -1700,12 +1730,27 @@ console.log(cleanedData, 'cleanedData');
   };
 
 
+  // const handleVariantSave = (variantId, newData) => {
+  //   const updatedVariants = productVariantData.map(variant => (variant.variant === variantId ? { ...variant, ...newData } : variant));
+  //   setAllVariants(updatedVariants)
+  //   onSave(updatedVariants);
+  //   console.log('updatedVariants', updatedVariants);
+  // };
+
   const handleVariantSave = (variantId, newData) => {
-    const updatedVariants = productVariantData.map(variant => (variant.variant === variantId ? { ...variant, ...newData } : variant));
-    setAllVariants(updatedVariants)
+    console.log('Saving variant:', variantId, newData);
+    
+    const updatedVariants = productVariantData.map(variant => 
+      variant.variant === variantId ? { ...variant, ...newData } : variant
+    );
+    
+    console.log('Updated Variants:', updatedVariants);
+    
+    setAllVariants(updatedVariants);
     onSave(updatedVariants);
-    console.log('updatedVariants', updatedVariants);
   };
+    
+  
 
   const openDialog = variant => {
     setCurrentVariant(variant)

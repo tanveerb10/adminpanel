@@ -22,10 +22,7 @@ import {
   CardContent
 } from '@mui/material'
 import CustomTextField from '@/@core/components/mui/TextField'
-// import VariantRow from '@/views/products/allproducts/product-settings/add/VariantRow'
 import { useEffect, useState } from 'react'
-import AddVariantDialog from '@/views/products/allproducts/product-settings/add/AddVariantDialog'
-import EditVariantDialog from '@/views/products/allproducts/product-settings/add/EditVariantDialog'
 import AddCombinationDialog from './AddCombinationDialog'
 // import EditCombinationDialog from './EditCombinationDialog'
 import Dialog from '@mui/material/Dialog'
@@ -33,7 +30,8 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import DialogCloseButton from '@/components/dialogs/DialogCloseButton'
-import CombinationForm from "./CombinationForm"
+
+// import CombinationForm from "./CombinationForm"
 
 // export default function VariantCombinationTable({ data, onSave }) {
 
@@ -1246,6 +1244,7 @@ import CombinationForm from "./CombinationForm"
 
 
 // ===================================================second best try===================================
+
 const cleanData = (data) => {
   console.log(data, 'data before cleaning');
   return data.map(item => {
@@ -1477,6 +1476,7 @@ const VariantRow = ({ variant, combinations, selectedItems, handleSelectItems, o
     }));
   };
 
+
   // const handleCombinationChange = (index, field, value) => {
   //   console.log(`Updating combination at index: ${index}, field: ${field}, with value: ${value}`);
 
@@ -1499,6 +1499,7 @@ const VariantRow = ({ variant, combinations, selectedItems, handleSelectItems, o
       ...prevState,
       combinations: updatedCombinations,
     }));
+    onSave(variantData)
   };
 
   // const handleEditCombination = (updatedCombination) => {
@@ -1657,22 +1658,21 @@ const VariantRow = ({ variant, combinations, selectedItems, handleSelectItems, o
   );
 };
 
-export default function VariantCombinationTable({ data, onSave }) {
-  const cleanedData = cleanData(data);
+export default function VariantCombinationTable({ productVariantData, onSave }) {
+  const cleanedData = cleanData(productVariantData);
   
 console.log(cleanedData, 'cleanedData');
 
   const structuredData = createDataStructure(cleanedData);
   console.log(structuredData, 'structureData');
-  console.log(data, 'data');
+  console.log(productVariantData, 'data from product Variant');
   
   
   const [openStates, setOpenStates] = useState({});
-  // const [allExpanded, setAllExpanded] = useState(false);
   const [selectedItems, setSelectedItems] = useState({});
-  // const [addDialogOpen, setAddDialogOpen] = useState(false);
-  // const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [currentVariant, setCurrentVariant] = useState(null);
+  const [allVariants, setAllVariants] = useState([]);
+
   
 
   const handleSelectItems = (itemId) => {
@@ -1681,6 +1681,7 @@ console.log(cleanedData, 'cleanedData');
       [itemId]: !prevState[itemId],
     }));
   };
+  console.log(allVariants,"all variant")
 
   const handleSelectAll = () => {
     const newSelectAll = !Object.values(selectedItems).every(Boolean);
@@ -1698,23 +1699,13 @@ console.log(cleanedData, 'cleanedData');
     setOpenStates(prevState => ({ ...prevState, [variant]: !prevState[variant] }));
   };
 
-  // const handleExpandCollapseAll = () => {
-  //   const newAllExpanded = !allExpanded;
-  //   setAllExpanded(newAllExpanded);
-  //   setOpenStates(
-  //     structuredData.values.reduce((acc, variantObj) => {
-  //       acc[variantObj.variant] = newAllExpanded;
-  //       return acc;
-  //     }, {})
-  //   );
-  // };
 
   const handleVariantSave = (variantId, newData) => {
-    const updatedVariants = data.map(variant => (variant.variant === variantId ? { ...variant, ...newData } : variant));
+    const updatedVariants = productVariantData.map(variant => (variant.variant === variantId ? { ...variant, ...newData } : variant));
+    setAllVariants(updatedVariants)
     onSave(updatedVariants);
     console.log('updatedVariants', updatedVariants);
   };
-
 
   const openDialog = variant => {
     setCurrentVariant(variant)
@@ -1725,31 +1716,6 @@ console.log(cleanedData, 'cleanedData');
     setDialogOpen(false)
     setCurrentVariant(null)
   }
-  // const handleAddVariant = (newVariant) => {
-  //   const updatedVariants = [...data, { ...newVariant, combinations: [] }];
-  //   onSave(updatedVariants);
-  // };
-
-  // const handleEditVariant = (updatedVariant) => {
-  //   handleVariantSave(updatedVariant.variant, updatedVariant);
-  // };
-
-  // const openAddDialog = () => {
-  //   setAddDialogOpen(true);
-  // };
-
-  // const openEditDialog = (variant) => {
-  //   setCurrentVariant(variant);
-  //   setEditDialogOpen(true);
-  // };
-
-  // const closeAddDialog = () => {
-  //   setAddDialogOpen(false);
-  // };
-
-  // const closeEditDialog = () => {
-  //   setEditDialogOpen(false);
-  // };
 
   if (!structuredData.values || structuredData.values.length === 0 || !structuredData.type) {
     return (
@@ -1763,9 +1729,6 @@ console.log(cleanedData, 'cleanedData');
 
   return (
     <Grid container className='mt-5 p-3'>
-      {/* <Button variant='contained' onClick={openAddDialog}>
-        Add Variant
-      </Button> */}
       <TableContainer component={Paper}>
         <Table aria-label='collapsible table'>
           <TableHead>
@@ -1784,12 +1747,6 @@ console.log(cleanedData, 'cleanedData');
             <TableCell>Price</TableCell>
             <TableCell>Quantity</TableCell>
             <TableCell>Action</TableCell>
-              {/* <TableCell align='right'>
-                Variant */}
-                {/* <IconButton aria-label='expand all' size='small' onClick={handleExpandCollapseAll}> */}
-                  {/* {allExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />} */}
-                {/* </IconButton> */}
-              {/* </TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -1809,15 +1766,6 @@ console.log(cleanedData, 'cleanedData');
         </Table>
        
       </TableContainer>
-      {/* <AddVariantDialog open={addDialogOpen} onClose={closeAddDialog} onSave={handleAddVariant} /> */}
-      {/* {currentVariant && (
-        <EditVariantDialog
-          open={editDialogOpen}
-          onClose={closeEditDialog}
-          variant={currentVariant}
-          onSave={handleEditVariant}
-        />
-      )} */}
     </Grid>
   );
 }

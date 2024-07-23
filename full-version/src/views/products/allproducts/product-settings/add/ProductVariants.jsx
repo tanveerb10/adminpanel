@@ -713,7 +713,7 @@ const ProductVariants = ({ setProductData }) => {
     <Grid item xs={12} className="repeater-item">
       <Grid container spacing={6}>
         <Grid item xs={12} md={4}>
-          <TextField
+          <CustomTextField
             select
             fullWidth
             label="Option Name"
@@ -723,15 +723,15 @@ const ProductVariants = ({ setProductData }) => {
             <MenuItem value="Size">Size</MenuItem>
             <MenuItem value="Color">Color</MenuItem>
             <MenuItem value="Material">Material</MenuItem>
-          </TextField>
+          </CustomTextField>
         </Grid>
         <Grid item xs={12} md={8}>
-          <Typography>Option Value</Typography>
           <div className="flex flex-col items-center gap-6">
             {option.values.map((value, valueIndex) => (
-              <TextField
+              <CustomTextField
                 key={valueIndex}
                 fullWidth
+                label="Option Value"
                 placeholder="Enter Variant Value"
                 value={value}
                 onChange={(e) => onOptionValueChange(optionIndex, valueIndex, e.target.value)}
@@ -792,7 +792,7 @@ const ProductVariants = ({ setProductData }) => {
       <Card>
         <CardContent>
           <VariantCombinationTable
-            data={state.variants}
+            productVariantData={state.variants}
             onSave={(updatedVariant) => {
               dispatch({ type: 'SET_VARIANTS', variants: state.variants.map(v => v.id === updatedVariant.id ? updatedVariant : v) });
             }}

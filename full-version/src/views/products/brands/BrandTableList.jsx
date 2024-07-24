@@ -48,10 +48,6 @@ import { getLocalizedUrl } from '@/utils/i18n'
 
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
-// import { makeStyles } from '@mui/styles'
-// import makeStyles from '@mui/styles/makeStyles';
-// import { styled } from '@mui/material/styles';
-
 
 // Styled Components
 const Icon = styled('i')({})
@@ -114,7 +110,8 @@ const BrandTableList = ({ tableData }) => {
   // Hooks
   const { lang: locale } = useParams()
   const router = useRouter()
-  // const { id } = params // Destructure id from params
+  const params = useParams()
+  const { id } = params // Destructure id from params
 
   const columns = useMemo(
     () => [
@@ -140,12 +137,12 @@ const BrandTableList = ({ tableData }) => {
           />
         )
       },
-      columnHelper.accessor('id', {
+      columnHelper.accessor('brandId', {
         header: 'Sr.no',
         cell: ({ row }) => (
           <div className='flex items-center gap-2'>
             <Typography className='capitalize' color='text.primary'>
-              {row.original.id}
+              {row.original.brandId}
             </Typography>
           </div>
         )
@@ -231,7 +228,7 @@ const BrandTableList = ({ tableData }) => {
               <i className='tabler-trash text-[22px] text-textSecondary' />
             </IconButton>
             <IconButton>
-              <Link href={getLocalizedUrl(`/admin/adminusers/${row.original.id}`, locale)} className='flex'>
+              <Link href={getLocalizedUrl(`/products/brands/${row.original.id}`, locale)} className='flex'>
                 <i className='tabler-eye text-[22px] text-textSecondary' />
               </Link>
             </IconButton>

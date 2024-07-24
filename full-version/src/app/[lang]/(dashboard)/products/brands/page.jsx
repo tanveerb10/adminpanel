@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react'
 import Brands from '@/views/products/brands/Brands'
 import fetchData from '@/utils/fetchData'
-import { brand } from 'valibot'
 
 export default function page() {
   const [brands, setBrands] = useState([])

@@ -10,27 +10,27 @@ import { useParams } from 'next/navigation'
 import { toast } from 'react-toastify'
 import fetchData from '@/utils/fetchData'
 
-const BrandDetailForm = ({ isAddBrand, brandData }) => {
+const CategoriesDetailForm = ({ isAddCategories, CategoriesData }) => {
   const initialFormData = {
-    name: brandData?.brand?.brand_name || '',
-    imgSrc: brandData?.brand?.brand_image_src || '',
-    productCount: brandData?.brand?.products_count || '',
-    description: brandData?.brand?.brand_description || '',
-    status: brandData?.brand?.is_deleted || false,
-    sortOrder: brandData?.brand?.sort_order || '',
-    imgAlt: brandData?.brand?.brand_image_alt || ''
+    name: CategoriesData?.Categories?.Categories_name || '',
+    imgSrc: CategoriesData?.Categories?.Categories_image_src || '',
+    productCount: CategoriesData?.Categories?.products_count || '',
+    description: CategoriesData?.Categories?.Categories_description || '',
+    status: CategoriesData?.Categories?.is_deleted || false,
+    sortOrder: CategoriesData?.Categories?.sort_order || '',
+    imgAlt: CategoriesData?.Categories?.Categories_image_alt || ''
   }
   const [formData, setFormData] = useState(initialFormData)
   const [imgSrc, setImgSrc] = useState('/images/avatars/1.png')
 
   const validationSchema = yup.object().shape({
-    name: yup.string().required('Brand name is required'),
-    description: yup.string().required('Brand description is required'),
+    name: yup.string().required('Categories name is required'),
+    description: yup.string().required('Categories description is required'),
     productCount: yup.number().required('Product count is required'),
     sortOrder: yup.string().required('Sort order is required'),
-    imgSrc: yup.string().required('Brand image is required'),
+    imgSrc: yup.string().required('Categories image is required'),
     status: yup.string().required('Is Deleted is required'),
-    brandSlug: yup.string(),
+    CategoriesSlug: yup.string(),
     imgAlt: yup.string()
   })
 
@@ -45,10 +45,10 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
   })
 
   useEffect(() => {
-    if (brandData) {
+    if (CategoriesData) {
       reset(initialFormData)
     }
-  }, [brandData, reset])
+  }, [CategoriesData, reset])
 
   const handleFormChange = useCallback(
     debounce((field, value) => {
@@ -75,10 +75,10 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
   const handleFormSubmit = async (formData) => {
     try {
       console.log('Form Data:', formData)
-      const apiUrl = isAddBrand
-        ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/createBrand`
-        : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/updateBrand/${id}`
-      const response = await fetchData(apiUrl, isAddBrand ? 'POST' : 'PUT', formData)
+      const apiUrl = isAddCategories
+        ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/Categories/createCategories`
+        : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/Categories/updateCategories/${id}`
+      const response = await fetchData(apiUrl, isAddCategories ? 'POST' : 'PUT', formData)
       console.log('API Response:', response)
     } catch (error) {
       console.error('API Error:', error)
@@ -122,8 +122,8 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
                   <CustomTextField
                     {...field}
                     fullWidth
-                    label='Brand Name'
-                    placeholder='Brand Name'
+                    label='Categories Name'
+                    placeholder='Categories Name'
                     error={Boolean(errors.name)}
                     helperText={errors.name?.message}
                   />
@@ -138,8 +138,8 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
                   <CustomTextField
                     {...field}
                     fullWidth
-                    label='Brand Description'
-                    placeholder='Brand Description'
+                    label='Categories Description'
+                    placeholder='Categories Description'
                     error={Boolean(errors.description)}
                     helperText={errors.description?.message}
                   />
@@ -148,16 +148,16 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <Controller
-                name='brandSlug'
+                name='CategoriesSlug'
                 control={control}
                 render={({ field }) => (
                   <CustomTextField
                     {...field}
                     fullWidth
-                    label='Brand Slug'
-                    placeholder='Brand Slug'
-                    error={Boolean(errors.brandSlug)}
-                    helperText={errors.brandSlug?.message}
+                    label='Categories Slug'
+                    placeholder='Categories Slug'
+                    error={Boolean(errors.CategoriesSlug)}
+                    helperText={errors.CategoriesSlug?.message}
                   />
                 )}
               />
@@ -211,12 +211,12 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
                 )}
               />
             </Grid>
-            {!isAddBrand && (
+            {!isAddCategories && (
               <Grid item xs={12} sm={6}>
               <Controller
                 name='status'
                 control={control}
-                defaultValue={brandData?.status || ''}
+                defaultValue={CategoriesData?.status || ''}
                 render={({ field }) => (
                   <CustomTextField
                     {...field}
@@ -238,7 +238,7 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
               <Controller
                 name='sortOrder'
                 control={control}
-                defaultValue={brandData?.sortOrder || ''}
+                defaultValue={CategoriesData?.sortOrder || ''}
                 render={({ field }) => (
                   <CustomTextField
                     {...field}
@@ -256,7 +256,7 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
             </Grid>
             <Grid item xs={12}>
               <Button variant='contained' type='submit'>
-                {isAddBrand ? 'Add Brand' : 'Save Changes'}
+                {isAddCategories ? 'Add Categories' : 'Save Changes'}
               </Button>
             </Grid>
           </Grid>
@@ -266,4 +266,4 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
   )
 }
 
-export default BrandDetailForm
+export default CategoriesDetailForm

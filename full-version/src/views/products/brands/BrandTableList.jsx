@@ -100,7 +100,7 @@ const truncateText = (text, maxLength) => {
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const BrandTableList = ({ tableData }) => {
+const BrandTableList = ({ tableData, totalBrands }) => {
   // States
   const [rowSelection, setRowSelection] = useState({})
 
@@ -110,8 +110,6 @@ const BrandTableList = ({ tableData }) => {
   // Hooks
   const { lang: locale } = useParams()
   const router = useRouter()
-  const params = useParams()
-  const { id } = params // Destructure id from params
 
   const columns = useMemo(
     () => [
@@ -315,7 +313,7 @@ const BrandTableList = ({ tableData }) => {
           <div>
                 Total Brands:
                 {/* <Chip variant='outlined' label={totalAdmin} color='warning' size='small' className='ml-2' /> */}
-                <Chip variant='outlined' label="soon" color='warning' size='small' className='ml-2' />
+                <Chip variant='outlined' label={totalBrands} color='warning' size='small' className='ml-2' />
               </div>
 
           <div className='flex flex-col sm:flex-row is-full sm:is-auto items-start sm:items-center gap-4'>

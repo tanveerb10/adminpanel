@@ -43,50 +43,35 @@ import CustomCheckboxAutocomplete from '@/libs/components/CustomCheckboxAutocomp
 //   { label: 'Monty Python and the Holy Grail', year: 1975 }
 // ]
 
-const movie = ["hello", "zebra",'zoo','animal']
+const movie = ['hello', 'zebra', 'zoo', 'animal']
 const ProductOrganize = ({ setProductData }) => {
-  const [selectedOption, setSelectedOption] = useState({tags:[],categories:[]})
-  
+  const [selectedOption, setSelectedOption] = useState({ tags: [], categories: [] })
+
   // States
-  
 
   const handleInputChange = e => {
-    const {name, value} = e.target
-    setProductData(prev => ({ ...prev, [name]: value}))
+    const { name, value } = e.target
+    setProductData(prev => ({ ...prev, [name]: value }))
   }
 
   const handleArrayChange = (name, newValue) => {
     // const { name, value } = e.target
-    setSelectedOption(prev=>({...prev,[name]:newValue}))
-}
-// console.log(selectedOption)
-  // const handleArrayChange = (list) => {
-  //   console.log({list})
-  //   setProductData(prev=>({...prev,"categories":[...list]}))
-  // }
+    setSelectedOption(prev => ({ ...prev, [name]: newValue }))
+  }
+
   return (
     <Card>
       <CardHeader title='Organize' />
       <CardContent>
         <form onSubmit={e => e.preventDefault()} className='flex flex-col gap-6'>
-          <CustomTextField select fullWidth label='Brand' name="brand" onChange={handleInputChange}>
+          <CustomTextField select fullWidth label='Brand' name='brand' onChange={handleInputChange}>
             <MenuItem value={`Men's Clothing`}>Men&apos;s Clothing</MenuItem>
             <MenuItem value={`Women's Clothing`}>Women&apos;s Clothing</MenuItem>
             <MenuItem value={`Kid's Clothing`}>Kid&apos;s Clothing</MenuItem>
           </CustomTextField>
           <div className='flex items-end gap-4'>
-
-            {/* <CustomCheckboxAutocomplete
-              label='Categories'
-              placeholder='Categories select'
-              fullWidth
-              name="categories"
-              // onChange={(event,newValue)=> setSelectedOption(newValue)}
-              // handleArrayChange={handleArrayChange}
-              onChange={handleArrayChange}
-            /> */}
             <CustomCheckboxAutocomplete
-            label='Categories'
+              label='Categories'
               placeholder='Categories select'
               fullWidth
               // onChange={(event, newValue) => handleArrayChange('categories', newValue)}
@@ -95,32 +80,50 @@ const ProductOrganize = ({ setProductData }) => {
               initialOptions={selectedOption.categories}
             />
           </div>
-          <CustomTextField select fullWidth label='Published' name="published" onChange={handleInputChange}>
+          <CustomTextField select fullWidth label='Published' name='published' onChange={handleInputChange}>
             <MenuItem value='true'>true</MenuItem>
             <MenuItem value='false'>False</MenuItem>
           </CustomTextField>
-          {/* <CustomCheckboxAutocomplete
+          <CustomCheckboxAutocomplete
             fullWidth
             label='Enter Tags'
             placeholder='Fashion, Trending, Summer'
-            // onChange={(value)=>handleArrayChange("tags", value)}
-            // onChange={handleArrayChange}
-            onChange={(event,newValue)=>selectedOption(newValue)}
-            name="tags"
-          /> */}
-          <CustomCheckboxAutocomplete
-              fullWidth
-              label='Enter Tags'
-              placeholder='Fashion, Trending, Summer'
-              onChange={(event, value) => handleArrayChange('tags', value)}
-              name='tags'
+            onChange={(event, value) => handleArrayChange('tags', value)}
+            name='tags'
             // initialOptions={selectedOption.tags}
             initialOptions={movie}
-            />
-          <CustomTextField fullWidth label='Country of Origin' onChange={handleInputChange} name="countryOfOrigin"/>
+          />
+          <CustomTextField fullWidth label='Country of Origin' onChange={handleInputChange} name='countryOfOrigin' />
         </form>
       </CardContent>
     </Card>
   )
 }
 export default ProductOrganize
+// console.log(selectedOption)
+// const handleArrayChange = (list) => {
+//   console.log({list})
+//   setProductData(prev=>({...prev,"categories":[...list]}))
+// }
+{
+  /* <CustomCheckboxAutocomplete
+              label='Categories'
+              placeholder='Categories select'
+              fullWidth
+              name="categories"
+              // onChange={(event,newValue)=> setSelectedOption(newValue)}
+              // handleArrayChange={handleArrayChange}
+              onChange={handleArrayChange}
+            /> */
+}
+{
+  /* <CustomCheckboxAutocomplete
+              fullWidth
+              label='Enter Tags'
+              placeholder='Fashion, Trending, Summer'
+              // onChange={(value)=>handleArrayChange("tags", value)}
+              // onChange={handleArrayChange}
+              onChange={(event,newValue)=>selectedOption(newValue)}
+              name="tags"
+            /> */
+}

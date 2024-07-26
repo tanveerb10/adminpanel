@@ -26,6 +26,8 @@ import CustomAvatar from '@core/components/mui/Avatar'
 // Styled Component Imports
 import AppReactDropzone from '@/libs/styles/AppReactDropzone'
 
+import { useProduct } from '@views/products/allproducts/productContext/ProductStateManagement'
+
 // Styled Dropzone Component
 const Dropzone = styled(AppReactDropzone)(({ theme }) => ({
   '& .dropzone': {
@@ -43,14 +45,20 @@ const Dropzone = styled(AppReactDropzone)(({ theme }) => ({
 const ProductImage = ({setProductData}) => {
   // States
   const [files, setFiles] = useState([])
+  const {state,dispatch} = useProduct()
 
   // Hooks
   const { getRootProps, getInputProps } = useDropzone({
-    multiple:true,
-    onDrop: acceptedFiles => {
-      setFiles(prevFiles => [...prevFiles, ...acceptedFiles.map(file => Object.assign(file))])
-      setProductData(prev =>({...prev, images:[...prev.images,...acceptedFiles]}))
-    }
+    // multiple:true,
+    // onDrop: acceptedFiles => {
+    //   setFiles(prevFiles => [...prevFiles, ...acceptedFiles.map(file => Object.assign(file))])
+    //   setProductData(prev =>({...prev, images:[...prev.images,...acceptedFiles]}))
+    multiple: true,
+    onDrop: (acceptedFiles) => {
+      setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
+      dispatch({ type: 'SET_PRODUCT_DATA', name: 'images', value: [...state.images, ...acceptedFiles] });
+    
+  }
   })
 
   const renderFilePreview = file => {
@@ -62,12 +70,21 @@ const ProductImage = ({setProductData}) => {
   }
 
   const handleRemoveFile = file => {
-    const uploadedFiles = files
-    const filtered = uploadedFiles.filter(i => i.name !== file.name)
+    // const uploadedFiles = files
+    // const filtered = uploadedFiles.filter(i => i.name !== file.name)
 
-    setFiles([...filtered])
-    setProductData(prev=>({...prev, images:[...filtered]}))
-  }
+    // setFiles([...filtered])
+    // setProductData(prev=>({...prev, images:[...filtered]}))
+    const updatedFiles = files.filter((f) => f.name !== file.name);
+    setFiles(updatedFiles);
+    dispatch({ type: 'SET_PRODUCT_DATA', name: 'images', value: updatedFiles });
+  };
+
+
+  const handleRemoveAllFiles = () => {
+    setFiles([]);
+    dispatch({ type: 'SET_PRODUCT_DATA', name: 'images', value: [] });
+  };
 
   const fileList = files.map(file => (
     <ListItem key={file.name} className='pis-4 plb-3'>
@@ -90,9 +107,9 @@ const ProductImage = ({setProductData}) => {
     </ListItem>
   ))
 
-  const handleRemoveAllFiles = () => {
-    setFiles([])
-  }
+  // const handleRemoveAllFiles = () => {
+  //   setFiles([])
+  // }
 
   return (
     <Dropzone>

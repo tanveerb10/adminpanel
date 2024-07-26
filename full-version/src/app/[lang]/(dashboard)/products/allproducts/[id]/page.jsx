@@ -13,8 +13,8 @@ import ProductOrganize from '@/views/products/allproducts/product-settings/add/P
 // import CustomCheckboxAutocomplete from '@/libs/components/CustomCheckboxAutocomplete'
 import fetchData from '@/utils/fetchData'
 // import VariantCombinationTable from '@/views/products/allproducts/product-settings/add/VariantCombinationTable'
+import {ProductProvider} from '@views/products/allproducts/productContext/ProductStateManagement'
 export default function Page() {
-
   // const movie = [
   //   { label: 'The Shawshank Redemption', year: 1994 },
   //   { label: 'The Godfather', year: 1972 },
@@ -40,18 +40,17 @@ export default function Page() {
   //   { label: '3 Idiots', year: 2009 },
   //   { label: 'Monty Python and the Holy Grail', year: 1975 }
   // ]
-  
-  
+
   const [productData, setProductData] = useState({
-    title: "",
-    description: "",
+    title: '',
+    description: '',
     images: [],
-    brand: "",
+    brand: '',
     categories: [],
-    published: "",
+    published: '',
     tags: [],
-    countryOfOrigin: "",
-    variants:[]
+    countryOfOrigin: '',
+    variants: []
   })
 
   useEffect(() => {
@@ -67,9 +66,10 @@ export default function Page() {
   }, [])
 
   const handleSaveProduct = () => {
-    console.log('Product Data',productData)
+    console.log('Product Data', productData)
   }
   return (
+    // <ProductProvider></ProductProvider>
     <Grid container spacing={6}>
       {/* ============================================================== */}
       {/* <Grid item xs={12}>
@@ -79,43 +79,45 @@ export default function Page() {
       <Grid item xs={12}>
         <ProductAddHeader />
       </Grid>
-        <Grid container spacing={6}>
-          <Grid item xs={12}>
-            <ProductInformation setProductData={ setProductData} />
-          </Grid>
-          {/* <Grid item xs={12}>
+      <Grid container spacing={6}>
+        <Grid item xs={12}>
+          <ProductInformation setProductData={setProductData} />
+        </Grid>
+        {/* <Grid item xs={12}>
             <ProductImage />
           </Grid> */}
-          <Grid item xs={12}>
-            <ProductVariants setProductData={setProductData} />
-          </Grid>
-          <Grid item xs={12}>
-            <ProductImage setProductData={ setProductData} />
-          </Grid>
-          <Grid item xs={12}>
-            <ProductOrganize setProductData={ setProductData} />
-          </Grid>
-          {/* <Grid item xs={12}>
+        <Grid item xs={12}>
+          <ProductVariants setProductData={setProductData} />
+        </Grid>
+        <Grid item xs={12}>
+          <ProductImage setProductData={setProductData} />
+        </Grid>
+        <Grid item xs={12}>
+          <ProductOrganize setProductData={setProductData} />
+        </Grid>
+        {/* <Grid item xs={12}>
             <ProductInventory />
           </Grid> */}
-        </Grid>
+      </Grid>
       {/* <Grid item xs={12} md={8}>
       </Grid> */}
       {/* <Grid item xs={12} md={4}> */}
-        {/* <Grid container spacing={6}> */}
-          {/* <Grid item xs={12}>
+      {/* <Grid container spacing={6}> */}
+      {/* <Grid item xs={12}>
                 <ProductPricing />
               </Grid> */}
-          
-        {/* </Grid> */}
 
       {/* </Grid> */}
-         {/* <Grid>
+
+      {/* </Grid> */}
+      {/* <Grid>
             <ProductVariants />
           </Grid> */}
       {/* <Testing/> */}
       <Grid item xs={12}>
-<Button variant='contained' onClick={handleSaveProduct}>Save Product</Button>
+        <Button variant='contained' onClick={handleSaveProduct}>
+          Save Product
+        </Button>
       </Grid>
     </Grid>
   )

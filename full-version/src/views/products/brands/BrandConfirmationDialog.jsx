@@ -17,7 +17,7 @@ import { useRouter, useParams } from 'next/navigation'
 // Third-party Imports
 import classnames from 'classnames'
 
-const BrandConfirmationDialog = ({ open, setOpen, type, id }) => {
+const BrandConfirmationDialog = ({ open, setOpen, type, id, status }) => {
   // States
   const [secondDialog, setSecondDialog] = useState(false)
   const [userInput, setUserInput] = useState(false)
@@ -64,7 +64,7 @@ const BrandConfirmationDialog = ({ open, setOpen, type, id }) => {
               className: 'flex flex-col items-center gap-5'
             })}
           >
-            <Typography variant='h5'>Are you sure you want to deactivate this brand?</Typography>
+            <Typography variant='h5'>{status ? "Are you sure you want to Activate this brand?":"Are you sure you want to deactivate this brand?"}</Typography>
           </Wrapper>
         </DialogContent>
         <DialogActions className='justify-center pbs-0 sm:pbe-16 sm:pli-16'>
@@ -101,16 +101,18 @@ const BrandConfirmationDialog = ({ open, setOpen, type, id }) => {
             })}
           />
           <Typography variant='h3' className='mbe-5'>
-            Deactivated
+            {status?"Activated":"Deactivated"}
           </Typography>
           <Typography color='text.primary' variant='h5'>
             {userInput ? (
               <>
-                <Typography>This brand has been deactivated successfully.</Typography>
+                <Typography>{status?"This brand has been Deactivated successfully.":"This brand has been deactivated successfully."}</Typography>
                 <Typography>You are going to redirect at brands page.</Typography>
               </>
             ) : (
-              <>Brand Delete Cancelled!</>
+                <Typography>
+                  {status?"Brand Activation Cancelled!":"Brand Deactivation Cancelled!"}
+              </Typography>
             )}
           </Typography>
         </DialogContent>

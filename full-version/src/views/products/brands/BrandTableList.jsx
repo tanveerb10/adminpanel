@@ -85,8 +85,8 @@ const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...prop
 }
 
 const userStatusObj = {
-  Active: 'success',
-  Inactive: 'secondary'
+  Active: 'error',
+  Inactive: 'error'
 }
 
 
@@ -196,8 +196,13 @@ const BrandTableList = ({ tableData, totalBrands }) => {
             <Chip
               variant='tonal'
               className='capitalize'
-              label={row.original.isDeleted ? 'Active' : 'Inactive'}
-              color={userStatusObj[row.original.isDeleted]}
+              label={row.original.isDeleted ? 'Inactive' : 'Active'}
+              // color={userStatusObj[row.original.isDeleted]}
+            //   color={statusO={
+            //     "Inactive" : 'error'
+              
+            // }
+              // }
               size='small'
             />
           </div>
@@ -227,7 +232,7 @@ const BrandTableList = ({ tableData, totalBrands }) => {
             </IconButton>
             <IconButton>
               <Link href={getLocalizedUrl(`/products/brands/${row.original.id}`, locale)} className='flex'>
-                <i className='tabler-eye text-[22px] text-textSecondary' />
+                <i className='tabler-edit text-[22px] text-textSecondary' />
               </Link>
             </IconButton>
             <OptionMenu

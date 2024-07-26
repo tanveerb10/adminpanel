@@ -19,7 +19,7 @@ import { useForm, Controller } from 'react-hook-form'
 // Component Imports
 import BrandConfirmationDialog from '@views/products/brands/BrandConfirmationDialog'
 
-const BrandDelete = ({id}) => {
+const BrandDelete = ({ id, status }) => {
   // States
   const [open, setOpen] = useState(false)
 
@@ -40,7 +40,7 @@ const BrandDelete = ({id}) => {
 
   return (
     <Card>
-      <CardHeader title='Delete Account' />
+      <CardHeader title='Deactived Brand' />
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormControl error={Boolean(errors.checkbox)} className='is-full mbe-6'>
@@ -49,15 +49,23 @@ const BrandDelete = ({id}) => {
               control={control}
               rules={{ required: true }}
               render={({ field }) => (
-                <FormControlLabel control={<Checkbox {...field} />} label='I confirm my account deactivation' />
+                <FormControlLabel control={<Checkbox {...field} />} label='I confirm this brand deactivation' />
               )}
             />
             {errors.checkbox && <FormHelperText error>Please confirm you want to deactivate this brand</FormHelperText>}
           </FormControl>
-          <Button variant='contained' color='error' type='submit' disabled={!checkboxValue}>
-            Deactivate Brand
-          </Button>
-          <BrandConfirmationDialog open={open} setOpen={setOpen} type='delete-brand' id={id} />
+
+          {status ? (
+            <Button variant='contained' color='success' type='submit' disabled={!checkboxValue}>
+              Activate Brand
+            </Button>
+          ) : (
+            <Button variant='contained' color='error' type='submit' disabled={!checkboxValue}>
+              Deactivate Brand
+            </Button>
+          )}
+
+          <BrandConfirmationDialog open={open} setOpen={setOpen} id={id} status={status} />
         </form>
       </CardContent>
     </Card>

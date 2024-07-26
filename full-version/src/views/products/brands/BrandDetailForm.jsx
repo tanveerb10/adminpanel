@@ -15,25 +15,26 @@ import BrandDelete from '@views/products/brands/BrandDelete'
 const BrandDetailForm = ({ isAddBrand, brandData }) => {
   const initialFormData = {
     brand_name: brandData?.brand?.brand_name || '',
-    brand_image_src: brandData?.brand?.brand_image_src || '',
+    brand_image_src: brandData?.brand?.brand_image_src || null,
     products_count: brandData?.brand?.products_count || 0,
     brand_description: brandData?.brand?.brand_description || '',
     is_deleted: brandData?.brand?.is_deleted || false,
     sort_order: brandData?.brand?.sort_order || '',
     brand_image_alt: brandData?.brand?.brand_image_alt || '',
-    brand_slug: brandData?.brand?.brand_slug || ''
+    // brand_slug: brandData?.brand?.brand_slug || ''
   }
-  const [formData, setFormData] = useState(initialFormData)
+  // const [formData, setFormData] = useState(initialFormData)
   const [imgSrc, setImgSrc] = useState(initialFormData.brand_image_src)
-
+  const [selectedFile, setSelectedFile] = useState(null)
   const validationSchema = yup.object().shape({
     brand_name: yup.string().required('Brand name is required'),
     brand_description: yup.string().required('Brand description is required'),
     products_count: yup.number().required('Product count is required'),
     sort_order: yup.string().required('Sort order is required'),
-    brand_image_src: yup.string().required('Brand image is required'),
+    brand_image_src: yup.string(),
+    // brand_image_src: yup.string().required('Brand image is required'),
     is_deleted: yup.string().required('Is Deleted is required'),
-    brand_slug: yup.string(),
+    // brand_slug: yup.string(),
     brand_image_alt: yup.string()
   })
 
@@ -56,6 +57,7 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
   const handleFileInputChange = event => {
     const file = event.target.files[0]
     if (file) {
+      setSelectedFile(file)
       const reader = new FileReader()
       reader.onload = e => setImgSrc(e.target.result)
       reader.readAsDataURL(file)
@@ -69,14 +71,46 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
   const { id, lang: locale } = useParams()
   const router = useRouter()
 
+  const handleSlug = brandName => {
+    return brandName
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '')
+      .replace(/\s+/g, '-')
+  }
   const handleFormSubmit = async data => {
     try {
+      // if (isAddBrand) {
+      //   data.brand_slug = handleSlug(data.brand_name)
+      // }
+
+      const formData = new FormData()
+      formData.append('brand_name', data.brand_name)
+      formData.append('products_count', data.products_count)
+      formData.append('brand_description', data.brand_description)
+      formData.append('is_deleted', data.is_deleted)
+      formData.append('sort_order', data.sort_order)
+      formData.append('brand_image_alt', data.brand_image_alt)
+      // formData.append('brand_slug', data.brand_slug);
+
+      if (!isAddBrand) {
+        formData.append('brand_slug', data.brand_slug)
+      }
+
+      if (selectedFile) {
+        formData.append('brand_image_src', imgSrc)
+      } else if (!isAddBrand) {
+        formData.append('brand_image_src', data.brand_image_src)
+      }
+
       console.log('Form Data:', data)
       const apiUrl = isAddBrand
         ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/createBrand`
         : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/updateBrand/${id}`
-      const response = await fetchData(apiUrl, isAddBrand ? 'POST' : 'PUT', data)
+      const response = await fetchData(apiUrl, isAddBrand ? 'POST' : 'PUT', formData)
       console.log('API Response:', response)
+      const result = await response.json()
+      console.log('API Response:', result)
+
       if (response.success === true) {
         setTimeout(() => router.push(getLocalizedUrl(`/products/brands`, locale)), 3000)
         return toast.success(response.message)
@@ -86,31 +120,15 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
       toast.error(error.message || 'An Error occurred')
     }
   }
-  const handleSlug = brandName => {
-    let slug = brandName.toLowerCase()
-   slug = slug.replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-');
-    return slug
-  }
-
-  const slug = (name1) => {
-    let name = handleSlug(initialFormData.brand_name)
-    setFormData(name)
-  }
-
-  console.log(formData)
-  // console.log(data.brand_name)
-  // console.log(brand_name);
-  console.log(handleSlug(initialFormData.brand_name))
-
-  // const slug = handleSlug('HELLo WorLd 1')
-  console.log(slug)
+  console.log(imgSrc, "img src ")
+  console.log(selectedFile, "selected file src ")
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
         <Card>
           <CardContent className='mbe-4'>
             <div className='flex max-sm:flex-col items-center gap-6'>
-              <img height={100} width={100} className='rounded' src={imgSrc} alt='Profile' />
+              <img height={100} width={100} className='rounded' src={imgSrc} alt={initialFormData.brand_image_alt} />
               <div className='flex flex-grow flex-col gap-4'>
                 <div className='flex flex-col sm:flex-row gap-4'>
                   <Button component='label' variant='contained' htmlFor='account-settings-upload-image'>
@@ -169,7 +187,7 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
                     />
                   </Grid>
                 )}
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   <Controller
                     name='brand_image_src'
                     control={control}
@@ -184,7 +202,7 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
                       />
                     )}
                   />
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12} sm={6}>
                   <Controller
                     name='brand_image_alt'
@@ -292,7 +310,7 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
       {!isAddBrand && (
         <Grid item xs={12}>
           <Card>
-            <BrandDelete id={id} />
+            <BrandDelete id={id} status={initialFormData.is_deleted} />
           </Card>
         </Grid>
       )}

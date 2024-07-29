@@ -40,7 +40,7 @@ const Dropzone = styled(AppReactDropzone)(({ theme }) => ({
   }
 }))
 
-const ProductImage = () => {
+const ProductImage = ({setProductData}) => {
   // States
   const [files, setFiles] = useState([])
 
@@ -48,7 +48,8 @@ const ProductImage = () => {
   const { getRootProps, getInputProps } = useDropzone({
     multiple:true,
     onDrop: acceptedFiles => {
-      setFiles(prevFiles => [...prevFiles,...acceptedFiles.map(file => Object.assign(file))])
+      setFiles(prevFiles => [...prevFiles, ...acceptedFiles.map(file => Object.assign(file))])
+      setProductData(prev =>({...prev, images:[...prev.images,...acceptedFiles]}))
     }
   })
 
@@ -65,6 +66,7 @@ const ProductImage = () => {
     const filtered = uploadedFiles.filter(i => i.name !== file.name)
 
     setFiles([...filtered])
+    setProductData(prev=>({...prev, images:[...filtered]}))
   }
 
   const fileList = files.map(file => (

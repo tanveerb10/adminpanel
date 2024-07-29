@@ -49,7 +49,7 @@
 // // //   // console.log(secondloopidentity)
 // // //     // console.log(firstidentity)
 // // //     return firstidentity
-  
+
 // // // })
 // // // // console.log(identity)
 // // // // console.log(identity)
@@ -59,7 +59,6 @@
 // // // //     console.log(secondidentity)
 // // // // })
 // // // // console.log(identity)
-
 
 // // const formData = [
 // //     {
@@ -75,20 +74,20 @@
 // //       value: ['fabric', 'cotton']
 // //     }
 // //   ];
-  
+
 // //   const generateCombinations = (data, currentIndex = 0, currentCombination = [], result = []) => {
 // //     if (currentIndex === data.length) {
 // //       result.push(currentCombination.join(' / '));
 // //       return result;
 // //     }
-  
+
 // //     for (const value of data[currentIndex].value) {
 // //       generateCombinations(data, currentIndex + 1, [...currentCombination, value], result);
 // //     }
-  
+
 // //     return result;
 // //   };
-  
+
 // //   const combinations = generateCombinations(formData);
 // //   console.log(combinations);
 
@@ -98,18 +97,17 @@
 //       values: item.values.filter(value => value !== '')
 //     }));
 //   };
-  
-  
+
 // const generateCombinations = (data, currentIndex = 0, currentCombination = [], result = []) => {
 //     if (currentIndex === data.length) {
 //       result.push(currentCombination.join(' / '));
 //       return result;
 //     }
-  
+
 //     for (const value of data[currentIndex].value) {
 //       generateCombinations(data, currentIndex + 1, [...currentCombination, value.toUpperCase()], result);
 //     }
-  
+
 //     return result;
 // };
 
@@ -118,9 +116,9 @@
 //       variant: variant,
 //       combinations: []
 //     }));
-  
+
 //     const combinations = generateCombinations(data.slice(1));
-  
+
 //     topLevelVariants.forEach(variantObj => {
 //       variantObj.combinations = combinations.map(combination => ({
 //         combination: combination,
@@ -128,13 +126,13 @@
 //         quantity: 0
 //       }));
 //     });
-  
+
 //     return {
 //       type: data[0].type,
 //       values: topLevelVariants
 //     };
 //   };
-  
+
 //   // Example input data
 //   const formData = [
 //     {
@@ -150,15 +148,15 @@
 //       values: ["fabrics", "cotton", ""]
 //     }
 //   ];
-  
+
 //   // Clean the data
 //   const cleanedData = cleanData(formData);
-  
+
 //   // Create the structured data
 //   const structuredData = createDataStructure(cleanedData);
-  
+
 //   console.log(JSON.stringify(structuredData, null, 2));
-  
+
 // //     {
 // //       type: 'size',
 // //       value: ['s', 'm']
@@ -172,12 +170,12 @@
 // //       value: ['fabric', 'cotton']
 // //     }
 // //   ];
-  
+
 // //   const structuredData = createDataStructure(formData);
-  
+
 // //   console.log(JSON.stringify(structuredData, null, 2));
 // // const comb = generateCombinations(formData)
-  
+
 // // console.log(comb)
 // // console.log(combinations)
 
@@ -186,221 +184,227 @@
 // // console.log("check", check)
 // // console.log(checkfirst)
 
+const cleanData = data => {
+  return data.map(item => ({
+    ...item,
+    values: item.values.filter(value => value !== '')
+  }))
+}
 
-const cleanData = (data) => {
-    return data.map(item => ({
-      ...item,
-      values: item.values.filter(value => value !== '')
-    }));
-  };
-  
-  const generateCombinations = (data, currentIndex = 0, currentCombination = [], result = []) => {
-    if (currentIndex === data.length) {
-      result.push(currentCombination.join(' / '));
-      return result;
-    }
-  
-    for (const value of data[currentIndex].values) {
-      generateCombinations(data, currentIndex + 1, [...currentCombination, value.toUpperCase()], result);
-    }
-  
-    return result;
-  };
+const generateCombinations = (data, currentIndex = 0, currentCombination = [], result = []) => {
+  if (currentIndex === data.length) {
+    result.push(currentCombination.join(' / '))
+    return result
+  }
 
-  const createDataStructure = (data) => {
-    const topLevelVariants = data[0].values.map(variant => ({
-      variant: variant,
-      combinations: []
-    }));
-  
-    const combinations = generateCombinations(data.slice(1));
-  
-    topLevelVariants.forEach(variantObj => {
-      variantObj.combinations = combinations.map(combination => ({
-        combination: combination,
-        price: 0.00,
-        quantity: 0
-      }));
-    });
-  
-    return {
-      type: data[0].type,
-      values: topLevelVariants
-    };
-  };
-  
-  // Example input data
-  const formData = [
-    {
-      type: "Size",
-      values: ["m", "l", "xl", ""]
-    },
-    {
-      type: "Color",
-      values: ["green", "red", "yellow", "blue", ""]
-    },
-    {
-      type: "Weight",
-      values: ["fabrics", "cotton", ""]
-    }
-  ];
-  
-  // Clean the data
-  const cleanedData = cleanData(formData);
-  
-  // Create the structured data
-  const structuredData = createDataStructure(cleanedData);
-  
-  // console.log(JSON.stringify(structuredData, null, 2));
-  
-const arraycheck = ["1", 2]
+  for (const value of data[currentIndex].values) {
+    generateCombinations(data, currentIndex + 1, [...currentCombination, value.toUpperCase()], result)
+  }
+
+  return result
+}
+
+const createDataStructure = data => {
+  const topLevelVariants = data[0].values.map(variant => ({
+    variant: variant,
+    combinations: []
+  }))
+
+  const combinations = generateCombinations(data.slice(1))
+
+  topLevelVariants.forEach(variantObj => {
+    variantObj.combinations = combinations.map(combination => ({
+      combination: combination,
+      price: 0.0,
+      quantity: 0
+    }))
+  })
+
+  return {
+    type: data[0].type,
+    values: topLevelVariants
+  }
+}
+
+// Example input data
+const formData = [
+  {
+    type: 'Size',
+    values: ['m', 'l', 'xl', '']
+  },
+  {
+    type: 'Color',
+    values: ['green', 'red', 'yellow', 'blue', '']
+  },
+  {
+    type: 'Weight',
+    values: ['fabrics', 'cotton', '']
+  }
+]
+
+// Clean the data
+const cleanedData = cleanData(formData)
+
+// Create the structured data
+const structuredData = createDataStructure(cleanedData)
+
+// console.log(JSON.stringify(structuredData, null, 2));
+
+const arraycheck = ['1', 2]
 // console.log(typeof arraycheck)
-  
 
 const dataaccess = {
-  "type": "Size",
-  "values": [
+  type: 'Size',
+  values: [
     {
-      "variant": "m",
-      "combinations": [
+      variant: 'm',
+      combinations: [
         {
-          "combination": "GREEN / FABRICS",
-          "price": 0,
-          "quantity": 0
+          combination: 'GREEN / FABRICS',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "GREEN / COTTON",
-          "price": 0,
-          "quantity": 0
+          combination: 'GREEN / COTTON',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "RED / FABRICS",
-          "price": 0,
-          "quantity": 0
+          combination: 'RED / FABRICS',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "RED / COTTON",
-          "price": 0,
-          "quantity": 0
+          combination: 'RED / COTTON',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "YELLOW / FABRICS",
-          "price": 0,
-          "quantity": 0
+          combination: 'YELLOW / FABRICS',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "YELLOW / COTTON",
-          "price": 0,
-          "quantity": 0
+          combination: 'YELLOW / COTTON',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "BLUE / FABRICS",
-          "price": 0,
-          "quantity": 0
+          combination: 'BLUE / FABRICS',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "BLUE / COTTON",
-          "price": 0,
-          "quantity": 0
+          combination: 'BLUE / COTTON',
+          price: 0,
+          quantity: 0
         }
       ]
     },
     {
-      "variant": "l",
-      "combinations": [
+      variant: 'l',
+      combinations: [
         {
-          "combination": "GREEN / FABRICS",
-          "price": 0,
-          "quantity": 0
+          combination: 'GREEN / FABRICS',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "GREEN / COTTON",
-          "price": 0,
-          "quantity": 0
+          combination: 'GREEN / COTTON',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "RED / FABRICS",
-          "price": 0,
-          "quantity": 0
+          combination: 'RED / FABRICS',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "RED / COTTON",
-          "price": 0,
-          "quantity": 0
+          combination: 'RED / COTTON',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "YELLOW / FABRICS",
-          "price": 0,
-          "quantity": 0
+          combination: 'YELLOW / FABRICS',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "YELLOW / COTTON",
-          "price": 0,
-          "quantity": 0
+          combination: 'YELLOW / COTTON',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "BLUE / FABRICS",
-          "price": 0,
-          "quantity": 0
+          combination: 'BLUE / FABRICS',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "BLUE / COTTON",
-          "price": 0,
-          "quantity": 0
+          combination: 'BLUE / COTTON',
+          price: 0,
+          quantity: 0
         }
       ]
     },
     {
-      "variant": "xl",
-      "combinations": [
+      variant: 'xl',
+      combinations: [
         {
-          "combination": "GREEN / FABRICS",
-          "price": 0,
-          "quantity": 0
+          combination: 'GREEN / FABRICS',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "GREEN / COTTON",
-          "price": 0,
-          "quantity": 0
+          combination: 'GREEN / COTTON',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "RED / FABRICS",
-          "price": 0,
-          "quantity": 0
+          combination: 'RED / FABRICS',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "RED / COTTON",
-          "price": 0,
-          "quantity": 0
+          combination: 'RED / COTTON',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "YELLOW / FABRICS",
-          "price": 0,
-          "quantity": 0
+          combination: 'YELLOW / FABRICS',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "YELLOW / COTTON",
-          "price": 0,
-          "quantity": 0
+          combination: 'YELLOW / COTTON',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "BLUE / FABRICS",
-          "price": 0,
-          "quantity": 0
+          combination: 'BLUE / FABRICS',
+          price: 0,
+          quantity: 0
         },
         {
-          "combination": "BLUE / COTTON",
-          "price": 0,
-          "quantity": 0
+          combination: 'BLUE / COTTON',
+          price: 0,
+          quantity: 0
         }
       ]
     }
   ]
 }
 
-const checkdataaccess = dataaccess.values.map((index)=> {
+const checkdataaccess = dataaccess.values.map(index => {
   console.log(index.variant)
-  const com =(index.combinations.map((comaccess) => {
+  const com = index.combinations.map(comaccess => {
     console.log(comaccess.combination)
-  }))
+  })
 })
+
+const date = '2024-07-27T07:30:30.337Z'
+
+const date1 = new Date(date)
+
+const formatDate = `${date1.getDate()}-${date1.getMonth() + 1}-${date1.getFullYear()}`
+console.log(Date.parse('2024-07-27T07:30:30.337Z'))
+console.log(formatDate)

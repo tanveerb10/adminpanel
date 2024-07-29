@@ -11,11 +11,11 @@ import MenuItem from '@mui/material/MenuItem'
 
 // Component Imports
 // import CustomIconButton from '@core/components/mui/IconButton'
-import { IconButton } from '@mui/material'
+// import { IconButton } from '@mui/material'
 import CustomTextField from '@core/components/mui/TextField'
-import Checkbox from '@mui/material/Checkbox'
-import Chip from '@mui/material/Chip'
-import CustomAutocomplete from '@core/components/mui/Autocomplete'
+// import Checkbox from '@mui/material/Checkbox'
+// import Chip from '@mui/material/Chip'
+// import CustomAutocomplete from '@core/components/mui/Autocomplete'
 import CustomCheckboxAutocomplete from '@/libs/components/CustomCheckboxAutocomplete'
 // const movie = [
 //   { label: 'The Shawshank Redemption', year: 1994 },
@@ -43,132 +43,81 @@ import CustomCheckboxAutocomplete from '@/libs/components/CustomCheckboxAutocomp
 //   { label: 'Monty Python and the Holy Grail', year: 1975 }
 // ]
 
-const ProductOrganize = () => {
+const movie = ["hello", "zebra",'zoo','animal']
+const ProductOrganize = ({ setProductData }) => {
+  const [selectedOption, setSelectedOption] = useState({tags:[],categories:[]})
+  
   // States
-  const [vendor, setVendor] = useState('')
-  const [category, setCategory] = useState('')
-  const [collection, setCollection] = useState('')
-  const [status, setStatus] = useState('')
-  // const [data, setData] = useState(top100Films)
-  // const [inputValue, setInputValue] = useState('')
+  
 
-  // const filterOption = data.filter(option =>
-  //   option.label.includes(inputValue)
-  // );
+  const handleInputChange = e => {
+    const {name, value} = e.target
+    setProductData(prev => ({ ...prev, [name]: value}))
+  }
 
+  const handleArrayChange = (name, newValue) => {
+    // const { name, value } = e.target
+    setSelectedOption(prev=>({...prev,[name]:newValue}))
+}
+// console.log(selectedOption)
+  // const handleArrayChange = (list) => {
+  //   console.log({list})
+  //   setProductData(prev=>({...prev,"categories":[...list]}))
+  // }
   return (
     <Card>
       <CardHeader title='Organize' />
       <CardContent>
         <form onSubmit={e => e.preventDefault()} className='flex flex-col gap-6'>
-          <CustomTextField select fullWidth label='Brand' value={vendor} onChange={e => setVendor(e.target.value)}>
+          <CustomTextField select fullWidth label='Brand' name="brand" onChange={handleInputChange}>
             <MenuItem value={`Men's Clothing`}>Men&apos;s Clothing</MenuItem>
             <MenuItem value={`Women's Clothing`}>Women&apos;s Clothing</MenuItem>
             <MenuItem value={`Kid's Clothing`}>Kid&apos;s Clothing</MenuItem>
           </CustomTextField>
           <div className='flex items-end gap-4'>
-            {/* <CustomTextField
-              select
+
+            {/* <CustomCheckboxAutocomplete
+              label='Categories'
+              placeholder='Categories select'
               fullWidth
-              label='Category'
-              value={category}
-              onChange={e => setCategory(e.target.value)}
-            >
-              <MenuItem value='Household'>Household</MenuItem>
-              <MenuItem value='Office'>Office</MenuItem>
-              <MenuItem value='Electronics'>Electronics</MenuItem>
-              <MenuItem value='Management'>Management</MenuItem>
-              <MenuItem value='Automotive'>Automotive</MenuItem>
-            </CustomTextField>
-            <IconButton variant='tonal' color='primary' className='min-is-fit'>
-              <i className='tabler-plus' />
-            </IconButton> */}
-            <CustomCheckboxAutocomplete label='Categories' placeholder='Categories select' fullWidth/>
+              name="categories"
+              // onChange={(event,newValue)=> setSelectedOption(newValue)}
+              // handleArrayChange={handleArrayChange}
+              onChange={handleArrayChange}
+            /> */}
+            <CustomCheckboxAutocomplete
+            label='Categories'
+              placeholder='Categories select'
+              fullWidth
+              // onChange={(event, newValue) => handleArrayChange('categories', newValue)}
+              onChange={handleInputChange}
+              name='categories'
+              initialOptions={selectedOption.categories}
+            />
           </div>
-          {/* <CustomTextField
-            select
-            fullWidth
-            label='Collection'
-            value={collection}
-            onChange={e => setCollection(e.target.value)}
-          >
-            <MenuItem value={`Men's Clothing`}>Men&apos;s Clothing</MenuItem>
-            <MenuItem value={`Women's Clothing`}>Women&apos;s Clothing</MenuItem>
-            <MenuItem value={`Kid's Clothing`}>Kid&apos;s Clothing</MenuItem>
-          </CustomTextField> */}
-          <CustomTextField select fullWidth label='Published' value={status} onChange={e => setStatus(e.target.value)}>
+          <CustomTextField select fullWidth label='Published' name="published" onChange={handleInputChange}>
             <MenuItem value='true'>true</MenuItem>
             <MenuItem value='false'>False</MenuItem>
           </CustomTextField>
-          <CustomCheckboxAutocomplete fullWidth label='Enter Tags' placeholder='Fashion, Trending, Summer' />
-          <CustomTextField fullWidth label='Country of Origin' />
-          {/* <CustomTextField select fullWidth label='Enter Tags' placeholder='Fashion, Trending, Summer' /> */}
-          {/* <CustomAutocomplete>
-            <MenuItem value='true'>true</MenuItem>
-            <MenuItem value='false'>False</MenuItem>
-            <MenuItem value='true'>true</MenuItem>
-            <MenuItem value='false'>False</MenuItem>
-            <MenuItem value='true'>true</MenuItem>
-            <MenuItem value='false'>False</MenuItem>
-          </CustomAutocomplete> */}
-
-          {/* <CustomAutocomplete
-            multiple
-            disableCloseOnSelect
-            options={data}
-            id='autocomplete-checkboxes'
-            getOptionLabel={option => option.title || ''}
-            renderInput={params => (
-              <CustomTextField {...params} key={params.id} label='Checkboxes' placeholder='Favorites' />
-            )}
-            renderOption={(props, option, { selected }) => (
-              <li {...props} key={option.label}>
-                <Checkbox key={option.label} checked={selected} className='mie-2' />
-                {option.label}
-              </li>
-            )}
-            renderTags={(tagValue, getTagProps) =>
-              tagValue.map((option, index) => (
-                <Chip label={option.label} {...getTagProps({ index })} key={index} size='small' />
-              ))
-            }
-          />
-           */}
-          {/* ======   going to trash=============
-          <CustomAutocomplete
-            multiple
-            disableCloseOnSelect
-            options={filterOption.length > 0 ? filterOption : data}
-            id='autocomplete-checkboxes'
-            getOptionLabel={option => option.label || ''}
-            renderInput={params => (
-              <CustomTextField
-                {...params}
-                key={params.id}
-                label='Checkboxes'
-                placeholder='Favorites'
-                onChange={e => setInputValue(e.target.value)}
-              />
-            )}
-            renderOption={(props, option, { selected }) => (
-              <li {...props} key={option.label}>
-                <Checkbox key={option.label} checked={selected} className='mie-2' />
-                {option.label}
-              </li>
-            )}
-            renderTags={(tagValue, getTagProps) =>
-              tagValue.map((option, index) => (
-                <Chip label={option.label} {...getTagProps({ index })} key={index} size='small' />
-              ))
-            }
-          >
-            {filterOption.length === 0 && (
-              <li key='add-button'>
-                <button>Add Option</button>
-              </li>
-            )}
-          </CustomAutocomplete> */}
-          {/* <CustomCheckboxAutocomplete fullWidth multiple placeholder='test check' label='test option' optionKey='label' fetchOption={movie}  /> */}
+          {/* <CustomCheckboxAutocomplete
+            fullWidth
+            label='Enter Tags'
+            placeholder='Fashion, Trending, Summer'
+            // onChange={(value)=>handleArrayChange("tags", value)}
+            // onChange={handleArrayChange}
+            onChange={(event,newValue)=>selectedOption(newValue)}
+            name="tags"
+          /> */}
+          <CustomCheckboxAutocomplete
+              fullWidth
+              label='Enter Tags'
+              placeholder='Fashion, Trending, Summer'
+              onChange={(event, value) => handleArrayChange('tags', value)}
+              name='tags'
+            // initialOptions={selectedOption.tags}
+            initialOptions={movie}
+            />
+          <CustomTextField fullWidth label='Country of Origin' onChange={handleInputChange} name="countryOfOrigin"/>
         </form>
       </CardContent>
     </Card>

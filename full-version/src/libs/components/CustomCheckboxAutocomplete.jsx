@@ -164,11 +164,11 @@ const checkedIcon = <CheckBoxIcon fontSize='small' />
 // const icon = <span>□</span>;
 // const checkedIcon = <span>■</span>;
 
-const CustomCheckboxAutocomplete = React.forwardRef(({initialOptions=[], label, placeholder,optionKey, ...props},ref) => {
+const CustomCheckboxAutocomplete = React.forwardRef(({initialOptions=[], label, placeholder,onChange,optionKey, ...props},ref) => {
   const [dataList, setDataList] = React.useState(initialOptions);
   const filter = createFilterOptions({
     matchFrom: 'start',
-    stringify: (option) => option[optionKey],
+    stringify: (option) => option,
   });
 
 //   return (
@@ -285,55 +285,121 @@ const CustomCheckboxAutocomplete = React.forwardRef(({initialOptions=[], label, 
 //   );
 // }
 
+  
+  // ===================================working with objectts and got data from it too============================
+// return (
+//   <Autocomplete
+//   multiple
+//   {...props}
+//     ref={ref}
+//     PaperComponent={props => <Paper {...props} />}
+//     options={dataList}
+//     disableCloseOnSelect
+//     filterOptions={(options, params) => {
+//       const filtered = filter(options, params);
+//       if (params.inputValue !== '' && !options.some(option => option[optionKey] === params.inputValue)) {
+//         filtered.push({
+//           inputValue: params.inputValue,
+//           [optionKey]: `Add "${params.inputValue}"`,
+//         });
+//       }
+//       return filtered;
+//     }}
+//     getOptionLabel={(option) => {
+//       return option.inputValue ? option.inputValue : option[optionKey];
+//     }}
+//     isOptionEqualToValue={(option, value) => {
+//       return option[optionKey] === value[optionKey];
+//     }}
+//     onChange={(event, newValue, reason) => {
+//       if (reason === 'selectOption' && newValue[newValue.length - 1].inputValue) {
+//         // Add the new value to the data list
+//         const newOption = { [optionKey]: newValue[newValue.length - 1].inputValue };
+//         setDataList([...dataList, newOption]);
+//         // Remove the "Add" option and add the actual value
+//         newValue.pop();
+//         newValue.push(newOption);
+//             onChange(event, newValue)
+//       }
+//     }}
+//     renderOption={(props, option, { selected }) => (
+//       <li {...props}>
+//         {option.inputValue ? (
+//           <Button
+//             onClick={() => {
+//               const newOption = {[optionKey]:option.inputValue}
+//               setDataList([...dataList, newOption]);
+//             }}
+//           >
+//             Add "{option.inputValue}"
+//           </Button>
+//         ) : (
+//           <>
+//             <Checkbox icon={icon} checkedIcon={checkedIcon} style={{ marginRight: 8 }} checked={selected} />
+//             {option[optionKey]}
+//           </>
+//         )}
+//       </li>
+//     )}
+//     style={{ width: 500 }}
+//     renderInput={(params) => <CustomTextField {...params} label={label} placeholder={placeholder} />}
+//     renderTags={(tagValue, getTagProps) =>
+//       tagValue.map((option, index) => (
+//         <Chip label={option[optionKey]} {...getTagProps({ index })} key={index} size="small" />
+//       ))
+//     }
+//   />
+// );
+// })
+// export default CustomCheckboxAutocomplete
+
 return (
   <Autocomplete
-  multiple
-  {...props}
+    multiple
+    {...props}
     ref={ref}
-    PaperComponent={props => <Paper {...props} />}
+    PaperComponent={(props) => <Paper {...props} />}
     options={dataList}
     disableCloseOnSelect
     filterOptions={(options, params) => {
       const filtered = filter(options, params);
-      if (params.inputValue !== '' && !options.some(option => option[optionKey] === params.inputValue)) {
-        filtered.push({
-          inputValue: params.inputValue,
-          [optionKey]: `Add "${params.inputValue}"`,
-        });
+      if (params.inputValue !== '' && !options.includes(params.inputValue)) {
+        filtered.push(`Add "${params.inputValue}"`);
       }
       return filtered;
     }}
     getOptionLabel={(option) => {
-      return option.inputValue ? option.inputValue : option[optionKey];
+      return typeof option === 'string' ? option : option.inputValue;
     }}
     isOptionEqualToValue={(option, value) => {
-      return option[optionKey] === value[optionKey];
+      return option === value;
     }}
     onChange={(event, newValue, reason) => {
-      if (reason === 'selectOption' && newValue[newValue.length - 1].inputValue) {
-        // Add the new value to the data list
-        const newOption = { [optionKey]: newValue[newValue.length - 1].inputValue };
+      if (reason === 'selectOption' && newValue[newValue.length - 1].startsWith('Add "')) {
+        const newOption = newValue[newValue.length - 1].slice(5, -1);
         setDataList([...dataList, newOption]);
-        // Remove the "Add" option and add the actual value
         newValue.pop();
         newValue.push(newOption);
+        onChange(event, newValue);
+      } else {
+        onChange(event, newValue);
       }
     }}
     renderOption={(props, option, { selected }) => (
       <li {...props}>
-        {option.inputValue ? (
+        {option.startsWith('Add "') ? (
           <Button
             onClick={() => {
-              const newOption = {[optionKey]:option.inputValue}
+              const newOption = option.slice(5, -1);
               setDataList([...dataList, newOption]);
             }}
           >
-            Add "{option.inputValue}"
+            {option}
           </Button>
         ) : (
           <>
             <Checkbox icon={icon} checkedIcon={checkedIcon} style={{ marginRight: 8 }} checked={selected} />
-            {option[optionKey]}
+            {option}
           </>
         )}
       </li>
@@ -342,10 +408,12 @@ return (
     renderInput={(params) => <CustomTextField {...params} label={label} placeholder={placeholder} />}
     renderTags={(tagValue, getTagProps) =>
       tagValue.map((option, index) => (
-        <Chip label={option[optionKey]} {...getTagProps({ index })} key={index} size="small" />
+        <Chip label={option} {...getTagProps({ index })} key={index} size="small" />
       ))
     }
   />
 );
-})
-export default CustomCheckboxAutocomplete
+}
+);
+
+export default CustomCheckboxAutocomplete;

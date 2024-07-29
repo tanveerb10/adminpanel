@@ -34,7 +34,6 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import DialogCloseButton from '@/components/dialogs/DialogCloseButton'
 
-
 // export default function VariantCombinationTable({ data, onSave }) {
 
 //   console.log('data from parent', data)

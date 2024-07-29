@@ -8,7 +8,9 @@ import { Card, CardContent, Button, Typography, Grid, MenuItem } from '@mui/mate
 import CustomTextField from '@core/components/mui/TextField'
 import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
-import fetchData from '@/utils/fetchData'
+// import fetchData from '@/utils/fetchData'
+import fetchFormData from '@/utils/fetchFormData'
+
 import { getLocalizedUrl } from '@/utils/i18n'
 import BrandDelete from '@views/products/brands/BrandDelete'
 
@@ -21,7 +23,7 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
     is_deleted: brandData?.brand?.is_deleted || false,
     sort_order: brandData?.brand?.sort_order || '',
     brand_image_alt: brandData?.brand?.brand_image_alt || '',
-    // brand_slug: brandData?.brand?.brand_slug || ''
+    brand_slug: brandData?.brand?.brand_slug
   }
   // const [formData, setFormData] = useState(initialFormData)
   const [imgSrc, setImgSrc] = useState(initialFormData.brand_image_src)
@@ -33,7 +35,8 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
     sort_order: yup.string().required('Sort order is required'),
     brand_image_src: yup.string(),
     // brand_image_src: yup.string().required('Brand image is required'),
-    is_deleted: yup.string().required('Is Deleted is required'),
+    // is_deleted: yup.boolean().required('Is Deleted is required'),
+    is_deleted: yup.boolean(),
     // brand_slug: yup.string(),
     brand_image_alt: yup.string()
   })
@@ -78,11 +81,12 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
       .replace(/\s+/g, '-')
   }
   const handleFormSubmit = async data => {
-    try {
-      // if (isAddBrand) {
-      //   data.brand_slug = handleSlug(data.brand_name)
-      // }
+    console.log('Form Submit called', data)
 
+    // if (isAddBrand) {
+    //   data.brand_slug = handleSlug(data.brand_name)
+    // }
+    try {
       const formData = new FormData()
       formData.append('brand_name', data.brand_name)
       formData.append('products_count', data.products_count)
@@ -103,14 +107,20 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
       }
 
       console.log('Form Data:', data)
+
+      console.log('Form Data:', Array.from(formData.entries()))
       const apiUrl = isAddBrand
         ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/createBrand`
         : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/updateBrand/${id}`
-      const response = await fetchData(apiUrl, isAddBrand ? 'POST' : 'PUT', formData)
+      const response = await fetchFormData(apiUrl, isAddBrand ? 'POST' : 'PUT', formData)
       console.log('API Response:', response)
       const result = await response.json()
       console.log('API Response:', result)
 
+      if (!response.ok) {
+        console.log('error response', response.message)
+        toast.error(response.message)
+      }
       if (response.success === true) {
         setTimeout(() => router.push(getLocalizedUrl(`/products/brands`, locale)), 3000)
         return toast.success(response.message)
@@ -120,8 +130,58 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
       toast.error(error.message || 'An Error occurred')
     }
   }
-  console.log(imgSrc, "img src ")
-  console.log(selectedFile, "selected file src ")
+  // const handleFormSubmit = async data => {
+  //   console.log('Form Submit called')
+  //   try {
+  //     // if (isAddBrand) {
+  //     //   data.brand_slug = handleSlug(data.brand_name)
+  //     // }
+
+  //     const formData = new FormData()
+  //     formData.append('brand_name', data.brand_name)
+  //     formData.append('products_count', data.products_count)
+  //     formData.append('brand_description', data.brand_description)
+  //     formData.append('is_deleted', data.is_deleted)
+  //     formData.append('sort_order', data.sort_order)
+  //     formData.append('brand_image_alt', data.brand_image_alt)
+  //     // formData.append('brand_slug', data.brand_slug);
+
+  //     if (!isAddBrand) {
+  //       formData.append('brand_slug', data.brand_slug)
+  //     }
+
+  //     if (selectedFile) {
+  //       formData.append('brand_image_src', imgSrc)
+  //     } else if (!isAddBrand) {
+  //       formData.append('brand_image_src', data.brand_image_src)
+  //     }
+
+  //     console.log('Form Data:', data)
+
+  //     console.log('Form Data:', Array.from(formData.entries()))
+  //     const apiUrl = isAddBrand
+  //       ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/createBrand`
+  //       : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/updateBrand/${id}`
+  //     const response = await fetchFormData(apiUrl, isAddBrand ? 'POST' : 'PUT', formData)
+  //     console.log('API Response:', response)
+  //     const result = await response.json()
+  //     console.log('API Response:', result)
+
+  //     if (!response.ok) {
+  //       console.log('error response', response.message)
+  //       toast.error(response.message)
+  //     }
+  //     if (response.success === true) {
+  //       setTimeout(() => router.push(getLocalizedUrl(`/products/brands`, locale)), 3000)
+  //       return toast.success(response.message)
+  //     }
+  //   } catch (error) {
+  //     console.error('API Error:', error)
+  //     toast.error(error.message || 'An Error occurred')
+  //   }
+  // }
+  // console.log(imgSrc, 'img src ')
+  // console.log(selectedFile, 'selected file src ')
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>

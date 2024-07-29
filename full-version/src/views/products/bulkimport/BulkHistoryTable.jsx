@@ -94,6 +94,10 @@ export default function BulkHistoryTable({ callAgain }) {
     date: formatDate(data.createdAt),
     username: data.admin_id ? data.admin_id.firstname : 'Unknown'
   }))
+  if (tableLog.length === 0) {
+    // console.log('history null')
+    return <div>There is no history data log</div>
+  }
   console.log(tableLog, 'table log')
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>

@@ -1,24 +1,12 @@
 'use client'
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { Button, Card, CardContent, Grid, Box, Chip, CardHeader } from '@mui/material'
 import BulkDropZone from './BulkDropZone'
 import Typography from '@mui/material/Typography'
-import Cookies from 'js-cookie'
-import CryptoJS from 'crypto-js'
 import { toast } from 'react-toastify'
 import BulkHistoryTable from './BulkHistoryTable'
-
-// Function to generate nonce
-const generateNonce = () => CryptoJS.lib.WordArray.random(16).toString()
-
-// Function to generate a timestamp
-const generateTimestamp = () => Date.now().toString()
-
-// Function to generate a signature
-const generateSignature = (payloaddata, secret, nonce, timestamp) => {
-  const payload = `${payloaddata}|${nonce}|${timestamp}`
-  return CryptoJS.HmacSHA256(payload, secret).toString(CryptoJS.enc.Hex)
-}
+import fetchFormData from '@/utils/fetchFormData'
+import fetchData from '@/utils/fetchData'
 
 const Bulkimport = () => {
   const [bulkFile, setBulkFile] = useState(null)
@@ -26,6 +14,7 @@ const Bulkimport = () => {
   const [fileName, setFileName] = useState('')
   const [isFailed, setIsFailed] = useState(false)
   const [responseMessage, setResponseMessage] = useState('')
+  const [fileUrl, setFileUrl] = useState(null)
 
   const onDrop = useCallback(acceptedFiles => {
     if (acceptedFiles.length && acceptedFiles[0].type === 'text/csv') {
@@ -46,51 +35,35 @@ const Bulkimport = () => {
     setIsFailed(false)
   }
   const handleUploadFile = async () => {
-    const secret = process.env.NEXT_PUBLIC_SECRET_KEY
-    const token = Cookies.get('accessToken')
-
-    if (!secret) {
-      console.log('Secret key is not defined')
-      return
-    }
-
-    if (!token) {
-      console.log('Token is not defined')
-      return
-    }
-
-    const nonce = generateNonce()
-    const timestamp = generateTimestamp()
     const formData = new FormData()
     formData.append('file', bulkFile)
 
-    const signature = generateSignature(JSON.stringify(formData), secret, nonce, timestamp)
-
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/uploadProducts`
+
     setLoading(true)
+
     try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'livein-key': 'livein-key',
-          Nonce: nonce,
-          Timestamp: timestamp,
-          Signature: signature,
-          Authorization: `Bearer ${token}`
-        },
-        body: formData
-      })
+      const response = await fetchFormData(apiUrl, 'POST', formData)
+      console.log('data of response', response)
 
-      const responseData = await response.json()
-      if (!response.ok) {
-        throw new Error(responseData.message || `Failed to fetch data, status: ${response.status}`)
+      if (response.success) {
+        console.log('Data submitted successfully:', response)
+        toast.success('File uploaded successfully')
+
+        setBulkFile(null)
+        setFileName('')
+      } else if (!response.ok || response.fileUrl) {
+        setFileUrl(response.fileUrl)
+        console.log('response fileUrl', response.fileUrl)
+        setIsFailed(true)
+        setBulkFile(null)
+        setFileName('')
+        throw new Error(response.message)
+      } else {
+        setFileUrl(null)
+        setIsFailed(false)
+        console.log(fileUrl)
       }
-
-      console.log('Data submitted successfully:', responseData)
-      toast.success('File uploaded successfully')
-      
-      setBulkFile(null)
-      setFileName('')
     } catch (error) {
       console.error('Error submitting data:', error.message)
       toast.error(`${error.message}`)
@@ -102,65 +75,149 @@ const Bulkimport = () => {
       setLoading(false)
     }
   }
+  console.log(fileUrl)
+  const DownloadErrorFile = () => {
+    if (fileUrl) {
+      window.location.href = fileUrl
+    } else {
+      toast.error('No file URL available for download')
+    }
+  }
 
   return (
-    <>
-      <Grid>
+    // <>
+    //   <Grid>
+    //     <Card>
+    //       <CardContent>
+    //         {!isFailed ? (
+    //           <>
+    //             <BulkDropZone onDrop={onDrop} loading={loading} />
+    //             {fileName ? (
+    //               <>
+    //                 <Box className='my-4 p-2' sx={{ border: '1px solid gray' }}>
+    //                   <Grid container alignItems='center' spacing={2}>
+    //                     <Grid item xs={12} md={8} justifyContent={{ xs: 'center', md: 'flex-center' }}>
+    //                       <Grid container pl={3} alignItems='center' spacing={2}>
+    //                         <Typography>{fileName}</Typography>
+    //                       </Grid>
+    //                     </Grid>
+
+    //                     <Grid item xs={12} md={4}>
+    //                       <Grid container justifyContent={{ xs: 'center', md: 'flex-end' }} spacing={2}>
+    //                         <Grid item>
+    //                           <Button onClick={handleRemoveFile}>Remove</Button>
+    //                         </Grid>
+    //                         {loading ? (
+    //                           <Grid item>
+    //                             <Button variant='contained'>Uploading...</Button>
+    //                           </Grid>
+    //                         ) : (
+    //                           <Grid item>
+    //                             <Button variant='contained' onClick={handleUploadFile} disabled={!bulkFile || loading}>
+    //                               Upload file
+    //                             </Button>
+    //                           </Grid>
+    //                         )}
+    //                       </Grid>
+    //                     </Grid>
+    //                   </Grid>
+    //                 </Box>
+    //               </>
+    //             ) : null}
+    //           </>
+    //         ) : (
+    //           <>
+    //             <div className='flex justify-center'>
+    //               <Button variant='contained' className='text-center' onClick={handleUploadAgain}>
+    //                 Upload Again
+    //               </Button>
+    //             </div>
+    //             <Box className='my-4 p-2' sx={{ border: '1px solid gray' }}>
+    //               <Grid container alignItems='center' spacing={2}>
+    //                 <Grid item xs={12} md={8}>
+    //                   <Grid
+    //                     container
+    //                     justifyContent={{ xs: 'center', md: 'flex-start' }}
+    //                     alignItems='center'
+    //                     spacing={2}
+    //                   >
+    //                     <Typography>{responseMessage} check</Typography>
+    //                   </Grid>
+    //                 </Grid>
+    //                 <Grid item xs={12} md={4}>
+    //                   <Grid container justifyContent={{ xs: 'center', md: 'flex-end' }} spacing={2}>
+    //                     <Grid item>
+    //                       {isFailed && fileUrl && (
+    //                         <Button variant='contained' color='error' onClick={DownloadErrorFile}>
+    //                           Download Error File
+    //                         </Button>
+    //                       )}
+    //                     </Grid>
+    //                   </Grid>
+    //                 </Grid>
+    //               </Grid>
+    //             </Box>
+    //           </>
+    //         )}
+    //       </CardContent>
+    //     </Card>
+    //     <Grid className='mt-3'>
+    //       <Card>
+    //         <CardHeader title={fileName} />
+    //         <CardContent>
+    //           <BulkHistoryTable />
+    //         </CardContent>
+    //       </Card>
+    //     </Grid>
+    //   </Grid>
+    // </>
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
         <Card>
           <CardContent>
             {!isFailed ? (
               <>
                 <BulkDropZone onDrop={onDrop} loading={loading} />
-                {fileName ? (
-                  <>
-                    <Box className='my-4 p-2' sx={{ border: '1px solid gray' }}>
-                      <Grid container alignItems='center' spacing={2}>
-                        <Grid item xs={12} md={8}>
-                          <Typography>{fileName}</Typography>
+                {fileName && (
+                  <Box my={4} p={2} sx={{ border: '1px solid gray' }}>
+                    <Grid container alignItems='center' spacing={2}>
+                      <Grid item xs={12} md={8}>
+                        <Typography>{fileName}</Typography>
+                      </Grid>
+                      <Grid item xs={12} md={4} container justifyContent={{ xs: 'center', md: 'flex-end' }} spacing={2}>
+                        <Grid item>
+                          <Button onClick={handleRemoveFile}>Remove</Button>
                         </Grid>
-                        <Grid item xs={12} md={4}>
-                          <Grid container justifyContent={{ xs: 'center', md: 'flex-end' }} spacing={2}>
-                            <Grid item>
-                              <Button onClick={handleRemoveFile}>Remove</Button>
-                            </Grid>
-                            {loading ? (
-                              <Grid item>
-                                <Button variant='contained'>Uploading...</Button>
-                              </Grid>
-                            ) : (
-                              <Grid item>
-                                <Button variant='contained' onClick={handleUploadFile}>
-                                  Upload file
-                                </Button>
-                              </Grid>
-                            )}
-                          </Grid>
+                        <Grid item>
+                          <Button variant='contained' onClick={handleUploadFile} disabled={!bulkFile || loading}>
+                            {loading ? 'Uploading...' : 'Upload file'}
+                          </Button>
                         </Grid>
                       </Grid>
-                    </Box>
-                  </>
-                ) : null}
+                    </Grid>
+                  </Box>
+                )}
               </>
             ) : (
               <>
-                <div className='flex justify-center'>
-                  <Button variant='contained' className='text-center' onClick={handleUploadAgain}>
+                <Box display='flex' justifyContent='center' mb={2}>
+                  <Button variant='contained' onClick={handleUploadAgain}>
                     Upload Again
                   </Button>
-                </div>
-                <Box className='my-4 p-2' sx={{ border: '1px solid gray' }}>
+                </Box>
+                <Box my={4} p={2} sx={{ border: '1px solid gray' }}>
                   <Grid container alignItems='center' spacing={2}>
                     <Grid item xs={12} md={8}>
                       <Typography>{responseMessage}</Typography>
                     </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Grid container justifyContent={{ xs: 'center', md: 'flex-end' }} spacing={2}>
+                    <Grid item xs={12} md={4} container justifyContent={{ xs: 'center', md: 'flex-end' }} spacing={2}>
+                      {isFailed && fileUrl && (
                         <Grid item>
-                          <Button variant='contained' color='error' onClick={handleUploadFile}>
+                          <Button variant='contained' color='error' onClick={DownloadErrorFile}>
                             Download Error File
                           </Button>
                         </Grid>
-                      </Grid>
+                      )}
                     </Grid>
                   </Grid>
                 </Box>
@@ -168,16 +225,16 @@ const Bulkimport = () => {
             )}
           </CardContent>
         </Card>
-        <Grid className='mt-3'>
-          <Card>
-            <CardHeader title={ fileName} />
-            <CardContent>
-              <BulkHistoryTable />
-            </CardContent>
-          </Card>
-        </Grid>
       </Grid>
-    </>
+      <Grid item xs={12}>
+        <Card>
+          <CardHeader title='History log' />
+          <CardContent>
+            <BulkHistoryTable callAgain={loading} />
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
   )
 }
 

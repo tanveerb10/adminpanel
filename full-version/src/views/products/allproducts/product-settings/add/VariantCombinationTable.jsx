@@ -1,4 +1,3 @@
-import * as React from 'react'
 import {
   Grid,
   TableContainer,
@@ -19,68 +18,60 @@ import {
   CardContent
 } from '@mui/material'
 import CustomTextField from '@/@core/components/mui/TextField'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import AddCombinationDialog from './AddCombinationDialog'
+import { useProduct } from '../../productContext/ProductStateManagement'
 
-const cleanData = data => {
-  console.log(data, 'data before cleaning')
-  return data.map(item => {
-    const cleanedItem = { ...item }
-    if (Array.isArray(cleanedItem.combinations)) {
-      cleanedItem.combinations = cleanedItem.combinations.filter(combination => {
-        return combination.combination && combination.price !== undefined && combination.quantity !== undefined
+const generateVariants = options => {
+  const variants = []
+
+  const combineOptions = (index, current) => {
+    if (index >= options.length) {
+      // Create a values string from current option values
+      const values = Object.keys(current)
+        .filter(key => key.endsWith('_value'))
+        .map(key => current[key])
+        .join('/')
+
+      variants.push({
+        ...current,
+        values,
+        variant_sku: '',
+        variant_compare_at_price: 0,
+        variant_inventory_qty: 0,
+        variant_price: 0,
+        variant_weight: 0,
+        variant_length: 0,
+        variant_width: 0,
+        variant_height: 0,
+        variant_tax: 0,
+        country_of_origin: 'IN'
       })
-    } else {
-      cleanedItem.combinations = []
+      return
     }
-    return cleanedItem
-  })
-}
 
-const createDataStructure = data => {
-  console.log(data, 'data before structuring')
-  return {
-    type: 'variants',
-    values: data.map(item => {
-      // Extract dynamic keys excluding 'combinations'
-      const variantKeys = Object.keys(item).filter(key => key !== 'combinations')
+    const { option_name, option_values } = options[index]
 
-      // Generate the combination string from dynamic keys
-      const combinationString = variantKeys.map(key => item[key]).join('/') || 'N/A'
-
-      // Ensure price and quantity have default values if not present
-      const price = item.price !== undefined ? item.price : 0
-      const quantity = item.quantity !== undefined ? item.quantity : 0
-
-      // Map combinations if they exist
-      const combinations = item.combinations
-        ? item.combinations.map(combination => ({
-            combination: combination.combination,
-            price: combination.price,
-            quantity: combination.quantity
-          }))
-        : []
-
-      // Return structured data for the current item
-      return {
-        variant: combinationString,
-        price,
-        quantity,
-        combinations
-      }
+    option_values.forEach(value => {
+      combineOptions(index + 1, {
+        ...current,
+        [`option${index + 1}_name`]: option_name,
+        [`option${index + 1}_value`]: value.option_value
+      })
     })
   }
+
+  combineOptions(0, {})
+  return variants
 }
 
-const VariantRow = ({ variant, combinations, selectedItems, handleSelectItems, onSave, handleVariantSave }) => {
+const VariantRow = ({ variant, selectedItems, handleSelectItems,index }) => {
   const [variantData, setVariantData] = useState({
-    ...variant,
-    // price: variant.price || 0,
-    // quantity: variant.quantity || 0,
-    combinations: variant.combinations || []
+    ...variant
   })
-  const [allData, setAllData] = useState(variant.combinations || [])
 
+  const { productData } = useProduct()
+  
   const [addCombinationDialogOpen, setAddCombinationDialogOpen] = useState(false)
 
   if (!variant) {
@@ -88,87 +79,68 @@ const VariantRow = ({ variant, combinations, selectedItems, handleSelectItems, o
     return null
   }
 
-  useEffect(() => {
-    console.log('variantData:', variantData)
-    setVariantData(variant)
-  }, [variantData])
+  // useEffect(() => {
+  //   console.log('variantData:', variantData)
+  //   setVariantData(variant)
+  // }, [variantData])
+
+  // const handleChange = (field, value) => {
+  //   console.log(`Updating field: ${field}, with value: ${value}`)
+  //   setVariantData(prevState => ({
+  //     ...prevState,
+  //     [field]: value
+  //   }))
+  // }
+
+  // useEffect(() => {
+  //   setVariantData({ ...variant, combinations: variant.combinations || [] })
+  // }, [variant])
+
+  // const openAddCombinationDialog = () => {
+  //   setAddCombinationDialogOpen(true)
+  // }
+
+  // const closeAddCombinationDialog = () => {
+  //   setAddCombinationDialogOpen(false)
+  // }
+
+  // const handelRowClick = e => {
+  //   if (e.target.type !== 'checkbox' && e.target.type !== 'file') {
+  //     openAddCombinationDialog()
+  //   }
+  // }
 
   useEffect(() => {
-    console.log('Received variant props:', variant)
-    console.log('variantData:', variantData)
+    setVariantData({ ...variant, combinations: variant.combinations || [] })
   }, [variant])
 
-  const handleChange = (field, value) => {
-    console.log(`Updating field: ${field}, with value: ${value}`)
+  const handleChange = useCallback((field, value) => {
     setVariantData(prevState => ({
       ...prevState,
       [field]: value
     }))
-  }
+  }, [])
 
-  // useEffect(() => {
-  //   onSave(variant.variant, variantData)
-  // }, [variantData])
-
-  useEffect(() => {
-    setVariantData({ ...variant, combinations: variant.combinations || [] });
-  }, [variant]);
-
-  // const handleChange = (field, value) => {
-  //   setVariantData(prevData => ({ ...prevData, [field]: value }));
-  // };
-  
-  const handleAddCombination = newCombination => {
-    console.log('Adding new combination:', newCombination)
-
-    const updatedCombinations = [...variantData.combinations, newCombination]
-    const updatedVariantData = {
-      ...variantData,
-      combinations: updatedCombinations
-    }
-
-    console.log('Updated combinations:', updatedCombinations)
-    console.log('Updated variantData before saving:', updatedVariantData)
-
-    setVariantData(updatedVariantData);
-    setAllData(updatedCombinations)
-  handleSave()
-  }
-console.log(allData)
-  // const handleAddCombination = newCombination => {
-  //   console.log("new combo",newCombination)
-  //   setVariantData(prevData => ({
-  //     ...prevData,
-  //     combinations: [...prevData.combinations, newCombination]
-  //   }));
-
-  const openAddCombinationDialog = () => {
+  const openAddCombinationDialog = useCallback(() => {
     setAddCombinationDialogOpen(true)
-  }
+  }, [])
 
-  const closeAddCombinationDialog = () => {
+  const closeAddCombinationDialog = useCallback(() => {
     setAddCombinationDialogOpen(false)
-  }
+  }, [])
 
-  const handelRowClick = e => {
-    if (e.target.type !== 'checkbox' && e.target.type !== 'file') {
-      openAddCombinationDialog()
-    }
-  }
-
-  console.log(variant, 'variant')
-  console.log(combinations)
-
-  
-  const handleSave = () => {
-    if (onSave) {
-      onSave(variant.variant, variantData);
-    }
-  };
+  const handleRowClick = useCallback(
+    e => {
+      if (e.target.type !== 'checkbox' && e.target.type !== 'file') {
+        openAddCombinationDialog()
+      }
+    },
+    [openAddCombinationDialog]
+  )
 
   return (
     <>
-      <TableRow onClick={handelRowClick}>
+      <TableRow onClick={handleRowClick}>
         <TableCell>
           <Checkbox
             checked={selectedItems[variant.variant] || false}
@@ -178,26 +150,12 @@ console.log(allData)
         <TableCell>
           <input type='file' accept='image/*' onChange={e => handleChange('image', e.target.files[0])} />
         </TableCell>
-        <TableCell>{variant.variant}</TableCell>
+        <TableCell>{variantData.values}</TableCell>
         <TableCell>
-          {/* <CustomTextField
-            label='Price'
-            disabled
-            value={variantData.price}
-            onChange={e => handleChange('price', e.target.value)}
-            fullWidth
-          /> */}
-          price
+          <CustomTextField label='Price' disabled value={productData.child[index].variant_price} fullWidth />
         </TableCell>
         <TableCell>
-          {/* <CustomTextField
-            label='Quantity'
-            disabled
-            value={variantData.quantity}
-            onChange={e => handleChange('quantity', e.target.value)}
-            fullWidth
-          /> */}
-          quantity
+          <CustomTextField label='Quantity' disabled value={productData.child[index].variant_inventory_qty} fullWidth />
         </TableCell>
 
         <TableCell>
@@ -216,64 +174,92 @@ console.log(allData)
       <AddCombinationDialog
         open={addCombinationDialogOpen}
         onClose={closeAddCombinationDialog}
-        onSave={handleAddCombination}
+        dialogData={variantData}
+        variant={variant}
+        index={index}
       />
     </>
   )
 }
+export default function VariantCombinationTable({ data }) {
+  // const structuredData = generateVariants(data)
+  const { productData ,updateProductData } = useProduct()
 
-export default function VariantCombinationTable({ productVariantData, onSave }) {
-  const cleanedData = cleanData(productVariantData)
-
-  console.log(cleanedData, 'cleanedData')
-
-  const structuredData = createDataStructure(cleanedData)
-  console.log(structuredData, 'structureData')
-  console.log(productVariantData, 'data from product Variant')
+  useEffect(() => {
+    const values = { child: generateVariants(data) }
+    updateProductData(values)
+  }, [data])
+  console.log(productData.child)
 
   const [openStates, setOpenStates] = useState({})
   const [selectedItems, setSelectedItems] = useState({})
-  const [allVariants, setAllVariants] = useState([])
 
-  const handleSelectItems = itemId => {
+  // const handleSelectItems = itemId => {
+  //   setSelectedItems(prevState => ({
+  //     ...prevState,
+  //     [itemId]: !prevState[itemId]
+  //   }))
+  // }
+  // console.log(allVariants, 'all variant')
+
+  // const handleSelectAll = () => {
+  //   const newSelectAll = !Object.values(selectedItems).every(Boolean)
+  //   const newSelectedItems = {}
+  //   structuredData.forEach(variant => {
+  //     newSelectedItems[variant.variant] = newSelectAll
+  //     variant.forEach(combination => {
+  //       newSelectedItems[combination.combination] = newSelectAll
+  //     })
+  //   })
+  //   setSelectedItems(newSelectedItems)
+  // }
+
+  // const handleToggle = variant => {
+  //   setOpenStates(prevState => ({ ...prevState, [variant]: !prevState[variant] }))
+  // }
+
+  // if (!structuredData || structuredData?.length === 0 || !Array.isArray(structuredData)) {
+  //   console.log(
+  //     structuredData?.values,
+  //     'structured value',
+  //     structuredData?.values?.length,
+  //     'structuredData length',
+  //     structuredData?.type,
+  //     'structuredData type'
+  //   )
+  //   return (
+  //     <Card>
+  //       <CardContent>
+  //         <Typography>No Data Available</Typography>
+  //       </CardContent>
+  //     </Card>
+  //   )
+  // }
+
+  const handleSelectItems = useCallback(itemId => {
     setSelectedItems(prevState => ({
       ...prevState,
       [itemId]: !prevState[itemId]
     }))
-  }
-  console.log(allVariants, 'all variant')
+  }, [])
 
-  const handleSelectAll = () => {
+  const handleSelectAll = useCallback(() => {
     const newSelectAll = !Object.values(selectedItems).every(Boolean)
     const newSelectedItems = {}
-    structuredData.values.forEach(variant => {
+    structuredData.forEach(variant => {
       newSelectedItems[variant.variant] = newSelectAll
       variant.combinations.forEach(combination => {
         newSelectedItems[combination.combination] = newSelectAll
       })
     })
     setSelectedItems(newSelectedItems)
-  }
+  }, [productData, selectedItems])
 
-  const handleToggle = variant => {
+  const handleToggle = useCallback(variant => {
     setOpenStates(prevState => ({ ...prevState, [variant]: !prevState[variant] }))
-  }
+  }, [])
 
-  const handleVariantSave = (variantId, newData) => {
-    console.log('Saving variant:', variantId, newData)
-
-    const updatedVariants = productVariantData.map(variant =>
-      variant.variant === variantId ? { ...variant, ...newData } : variant
-    )
-
-    console.log('Updated Variants......:', updatedVariants)
-
-    setAllVariants(updatedVariants)
-    onSave(updatedVariants)
-  }
-
-
-  if (!structuredData.values || structuredData.values.length === 0 || !structuredData.type) {
+  if (!productData.child || productData.child.length === 0) {
     return (
       <Card>
         <CardContent>
@@ -282,7 +268,6 @@ export default function VariantCombinationTable({ productVariantData, onSave }) 
       </Card>
     )
   }
-
   return (
     <Grid container className='mt-5 p-3'>
       <TableContainer component={Paper}>
@@ -306,16 +291,14 @@ export default function VariantCombinationTable({ productVariantData, onSave }) 
             </TableRow>
           </TableHead>
           <TableBody>
-            {structuredData.values?.map((variantObj, index) => (
+            {productData?.child?.map((variantObj, index) => (
               <VariantRow
-                key={variantObj.variant + index}
+                key={index}
                 variant={variantObj}
-                combinations={variantObj.combinations}
-                open={openStates[variantObj.variant]}
-                onToggle={() => handleToggle(variantObj.variant)}
+                index={index}
                 selectedItems={selectedItems}
                 handleSelectItems={handleSelectItems}
-                onSave={handleVariantSave}
+
               />
             ))}
           </TableBody>

@@ -194,7 +194,8 @@
 import React, { createContext, useState, useContext } from 'react'
 const ProductContext = createContext()
 export const ProductProvider = ({ children }) => {
-  const productParent = { brand_name: '',
+  const productParent = {
+    brand_name: '',
     default_category: '',
     category_name: '',
     category_description: '',
@@ -204,38 +205,39 @@ export const ProductProvider = ({ children }) => {
     product_description: '',
     product_slug: '',
     product_type: '',
-    tag_name: '',
+    tag_name: [],
     slug: '',
-    country_of_origin: '', // optional only edit
-    published: true, // optional only edit
+    country_of_origin: '', 
+    published: true
   }
 
-  const productChild = [{variant_sku: '',
-    variant_inventory_qty: 0,
-    variant_compare_at_price: null,
-    variant_price: 0,
-    variant_weight: 0,
-    variant_length: 0,
-    variant_width: 0,
-    variant_height: 0,
-    variant_tax: 0,
-  }]
+  const productChild = [
+    {
+      variant_sku: '',
+      variant_inventory_qty: 0,
+      variant_compare_at_price: null,
+      variant_price: 0,
+      variant_weight: 0,
+      variant_length: 0,
+      variant_width: 0,
+      variant_height: 0,
+      variant_tax: ""
+    }
+  ]
   const metafield = {}
   const [productData, setProductData] = useState({
     parent: productParent,
     child: productChild,
-    meta : metafield
+    meta: metafield
   })
 
-  const updateProductData = (updatedData) => {
+  const updateProductData = updatedData => {
     setProductData(prevData => ({
       parent: { ...prevData.parent, ...updatedData.parent },
       child: updatedData.child ? [...updatedData.child] : [...prevData.child],
-      meta: { ...prevData.meta, ...updatedData.meta },
-    }));
-  };
-  
-
+      meta: { ...prevData.meta, ...updatedData.meta }
+    }))
+  }
 
   return <ProductContext.Provider value={{ productData, updateProductData }}>{children}</ProductContext.Provider>
 }

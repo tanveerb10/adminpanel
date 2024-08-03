@@ -27,7 +27,6 @@ const generateVariants = options => {
 
   const combineOptions = (index, current) => {
     if (index >= options.length) {
-      // Create a values string from current option values
       const values = Object.keys(current)
         .filter(key => key.endsWith('_value'))
         .map(key => current[key])
@@ -44,7 +43,7 @@ const generateVariants = options => {
         variant_length: 0,
         variant_width: 0,
         variant_height: 0,
-        variant_tax: 0,
+        variant_tax: "",
         country_of_origin: 'IN'
       })
       return
@@ -71,44 +70,13 @@ const VariantRow = ({ variant, selectedItems, handleSelectItems,index }) => {
   })
 
   const { productData } = useProduct()
-  
+
   const [addCombinationDialogOpen, setAddCombinationDialogOpen] = useState(false)
 
   if (!variant) {
     console.error('Variant is undefined:', variant)
     return null
   }
-
-  // useEffect(() => {
-  //   console.log('variantData:', variantData)
-  //   setVariantData(variant)
-  // }, [variantData])
-
-  // const handleChange = (field, value) => {
-  //   console.log(`Updating field: ${field}, with value: ${value}`)
-  //   setVariantData(prevState => ({
-  //     ...prevState,
-  //     [field]: value
-  //   }))
-  // }
-
-  // useEffect(() => {
-  //   setVariantData({ ...variant, combinations: variant.combinations || [] })
-  // }, [variant])
-
-  // const openAddCombinationDialog = () => {
-  //   setAddCombinationDialogOpen(true)
-  // }
-
-  // const closeAddCombinationDialog = () => {
-  //   setAddCombinationDialogOpen(false)
-  // }
-
-  // const handelRowClick = e => {
-  //   if (e.target.type !== 'checkbox' && e.target.type !== 'file') {
-  //     openAddCombinationDialog()
-  //   }
-  // }
 
   useEffect(() => {
     setVariantData({ ...variant, combinations: variant.combinations || [] })
@@ -182,7 +150,6 @@ const VariantRow = ({ variant, selectedItems, handleSelectItems,index }) => {
   )
 }
 export default function VariantCombinationTable({ data }) {
-  // const structuredData = generateVariants(data)
   const { productData ,updateProductData } = useProduct()
 
   useEffect(() => {
@@ -193,48 +160,6 @@ export default function VariantCombinationTable({ data }) {
 
   const [openStates, setOpenStates] = useState({})
   const [selectedItems, setSelectedItems] = useState({})
-
-  // const handleSelectItems = itemId => {
-  //   setSelectedItems(prevState => ({
-  //     ...prevState,
-  //     [itemId]: !prevState[itemId]
-  //   }))
-  // }
-  // console.log(allVariants, 'all variant')
-
-  // const handleSelectAll = () => {
-  //   const newSelectAll = !Object.values(selectedItems).every(Boolean)
-  //   const newSelectedItems = {}
-  //   structuredData.forEach(variant => {
-  //     newSelectedItems[variant.variant] = newSelectAll
-  //     variant.forEach(combination => {
-  //       newSelectedItems[combination.combination] = newSelectAll
-  //     })
-  //   })
-  //   setSelectedItems(newSelectedItems)
-  // }
-
-  // const handleToggle = variant => {
-  //   setOpenStates(prevState => ({ ...prevState, [variant]: !prevState[variant] }))
-  // }
-
-  // if (!structuredData || structuredData?.length === 0 || !Array.isArray(structuredData)) {
-  //   console.log(
-  //     structuredData?.values,
-  //     'structured value',
-  //     structuredData?.values?.length,
-  //     'structuredData length',
-  //     structuredData?.type,
-  //     'structuredData type'
-  //   )
-  //   return (
-  //     <Card>
-  //       <CardContent>
-  //         <Typography>No Data Available</Typography>
-  //       </CardContent>
-  //     </Card>
-  //   )
-  // }
 
   const handleSelectItems = useCallback(itemId => {
     setSelectedItems(prevState => ({

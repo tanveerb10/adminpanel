@@ -194,6 +194,7 @@
 import React, { createContext, useState, useContext } from 'react'
 const ProductContext = createContext()
 export const ProductProvider = ({ children }) => {
+  
   const productParent = {
     brand_name: '',
     default_category: '',
@@ -203,12 +204,14 @@ export const ProductProvider = ({ children }) => {
     category_sort: '',
     product_title: '',
     product_description: '',
+    type_standard:'',
     product_slug: '',
     product_type: '',
     tag_name: [],
     slug: '',
     country_of_origin: '', 
-    published: true
+    published: true,
+    categories: []
   }
 
   const productChild = [
@@ -224,7 +227,9 @@ export const ProductProvider = ({ children }) => {
       variant_tax: ""
     }
   ]
+
   const metafield = {}
+
   const [productData, setProductData] = useState({
     parent: productParent,
     child: productChild,

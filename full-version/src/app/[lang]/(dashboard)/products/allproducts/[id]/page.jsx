@@ -9,6 +9,7 @@ import ProductVariants from '@/views/products/allproducts/product-settings/add/P
 import ProductOrganize from '@/views/products/allproducts/product-settings/add/ProductOrganize'
 import fetchData from '@/utils/fetchData'
 import { useProduct } from '@views/products/allproducts/productContext/ProductStateManagement'
+import Metafield from '@views/products/allproducts/product-settings/add/Metafield'
 
 // const [productData, setProductData] = useState({})
 // const tagUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/tags/${id}`
@@ -52,6 +53,9 @@ export default function Page() {
         </Grid>
         <Grid item xs={12}>
           <ProductOrganize />
+        </Grid>
+        <Grid item xs={12}>
+          <Metafield />
         </Grid>
       </Grid>
       <Grid item xs={12}>

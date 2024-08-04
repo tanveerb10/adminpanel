@@ -15,9 +15,11 @@ import MenuItem from '@mui/material/MenuItem'
 import CustomTextField from '@core/components/mui/TextField'
 // import Checkbox from '@mui/material/Checkbox'
 // import Chip from '@mui/material/Chip'
-// import CustomAutocomplete from '@core/components/mui/Autocomplete'
 import CustomCheckboxAutocomplete from '@/libs/components/CustomCheckboxAutocomplete'
 import { useProduct } from '../../productContext/ProductStateManagement'
+import { TypeOfStandard } from '@views/products/allproducts/product-settings/add/TypeOfStandard'
+import CustomAutocomplete from '@core/components/mui/Autocomplete'
+
 const movie = ['hello', 'zebra', 'zoo', 'animal']
 
 const ProductOrganize = () => {
@@ -25,12 +27,13 @@ const ProductOrganize = () => {
 
   const handleInputChange = e => {
     const { name, value } = e.target
-    updateProductData({parent :{ [name]: value }})
+    console.log('name', name, 'value', value)
+    updateProductData({ parent: { [name]: value } })
   }
 
   const handleArrayChange = (name, newValue) => {
     // const { name, value } = e.target
-    updateProductData({parent:{ [name]: newValue }})
+    updateProductData({ parent: { [name]: newValue } })
   }
 
   return (
@@ -42,30 +45,31 @@ const ProductOrganize = () => {
           fullWidth
           label='Brand'
           name='brand_name'
-          value={productData.brand_name || ''}
+          value={productData.parent.brand_name || ''}
           onChange={handleInputChange}
         >
           <MenuItem value={`Men's Clothing`}>Men&apos;s Clothing</MenuItem>
           <MenuItem value={`Women's Clothing`}>Women&apos;s Clothing</MenuItem>
           <MenuItem value={`Kid's Clothing`}>Kid&apos;s Clothing</MenuItem>
         </CustomTextField>
+
         <div className='flex items-end gap-4'>
           <CustomCheckboxAutocomplete
             label='Categories'
             placeholder='Categories select'
             fullWidth
             onChange={(event, newValue) => handleArrayChange('categories', newValue)}
-            // onChange={handleInputChange}
             name='categories'
-            initialOptions={productData.categories || []}
+            initialOptions={productData.parent.categories || []}
           />
         </div>
+
         <CustomTextField
           select
           fullWidth
           label='Published'
           name='published'
-          value={productData.published || ''}
+          value={productData.parent.published || ''}
           onChange={handleInputChange}
         >
           <MenuItem value='true'>true</MenuItem>
@@ -76,12 +80,41 @@ const ProductOrganize = () => {
           fullWidth
           label='Enter Tags'
           placeholder='Fashion, Trending, Summer'
-          onChange={(event, value) => handleArrayChange('tags', value)}
-          name='tags'
-          // initialOptions={selectedOption.tags}
-          initialOptions={productData.tags || []}
+          onChange={(event, value) => handleArrayChange('tag_name', value)}
+          name='tag_name'
+          // initialOptions={productData.parent.tags_name}
+          initialOptions={productData.parent.tag_name || []}
         />
-        
+
+        <CustomAutocomplete
+          fullWidth
+          value={productData.parent.type_standard || ''}
+          options={TypeOfStandard}
+          onChange={(event, newValue) => {
+            updateProductData({ parent: { type_standard: newValue } })
+          }}
+          getOptionLabel={option => option}
+          renderInput={params => <CustomTextField {...params} placeholder='Standard Type' label='Standard Type' />}
+        />
+
+        {/* {productData.parent.categories.length()} */}
+
+        {productData.parent.categories.length > 0 ? (
+          <CustomAutocomplete
+            fullWidth
+            value={productData.parent.default_category}
+            options={productData.parent.categories || []}
+            onChange={(event, newValue) => {
+              updateProductData({ parent: { default_category: newValue } })
+            }}
+            getOptionLabel={option => option}
+            renderInput={params => (
+              <CustomTextField {...params} placeholder='Default Categories' label='Default Categories' />
+            )}
+          />
+        ) : (
+              <CustomTextField fullWidth select disabled placeholder='Default Categories' label='Default Categories' />
+        )}
       </CardContent>
     </Card>
   )

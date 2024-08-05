@@ -79,7 +79,7 @@ const VariantRow = ({ variant, selectedItems, handleSelectItems,index }) => {
   }
 
   useEffect(() => {
-    setVariantData({ ...variant, combinations: variant.combinations || [] })
+    setVariantData({ ...variant})
   }, [variant])
 
   const handleChange = useCallback((field, value) => {
@@ -173,9 +173,9 @@ export default function VariantCombinationTable({ data }) {
     const newSelectedItems = {}
     structuredData.forEach(variant => {
       newSelectedItems[variant.variant] = newSelectAll
-      variant.combinations.forEach(combination => {
-        newSelectedItems[combination.combination] = newSelectAll
-      })
+      // variant.combinations.forEach(combination => {
+      //   newSelectedItems[combination.combination] = newSelectAll
+      // })
     })
     setSelectedItems(newSelectedItems)
   }, [productData, selectedItems])

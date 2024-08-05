@@ -7,22 +7,30 @@ import Typography from '@mui/material/Typography'
 
 import CustomTextField from '@core/components/mui/TextField'
 
-import AppReactDraftWysiwyg from '@/libs/styles/AppReactDraftWysiwyg'
-
 import { useProduct } from '@views/products/allproducts/productContext/ProductStateManagement'
+
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
+import { useState } from 'react'
 
 const ProductInformation = () => {
   const { productData, updateProductData } = useProduct()
 
   const handleInputChange = e => {
     const { name, value } = e.target
-    updateProductData({parent : { [name]: value }})
+    updateProductData({ parent: { [name]: value } })
   }
 
-  const handleDescriptionChange = description => {
-    updateProductData({parent:{ product_description: description }})
+  const handleDescriptionChange = value => {
+    // setEditorValue(description)
+    console.log(value , "dwscription")
+    updateProductData({ parent: { product_description: value } })
   }
-  
+
+  // const handleChange = (value) => {
+  //   setEditorValue(value);
+  // };
+
   return (
     <Card>
       <CardHeader title='Product Information' />
@@ -40,12 +48,13 @@ const ProductInformation = () => {
           </Grid>
         </Grid>
         <Typography className='mbe-1'>Description</Typography>
+
         <Card className='p-0 border shadow-none'>
           <CardContent className='p-0'>
-            <AppReactDraftWysiwyg
+            <ReactQuill
+              value={productData.parent.product_description || ""}
               onChange={handleDescriptionChange}
-              initialContent={productData.parent.product_description || ''}
-              name='description'
+              placeholder='Write something...'
             />
           </CardContent>
         </Card>

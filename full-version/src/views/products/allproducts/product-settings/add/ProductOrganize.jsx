@@ -22,7 +22,7 @@ import CustomAutocomplete from '@core/components/mui/Autocomplete'
 
 const movie = ['hello', 'zebra', 'zoo', 'animal']
 
-const ProductOrganize = () => {
+const ProductOrganize = ({ brandName }) => {
   const { productData, updateProductData } = useProduct()
 
   const handleInputChange = e => {
@@ -48,9 +48,14 @@ const ProductOrganize = () => {
           value={productData.parent.brand_name || ''}
           onChange={handleInputChange}
         >
-          <MenuItem value={`Men's Clothing`}>Men&apos;s Clothing</MenuItem>
+          {brandName?.allBrand?.map(brand => (
+            <MenuItem value={brand.brand_name} key={brand._id}>
+              {brand.brand_name}
+            </MenuItem>
+          ))}
+          {/* <MenuItem value={`Men's Clothing`}>Men&apos;s Clothing</MenuItem>
           <MenuItem value={`Women's Clothing`}>Women&apos;s Clothing</MenuItem>
-          <MenuItem value={`Kid's Clothing`}>Kid&apos;s Clothing</MenuItem>
+          <MenuItem value={`Kid's Clothing`}>Kid&apos;s Clothing</MenuItem> */}
         </CustomTextField>
 
         <div className='flex items-end gap-4'>
@@ -72,18 +77,18 @@ const ProductOrganize = () => {
           value={productData.parent.published || ''}
           onChange={handleInputChange}
         >
-          <MenuItem value='true'>true</MenuItem>
-          <MenuItem value='false'>False</MenuItem>
+          <MenuItem value='TRUE'>True</MenuItem>
+          <MenuItem value='FALSE'>False</MenuItem>
         </CustomTextField>
 
         <CustomCheckboxAutocomplete
           fullWidth
           label='Enter Tags'
           placeholder='Fashion, Trending, Summer'
-          onChange={(event, value) => handleArrayChange('tag_name', value)}
-          name='tag_name'
+          onChange={(event, value) => handleArrayChange('tags', value)}
+          name='tags'
           // initialOptions={productData.parent.tags_name}
-          initialOptions={productData.parent.tag_name || []}
+          initialOptions={productData.parent.tags || []}
         />
 
         <CustomAutocomplete
@@ -105,7 +110,7 @@ const ProductOrganize = () => {
             value={productData.parent.default_category}
             options={productData.parent.categories || []}
             onChange={(event, newValue) => {
-              updateProductData({ parent: { default_category: newValue } })
+              updateProductData({ parent: { default_category: newValue, product_type: newValue } })
             }}
             getOptionLabel={option => option}
             renderInput={params => (
@@ -113,7 +118,7 @@ const ProductOrganize = () => {
             )}
           />
         ) : (
-              <CustomTextField fullWidth select disabled placeholder='Default Categories' label='Default Categories' />
+          <CustomTextField fullWidth select disabled placeholder='Default Categories' label='Default Categories' />
         )}
       </CardContent>
     </Card>

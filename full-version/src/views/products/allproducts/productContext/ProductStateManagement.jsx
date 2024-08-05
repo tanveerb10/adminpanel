@@ -198,20 +198,19 @@ export const ProductProvider = ({ children }) => {
   const productParent = {
     brand_name: '',
     default_category: '',
-    category_name: '',
-    category_description: '',
-    category_slug: '',
-    category_sort: '',
+    categories: [],
+
+    // category_description: '',
+    // category_slug: '',
+    // category_sort: 'default',
     product_title: '',
     product_description: '',
-    type_standard:'',
-    product_slug: '',
     product_type: '',
-    tag_name: [],
-    slug: '',
-    country_of_origin: '', 
-    published: true,
-    categories: []
+    tags: [],
+    type_standard:'',
+    // product_slug: '',
+    // slug: '',
+    published: "TRUE",
   }
 
   const productChild = [
@@ -222,9 +221,10 @@ export const ProductProvider = ({ children }) => {
       variant_price: 0,
       variant_weight: 0,
       variant_length: 0,
+      variation_weight_unit: "g",
       variant_width: 0,
       variant_height: 0,
-      variant_tax: ""
+      // variant_tax: ""
     }
   ]
 

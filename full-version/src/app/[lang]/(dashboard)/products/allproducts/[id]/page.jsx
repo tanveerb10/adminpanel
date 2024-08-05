@@ -1,6 +1,6 @@
 'use client'
 import { Button, Grid } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState} from 'react'
 // import ProductSettings from '@/views/products/allproducts/product-settings/index'
 import ProductAddHeader from '@/views/products/allproducts/product-settings/add/ProductAddHeader'
 import ProductInformation from '@/views/products/allproducts/product-settings/add/ProductInformation'
@@ -21,21 +21,52 @@ import Metafield from '@views/products/allproducts/product-settings/add/Metafiel
 
 export default function Page() {
   const { productData } = useProduct()
+  const [brandData, setBrandData] = useState([])
   useEffect(() => {
     const brandUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands`
-    fetchData(brandUrl, 'GET')
+  const responsedata = fetchData(brandUrl, 'GET')
+  
       .then(response => {
         console.log('Get brands data', response)
+        setBrandData(response)
       })
       .catch(error => {
         console.log('error got', error)
       })
   }, [])
 
-  const handleSaveProduct = () => {
-    console.log('Product Data', productData)
-  }
+  console.log(productData.child.length, 'length')
 
+  // const result = []
+  // for (const item of productData.child) {
+  //   const newDataStructure = {...productData.parent, meta :productData.meta, ...item}
+  //   result.push(newDataStructure)
+  // }
+
+  const res = productData.child.map(child => ({ ...productData.parent, metafields: productData.meta, ...child }))
+  console.log(res, 'result')
+  const handleSaveProduct = async () => {
+    const product = {
+      products: res,
+      images: [
+        {
+          image_src: 'https://www.dropbox.com/image1.jpg',
+          image_position: 1
+        }
+      ],
+      videos: [
+        {
+          video_src: 'http://example.com/video.mp4'
+        }
+      ]
+    }
+    const response = await fetchData(
+      `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/uploadProduct`,
+      'POST',
+      product
+    )
+    console.log('Product Data', response)
+  }
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
@@ -52,7 +83,7 @@ export default function Page() {
           <ProductImage />
         </Grid>
         <Grid item xs={12}>
-          <ProductOrganize />
+          <ProductOrganize brandName={ brandData} />
         </Grid>
         <Grid item xs={12}>
           <Metafield />

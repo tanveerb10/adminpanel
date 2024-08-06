@@ -1,8 +1,5 @@
 'use client'
 
-// React Imports
-import { useState } from 'react'
-
 // MUI Imports
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
@@ -10,17 +7,11 @@ import CardContent from '@mui/material/CardContent'
 import MenuItem from '@mui/material/MenuItem'
 
 // Component Imports
-// import CustomIconButton from '@core/components/mui/IconButton'
-// import { IconButton } from '@mui/material'
 import CustomTextField from '@core/components/mui/TextField'
-// import Checkbox from '@mui/material/Checkbox'
-// import Chip from '@mui/material/Chip'
 import CustomCheckboxAutocomplete from '@/libs/components/CustomCheckboxAutocomplete'
 import { useProduct } from '../../productContext/ProductStateManagement'
 import { TypeOfStandard } from '@views/products/allproducts/product-settings/add/TypeOfStandard'
 import CustomAutocomplete from '@core/components/mui/Autocomplete'
-
-const movie = ['hello', 'zebra', 'zoo', 'animal']
 
 const ProductOrganize = ({ brandName }) => {
   const { productData, updateProductData } = useProduct()
@@ -32,7 +23,6 @@ const ProductOrganize = ({ brandName }) => {
   }
 
   const handleArrayChange = (name, newValue) => {
-    // const { name, value } = e.target
     updateProductData({ parent: { [name]: newValue } })
   }
 
@@ -53,12 +43,9 @@ const ProductOrganize = ({ brandName }) => {
               {brand.brand_name}
             </MenuItem>
           ))}
-          {/* <MenuItem value={`Men's Clothing`}>Men&apos;s Clothing</MenuItem>
-          <MenuItem value={`Women's Clothing`}>Women&apos;s Clothing</MenuItem>
-          <MenuItem value={`Kid's Clothing`}>Kid&apos;s Clothing</MenuItem> */}
         </CustomTextField>
 
-        <div className='flex items-end gap-4'>
+        {/* <div className='flex items-end gap-4'> */}
           <CustomCheckboxAutocomplete
             label='Categories'
             placeholder='Categories select'
@@ -67,7 +54,7 @@ const ProductOrganize = ({ brandName }) => {
             name='categories'
             initialOptions={productData.parent.categories || []}
           />
-        </div>
+        {/* </div> */}
 
         <CustomTextField
           select
@@ -87,7 +74,6 @@ const ProductOrganize = ({ brandName }) => {
           placeholder='Fashion, Trending, Summer'
           onChange={(event, value) => handleArrayChange('tags', value)}
           name='tags'
-          // initialOptions={productData.parent.tags_name}
           initialOptions={productData.parent.tags || []}
         />
 
@@ -101,8 +87,6 @@ const ProductOrganize = ({ brandName }) => {
           getOptionLabel={option => option}
           renderInput={params => <CustomTextField {...params} placeholder='Standard Type' label='Standard Type' />}
         />
-
-        {/* {productData.parent.categories.length()} */}
 
         {productData.parent.categories.length > 0 ? (
           <CustomAutocomplete
@@ -125,30 +109,3 @@ const ProductOrganize = ({ brandName }) => {
   )
 }
 export default ProductOrganize
-// console.log(selectedOption)
-// const handleArrayChange = (list) => {
-//   console.log({list})
-//   setProductData(prev=>({...prev,"categories":[...list]}))
-// }
-{
-  /* <CustomCheckboxAutocomplete
-              label='Categories'
-              placeholder='Categories select'
-              fullWidth
-              name="categories"
-              // onChange={(event,newValue)=> setSelectedOption(newValue)}
-              // handleArrayChange={handleArrayChange}
-              onChange={handleArrayChange}
-            /> */
-}
-{
-  /* <CustomCheckboxAutocomplete
-              fullWidth
-              label='Enter Tags'
-              placeholder='Fashion, Trending, Summer'
-              // onChange={(value)=>handleArrayChange("tags", value)}
-              // onChange={handleArrayChange}
-              onChange={(event,newValue)=>selectedOption(newValue)}
-              name="tags"
-            /> */
-}

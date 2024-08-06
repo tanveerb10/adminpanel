@@ -14,7 +14,7 @@ import MenuItem from '@mui/material/MenuItem'
 // Components Imports
 import { IconButton, InputAdornment, TextField, Typography } from '@mui/material'
 import CustomTextField from '@core/components/mui/TextField'
-import CustomCheckboxAutocomplete from '@/libs/components/CustomCheckboxAutocomplete'
+import CustomControlledAutoComplete from '@/libs/components/CustomControlledAutoComplete'
 // import Typography from '@mui/material/Typography'
 import VariantCombinationTable from './VariantCombinationTable'
 import debounce from 'lodash.debounce'
@@ -71,13 +71,20 @@ const ProductVariants = () => {
   //   setFormData(newFormData);
   // };
 
-  const handleChange = useCallback((index, e) => {
+  const handleChange = useCallback((index, newValue) => {
     setFormData(prevFormData => {
       const newFormData = [...prevFormData]
-      newFormData[index].option_name = e.target.value
+      newFormData[index].option_name = newValue
       return newFormData
     })
   }, [])
+  // const handleChange = useCallback((index, e) => {
+  //   setFormData(prevFormData => {
+  //     const newFormData = [...prevFormData]
+  //     newFormData[index].option_name = e.target.value
+  //     return newFormData
+  //   })
+  // }, [])
 
   const deleteInput = useCallback((optionIndex, variantIndex) => {
     setFormData(prevFormData => {
@@ -90,9 +97,17 @@ const ProductVariants = () => {
   }, [])
 
   const addOption = useCallback(() => {
-    setFormData(prevFormData => [...prevFormData, { option_name: 'Size', option_values: [{
-      option_value: ''
-    }] }])
+    setFormData(prevFormData => [
+      ...prevFormData,
+      {
+        option_name: 'Size',
+        option_values: [
+          {
+            option_value: ''
+          }
+        ]
+      }
+    ])
   }, [])
 
   const deleteForm = useCallback(optionIndex => {
@@ -105,7 +120,7 @@ const ProductVariants = () => {
       newValues[variantIndex].option_value = e.target.value
 
       if (e.target.value.length === 1 && variantIndex === newValues.length - 1) {
-        newValues.push({option_value: ''})
+        newValues.push({ option_value: '' })
       }
 
       newFormData[optionIndex].option_values = newValues
@@ -120,62 +135,54 @@ const ProductVariants = () => {
     }))
     setVariantTableData(newVariantTableData)
   }, [formData])
-  // const addVariant = () => {
-  //   setProductData(prev => ({ ...prev, variants: [...prev.variants, { name: '', value: '' }] }));
-  // };
-
   console.log('formData', formData)
   console.log('variant data table', variantTableData)
   return (
-    <Grid container className='flex flex-col gap-3'>
+    <Grid container className='flex flex-col gap-3 pl-5'>
       <Card>
         <CardHeader title='Product Variants' />
         <CardContent>
           <Grid container spacing={6}>
             {formData.map((variants, optionIndex) => (
-              <Grid key={optionIndex} item xs={12} className='repeater-item'>
-                <Grid container spacing={6}>
-                  <Grid item xs={12} md={4}>
-                    <CustomTextField
-                      select
-                      fullWidth
-                      label='Options Name'
-                      value={variants.option_name}
-                      onChange={e => handleChange(optionIndex, e)}
-                      defaultValue='Size'
-                    >
-                      <MenuItem value='Size'>Size</MenuItem>
-                      <MenuItem value='Color'>Color</MenuItem>
-                      <MenuItem value='Weight'>Material</MenuItem>
-                    </CustomTextField>
-                  </Grid>
-                  <Grid item xs={12} md={8} alignSelf='end'>
-                    <Typography>Option Value</Typography>
-                    <div className='flex flex-col items-center gap-6'>
-                      {Array.isArray(variants.option_values) &&
-                        variants.option_values.map((variant, variantIndex) => (
-                          <CustomTextField
-                            key={variantIndex}
-                            fullWidth
-                            placeholder='Enter Variant Value'
-                            value={variant.option_value}
-                            onChange={e => variantInput(e, optionIndex, variantIndex)}
-                            InputProps={{
-                              endAdornment: (
-                                <InputAdornment position='end'>
-                                  {variantIndex > 0 && (
-                                    <IconButton
-                                      onClick={() => deleteInput(optionIndex, variantIndex)}
-                                      className='min-is-fit'
-                                    >
-                                      <i className='tabler-x' />
-                                    </IconButton>
-                                  )}
-                                </InputAdornment>
-                              )
-                            }}
-                          />
-                        ))}
+              <Grid key={optionIndex} container spacing={6} item xs={12} className='repeater-item'>
+                <Grid item xs={12} md={4}>
+                  <CustomControlledAutoComplete
+                    fullWidth
+                    label='Options Name'
+                    placeholder='Select or Add Option'
+                    initialOptions={[]}
+                    value={variants.option_name}
+                    onChange={(e, newValue) => handleChange(optionIndex, newValue)}
+                  />
+                </Grid>
+                <Grid item xs={12} md={8} alignSelf='end' className=''>
+                  <Typography>Option Value</Typography>
+                  <div className='flex flex-col items-center gap-6'>
+                    {Array.isArray(variants.option_values) &&
+                      variants.option_values.map((variant, variantIndex) => (
+                        <CustomTextField
+                          key={variantIndex}
+                          fullWidth
+                          placeholder='Enter Variant Value'
+                          value={variant.option_value}
+                          onChange={e => variantInput(e, optionIndex, variantIndex)}
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position='end'>
+                                {variantIndex > 0 && (
+                                  <IconButton
+                                    onClick={() => deleteInput(optionIndex, variantIndex)}
+                                    className='min-is-fit'
+                                  >
+                                    <i className='tabler-x' />
+                                  </IconButton>
+                                )}
+                              </InputAdornment>
+                            )
+                          }}
+                        />
+                      ))}
+                    {formData.length > 1 && (
                       <Button
                         variant='outlined'
                         color='error'
@@ -184,8 +191,8 @@ const ProductVariants = () => {
                       >
                         Delete
                       </Button>
-                    </div>
-                  </Grid>
+                    )}
+                  </div>
                 </Grid>
               </Grid>
             ))}
@@ -199,9 +206,8 @@ const ProductVariants = () => {
           </Grid>
         </CardContent>
       </Card>
-      <Card>
-        <VariantCombinationTable data={variantTableData} />
-      </Card>
+
+      <VariantCombinationTable data={variantTableData} />
     </Grid>
   )
 }

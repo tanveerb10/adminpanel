@@ -187,24 +187,6 @@ console.log(productData, "prdouctData")
               />
             )}
           />
-          {/* <Controller
-            // name='variant_tax'
-            control={control}
-            render={({ field }) => (
-              <CustomTextField
-                {...field}
-                select
-                fullWidth
-                label='Taxable'
-                error={!!errors.variant_tax}
-                helperText={errors.variant_tax?.message}
-                margin='normal'
-              >
-                <MenuItem value='true'>True</MenuItem>
-                <MenuItem value='false'>False</MenuItem>
-              </CustomTextField>
-            )}
-          /> */}
           <DialogActions className='flex max-sm:flex-col max-sm:items-center max-sm:gap-2 justify-center pbs-0 sm:pbe-16 sm:pli-16'>
             <Button onClick={onClose} variant='tonal' color='secondary' className='max-sm:mis-0'>
               Cancel

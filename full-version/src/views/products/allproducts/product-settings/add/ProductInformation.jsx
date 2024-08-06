@@ -4,14 +4,10 @@ import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
-
 import CustomTextField from '@core/components/mui/TextField'
 
 import { useProduct } from '@views/products/allproducts/productContext/ProductStateManagement'
-
-import ReactQuill from 'react-quill'
-import 'react-quill/dist/quill.snow.css'
-import { useState } from 'react'
+import RichTextEditor from '@/libs/RichTextEditor'
 
 const ProductInformation = () => {
   const { productData, updateProductData } = useProduct()
@@ -22,14 +18,9 @@ const ProductInformation = () => {
   }
 
   const handleDescriptionChange = value => {
-    // setEditorValue(description)
-    console.log(value , "dwscription")
+    console.log(value, 'description')
     updateProductData({ parent: { product_description: value } })
   }
-
-  // const handleChange = (value) => {
-  //   setEditorValue(value);
-  // };
 
   return (
     <Card>
@@ -47,17 +38,12 @@ const ProductInformation = () => {
             />
           </Grid>
         </Grid>
+
         <Typography className='mbe-1'>Description</Typography>
 
-        <Card className='p-0 border shadow-none'>
-          <CardContent className='p-0'>
-            <ReactQuill
-              value={productData.parent.product_description || ""}
-              onChange={handleDescriptionChange}
-              placeholder='Write something...'
-            />
-          </CardContent>
-        </Card>
+        <Grid className='p-0 border shadow-none' sx={{ boxShadow: 3, borderRadius: 2 }}>
+          <RichTextEditor value={productData.parent.product_description || ''} onChange={handleDescriptionChange} />
+        </Grid>
       </CardContent>
     </Card>
   )

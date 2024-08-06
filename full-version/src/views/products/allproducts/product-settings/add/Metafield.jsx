@@ -31,8 +31,6 @@ export default function Metafield() {
         <CardHeader title='Metafield' />
       </Grid>
       <Grid>
-        {/* <Grid className='flex h-full'> */}
-
         <Grid container className='flex flex-row h-full items-end pl-5' gap={5}>
           <Grid>
             <CustomTextField
@@ -54,16 +52,10 @@ export default function Metafield() {
               label='Metafield value'
             />
           </Grid>
-
           <Grid>
-            {/* <CardActions> */}
-            {/* <Button variant='contained' color='success'>
-                    Add option
-                  </Button> */}
             <Button variant='contained' color='success' onClick={handleSave}>
               Create
             </Button>
-            {/* </CardActions> */}
           </Grid>
         </Grid>
         <Grid className='px-5 my-5'>

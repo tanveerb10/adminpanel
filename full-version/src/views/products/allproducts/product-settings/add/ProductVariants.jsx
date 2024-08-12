@@ -20,17 +20,59 @@ import VariantCombinationTable from './VariantCombinationTable'
 import debounce from 'lodash.debounce'
 import { useProduct } from '@/views/products/allproducts/productContext/ProductStateManagement'
 
-const ProductVariants = () => {
-  const [formData, setFormData] = useState([
-    {
-      option_name: 'Size',
-      option_values: [
-        {
-          option_value: ''
+const revertVariants = variants => {
+  const optionMap = {}
+  variants.forEach(variant => {
+    Object.keys(variant).forEach(key => {
+      const match = key.match(/option(\d+)_name/)
+      if (match) {
+        const index = match[1]
+        // console.log(index, "index")
+        const optionName = variant[`option${index}_name`]
+        // console.log("Option name", optionName)
+        const optionValue = variant[`option${index}_value`]
+        // console.log("Option Value", optionValue)
+        if (!optionMap[optionName]) {
+          optionMap[optionName] = new Set()
         }
-      ]
+        optionMap[optionName].add(optionValue)
+      }
+    })
+  })
+  return Object.keys(optionMap).map(optionName => ({
+    option_name: optionName,
+    option_values: Array.from(optionMap[optionName])
+      .map(value => ({
+        option_value: value
+      }))
+      .concat([{ option_value: '' }])
+  }))
+}
+
+const ProductVariants = () => {
+  const [formData, setFormData] = useState([])
+
+  const { productData } = useProduct()
+
+  const initialVariants = productData.child
+  console.log('Intial data in product variant', initialVariants)
+  useEffect(() => {
+    if (initialVariants?.length) {
+      const data = revertVariants(initialVariants)
+      setFormData(revertVariants(initialVariants))
+    } else {
+      setFormData([
+        {
+          option_name: 'Size',
+          option_values: [
+            {
+              option_value: ''
+            }
+          ]
+        }
+      ])
     }
-  ])
+  }, [initialVariants])
   const [variantTableData, setVariantTableData] = useState([])
 
   // const handleChange = (index, e) => {
@@ -131,12 +173,14 @@ const ProductVariants = () => {
   useEffect(() => {
     const newVariantTableData = formData.map(option => ({
       option_name: option.option_name,
-      option_values: option.option_values.filter(opt => opt.option_value !== '')
+      option_values: option.option_values?.filter(opt => opt.option_value !== '')
     }))
-    setVariantTableData(newVariantTableData)
+    if (JSON.stringify(newVariantTableData) !== JSON.stringify(variantTableData)) {
+      setVariantTableData(newVariantTableData)
+    }
   }, [formData])
-  console.log('formData', formData)
-  console.log('variant data table', variantTableData)
+  // console.log('formData', formData)
+  // console.log('variant data table', variantTableData)
   return (
     <Grid container className='flex flex-col gap-3 pl-5'>
       <Card>

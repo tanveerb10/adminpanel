@@ -105,7 +105,7 @@ const Login = ({ mode }) => {
     resolver: valibotResolver(schema),
     defaultValues: {
       email: 'admin@livein.in',
-      password: 'Livein@20243$'
+      password: 'admin@123'
     }
   })
 

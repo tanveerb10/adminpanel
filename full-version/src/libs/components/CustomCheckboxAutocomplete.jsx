@@ -1,20 +1,20 @@
 'use client'
-import * as React from 'react'
+import React, { useState, forwardRef } from 'react'
 import Checkbox from '@mui/material/Checkbox'
 // import TextField from '@mui/material/TextField'
 import CustomTextField from '@/@core/components/mui/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
-import { Button, Chip, Paper } from '@mui/material'
+import { Button, Chip, Paper, Tooltip } from '@mui/material'
 import { createFilterOptions } from '@mui/material/Autocomplete'
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />
 const checkedIcon = <CheckBoxIcon fontSize='small' />
 
-const CustomCheckboxAutocomplete = React.forwardRef(
-  ({ initialOptions = [], label, placeholder, onChange, optionKey, ...props }, ref) => {
-    const [dataList, setDataList] = React.useState(initialOptions)
+const CustomCheckboxAutocomplete = forwardRef(
+  ({ initialOptions = [], label, placeholder, onChange, optionKey, error, helperText, ...props }, ref) => {
+    const [dataList, setDataList] = useState(initialOptions)
     const filter = createFilterOptions({
       matchFrom: 'start',
       stringify: option => option
@@ -71,7 +71,18 @@ const CustomCheckboxAutocomplete = React.forwardRef(
             )}
           </li>
         )}
-        renderInput={params => <CustomTextField {...params} label={label} placeholder={placeholder} />}
+        renderInput={params => (
+          <Tooltip title={helperText || ''} placement='top' arrow>
+          <CustomTextField
+          {...params}
+          label={label}
+          placeholder={placeholder}
+          
+          helperText={error ? helperText : ''}
+          error={error}
+          />
+          </Tooltip>
+        )}
         renderTags={(tagValue, getTagProps) =>
           tagValue.map((option, index) => <Chip label={option} {...getTagProps({ index })} key={index} size='small' />)
         }

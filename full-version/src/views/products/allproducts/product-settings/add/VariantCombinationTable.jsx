@@ -74,7 +74,7 @@ const VariantRow = ({ variant, selectedItems, handleSelectItems,index }) => {
   const [addCombinationDialogOpen, setAddCombinationDialogOpen] = useState(false)
 
   if (!variant) {
-    console.error('Variant is undefined:', variant)
+    // console.error('Variant is undefined:', variant)
     return null
   }
 
@@ -156,7 +156,7 @@ export default function VariantCombinationTable({ data }) {
     const values = { child: generateVariants(data) }
     updateProductData(values)
   }, [data])
-  console.log(productData.child)
+  // console.log(productData.child)
 
   const [openStates, setOpenStates] = useState({})
   const [selectedItems, setSelectedItems] = useState({})

@@ -517,9 +517,9 @@ let contextData = [
   }
 ]
 let structuredData123 = {
-  dataat : function name(params) {
+  dataat: function name(params) {
     return {
-      variant : {key : val},
+      variant: { key: val },
       combination: [
         'x/yellow/cotton',
         'x/red/cotton',
@@ -530,7 +530,6 @@ let structuredData123 = {
       ]
     }
   }
-  
 }
 
 function combineOptions(index, current) {
@@ -546,29 +545,28 @@ function combineOptions(index, current) {
       variant_width: 0,
       variant_height: 0,
       variant_tax: 0,
-      country_of_origin: 'IN',
-    });
-    return;
+      country_of_origin: 'IN'
+    })
+    return
   }
 
+  const generateVariants = data => {
+    const variants = []
+    const { option_name, option_values } = options[index]
+    option_values.forEach((value, idx) => {
+      if (option_values.length - 1 !== idx) {
+        combineOptions(index + 1, {
+          ...current,
+          [`option${index + 1}_name`]: option_name,
+          [`option${index + 1}_value`]: value.option_value
+        })
+      }
+    })
+  }
 
-  const generateVariants = (data) => {
-    const variants = [];
-  const {option_name, option_values} = options[index];
-  option_values.forEach((value, idx) => {
-    if (option_values.length - 1 !== idx) {
-      combineOptions(index + 1, {
-        ...current,
-        [`option${index + 1}_name`]: option_name,
-        [`option${index + 1}_value`]: value.option_value,
-      });
-    }
-  }); 
+  combineOptions(0, {})
+  return variants
 }
-
-combineOptions(0, {});
-return variants;
-};
 
 // const generateVariants = (options) => {
 //   const variants = [];
@@ -593,3 +591,313 @@ return variants;
 //   combineOptions(0, {});
 //   return variants;
 // };
+
+// const formData1 = {
+//   formatData: [
+//     {
+//       brand_name: 'Livein-5',
+//       default_category: '',
+//       categories: [],
+//       product_title: 'kkj',
+//       product_description: '<p>kj,.</p>',
+//       product_type: '',
+//       tags: [],
+//       type_standard: 'Animals & Pet Supplies',
+//       published: 'TRUE',
+//       metafields: {
+//         hello: 'world',
+//         hwllodx: 'wokrldc'
+//       },
+//       variant_width: 2,
+//       variant_length: 2,
+//       variant_height: 2,
+//       variant_compare_at_price: 2,
+//       variant_inventory_qty: 2,
+//       variant_weight: 2,
+//       variant_sku: '2',
+//       variant_price: 2,
+//       option1_name: 'Size',
+//       option1_value: 'kjl,',
+//       values: 'kjl,',
+//       variant_tax: '',
+//       country_of_origin: 'IN'
+//     },
+//     {
+//       brand_name: 'Livein-5',
+//       default_category: '',
+//       categories: [],
+//       product_title: 'kkj',
+//       product_description: '<p>kj,.</p>',
+//       product_type: '',
+//       tags: [],
+//       type_standard: 'Animals & Pet Supplies',
+//       published: 'TRUE',
+//       metafields: {
+//         hello: 'world',
+//         hwllodx: 'wokrldc'
+//       },
+//       variant_width: 1,
+//       variant_length: 1,
+//       variant_height: 1,
+//       variant_compare_at_price: 1,
+//       variant_inventory_qty: 1,
+//       variant_weight: 1,
+//       variant_sku: '1',
+//       variant_price: 1,
+//       option1_name: 'Size',
+//       option1_value: 'jhk',
+//       values: 'jhk',
+//       variant_tax: '',
+//       country_of_origin: 'IN'
+//     }
+//   ]
+// }
+
+const singleProductData = {
+  success: true,
+  Finalproduct: {
+    products: [
+      {
+        brand_name: 'Livein',
+        default_category: 'Jeans',
+        categories: ['Shop', 'Men', 'Jeans', 'G12'],
+        product_title: 'Men Blue Denim Jeans - ABCD-12',
+        product_description: 'basu',
+        product_type: 'Jeans',
+        is_deleted: false,
+        tags: ['Jeans', 'Blue Jeans', 'Jean'],
+        published: 'TRUE',
+        type_standard: '132 - Apparel & Accessories > Clothing > Jean',
+        metafields: {
+          ' Size Chart': 'gid://shopify/OnlineStorePage/117528953122',
+          ' Fabric': 'Crepe',
+          ' Pattern': 'Solid',
+          ' Color': 'Crimson Red',
+          ' Fit': 'Loose Fit',
+          ' Collar': 'Button Down Collar',
+          ' Item Code': 'ABCD-12',
+          ' Gender': 'Female'
+        },
+        option1_name: 'Color',
+        option1_value: 'Red',
+        option2_name: 'Size',
+        option2_value: 'S',
+        variant_sku: '8912939499494',
+        variant_inventory_qty: 100,
+        variant_compare_at_price: 11,
+        variant_price: 599,
+        variant_weight: 500,
+        variant_length: 0,
+        variant_width: 0,
+        variant_height: 0
+      },
+      {
+        brand_name: 'Livein',
+        default_category: 'Jeans',
+        categories: ['Shop', 'Men', 'Jeans', 'G12'],
+        product_title: 'Men Blue Denim Jeans - ABCD-12',
+        product_description: 'basu',
+        product_type: 'Jeans',
+        is_deleted: false,
+        tags: ['Jeans', 'Blue Jeans', 'Jean'],
+        published: 'TRUE',
+        type_standard: '132 - Apparel & Accessories > Clothing > Jean',
+        metafields: {
+          ' Size Chart': 'gid://shopify/OnlineStorePage/117528953122',
+          ' Fabric': 'Crepe',
+          ' Pattern': 'Solid',
+          ' Color': 'Crimson Red',
+          ' Fit': 'Loose Fit',
+          ' Collar': 'Button Down Collar',
+          ' Item Code': 'ABCD-12',
+          ' Gender': 'Female'
+        },
+        option1_name: 'Color',
+        option1_value: 'Red',
+        option2_name: 'Size',
+        option2_value: 'M',
+        variant_sku: '8912939499495',
+        variant_inventory_qty: 100,
+        variant_compare_at_price: 11,
+        variant_price: 599,
+        variant_weight: 500,
+        variant_length: 0,
+        variant_width: 0,
+        variant_height: 0
+      },
+      {
+        brand_name: 'Livein',
+        default_category: 'Jeans',
+        categories: ['Shop', 'Men', 'Jeans', 'G12'],
+        product_title: 'Men Blue Denim Jeans - ABCD-12',
+        product_description: 'basu',
+        product_type: 'Jeans',
+        is_deleted: false,
+        tags: ['Jeans', 'Blue Jeans', 'Jean'],
+        published: 'TRUE',
+        type_standard: '132 - Apparel & Accessories > Clothing > Jean',
+        metafields: {
+          ' Size Chart': 'gid://shopify/OnlineStorePage/117528953122',
+          ' Fabric': 'Crepe',
+          ' Pattern': 'Solid',
+          ' Color': 'Crimson Red',
+          ' Fit': 'Loose Fit',
+          ' Collar': 'Button Down Collar',
+          ' Item Code': 'ABCD-12',
+          ' Gender': 'Female'
+        },
+        option1_name: 'Color',
+        option1_value: 'Red',
+        option2_name: 'Size',
+        option2_value: 'L',
+        variant_sku: '8912939499496',
+        variant_inventory_qty: 100,
+        variant_compare_at_price: 11,
+        variant_price: 599,
+        variant_weight: 500,
+        variant_length: 0,
+        variant_width: 0,
+        variant_height: 0
+      },
+      {
+        brand_name: 'Livein',
+        default_category: 'Jeans',
+        categories: ['Shop', 'Men', 'Jeans', 'G12'],
+        product_title: 'Men Blue Denim Jeans - ABCD-12',
+        product_description: 'basu',
+        product_type: 'Jeans',
+        is_deleted: false,
+        tags: ['Jeans', 'Blue Jeans', 'Jean'],
+        published: 'TRUE',
+        type_standard: '132 - Apparel & Accessories > Clothing > Jean',
+        metafields: {
+          ' Size Chart': 'gid://shopify/OnlineStorePage/117528953122',
+          ' Fabric': 'Crepe',
+          ' Pattern': 'Solid',
+          ' Color': 'Crimson Red',
+          ' Fit': 'Loose Fit',
+          ' Collar': 'Button Down Collar',
+          ' Item Code': 'ABCD-12',
+          ' Gender': 'Female'
+        },
+        option1_name: 'Color',
+        option1_value: 'Red',
+        option2_name: 'Size',
+        option2_value: '3XL',
+        variant_sku: '8912939499497',
+        variant_inventory_qty: 100,
+        variant_compare_at_price: 11,
+        variant_price: 599,
+        variant_weight: 500,
+        variant_length: 0,
+        variant_width: 0,
+        variant_height: 0
+      },
+      {
+        brand_name: 'Livein',
+        default_category: 'Jeans',
+        categories: ['Shop', 'Men', 'Jeans', 'G12'],
+        product_title: 'Men Blue Denim Jeans - ABCD-12',
+        product_description: 'basu',
+        product_type: 'Jeans',
+        is_deleted: false,
+        tags: ['Jeans', 'Blue Jeans', 'Jean'],
+        published: 'TRUE',
+        type_standard: '132 - Apparel & Accessories > Clothing > Jean',
+        metafields: {
+          ' Size Chart': 'gid://shopify/OnlineStorePage/117528953122',
+          ' Fabric': 'Crepe',
+          ' Pattern': 'Solid',
+          ' Color': 'Crimson Red',
+          ' Fit': 'Loose Fit',
+          ' Collar': 'Button Down Collar',
+          ' Item Code': 'ABCD-12',
+          ' Gender': 'Female'
+        },
+        option1_name: 'Color',
+        option1_value: 'Red',
+        option2_name: 'Size',
+        option2_value: '2XL',
+        variant_sku: '8912939499498',
+        variant_inventory_qty: 100,
+        variant_compare_at_price: 11,
+        variant_price: 599,
+        variant_weight: 500,
+        variant_length: 0,
+        variant_width: 0,
+        variant_height: 0
+      }
+    ],
+    images: [
+      {
+        image_src: '1722948001457-image_1.jpg',
+        image_position: 1
+      },
+      {
+        image_src: '1722948015829-image_2.jpg',
+        image_position: 2
+      },
+      {
+        image_src: '1722948023944-image_3.jpg',
+        image_position: 3
+      },
+      {
+        image_src: '1722948029828-image_4.jpg',
+        image_position: 4
+      },
+      {
+        image_src: '1722948033820-image_5.jpg',
+        image_position: 5
+      }
+    ],
+    videos: [
+      {
+        video_src: 'video.mp4'
+      }
+    ]
+  }
+}
+// console.log(singleProductData.Finalproduct.products[0].brand_name)
+
+const singleParentData = singleProductData.Finalproduct.products.map(sep => {
+  const {
+    brand_name,
+    default_category,
+    categories,
+    product_description,
+    product_title,
+    product_type,
+    is_deleted,
+    tags,
+    published,
+    type_standard,
+    metafields,
+    ...rest
+  } = sep
+  return { ...rest }
+  console.log(
+    '===============================================',
+    rest,
+    '==============================================='
+  )
+
+  // console.log('===============================================', sep, '===============================================')
+})
+
+console.log(singleParentData)
+
+// const {
+//   brand_name,
+//   default_category,
+//   categories,
+//   product_description,
+//   product_title,
+//   product_type,
+//   is_deleted,
+//   tags,
+//   published,
+//   type_standard,
+//   metafields,
+//   ...rest
+// } = singleParentData
+// console.log(brand_name, default_category,categories,product_description, rest)

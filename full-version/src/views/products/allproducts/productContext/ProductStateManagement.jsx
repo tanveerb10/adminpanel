@@ -2,7 +2,6 @@
 import React, { createContext, useState, useContext } from 'react'
 const ProductContext = createContext()
 export const ProductProvider = ({ children }) => {
-  
   const productParent = {
     brand_name: '',
     default_category: '',
@@ -11,8 +10,8 @@ export const ProductProvider = ({ children }) => {
     product_description: '',
     product_type: '',
     tags: [],
-    type_standard:'',
-    published: "TRUE",
+    type_standard: '',
+    published: 'TRUE'
   }
 
   const productChild = [
@@ -23,9 +22,9 @@ export const ProductProvider = ({ children }) => {
       variant_price: 0,
       variant_weight: 0,
       variant_length: 0,
-      variation_weight_unit: "g",
+      variation_weight_unit: 'g',
       variant_width: 0,
-      variant_height: 0,
+      variant_height: 0
     }
   ]
 
@@ -44,8 +43,38 @@ export const ProductProvider = ({ children }) => {
       meta: { ...prevData.meta, ...updatedData.meta }
     }))
   }
+  const updateChildData = updateData => {
+    setProductData(prevData => ({ ...prevData, child: updateData }))
+  }
+  {
+    /* 
+  const updateProductData = updatedData => {
+    setProductData(prevData => {
+      // Check if there's actually something to update to prevent unnecessary re-renders
+      const newParentData = { ...prevData.parent, ...updatedData.parent }
+      const newChildData = updatedData.child ? [...updatedData.child] : [...prevData.child]
+      const newMetaData = { ...prevData.meta, ...updatedData.meta }
 
-  return <ProductContext.Provider value={{ productData, updateProductData }}>{children}</ProductContext.Provider>
+      // Add a condition to prevent setting the same state repeatedly
+      if (newParentData !== prevData.parent || newChildData !== prevData.child || newMetaData !== prevData.meta) {
+        return {
+          parent: newParentData,
+          child: newChildData,
+          meta: newMetaData
+        }
+      } else {
+        return prevData // Prevent unnecessary updates
+      }
+    })
+  }
+*/
+  }
+
+  return (
+    <ProductContext.Provider value={{ productData, updateProductData, updateChildData }}>
+      {children}
+    </ProductContext.Provider>
+  )
 }
 
 export const useProduct = () => {

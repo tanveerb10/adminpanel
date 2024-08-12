@@ -42,9 +42,9 @@ export default function MetaTablePreview() {
   const { productData, updateProductData } = useProduct()
 
   const data = productData.meta
-  console.log(data, 'tablePrivew data')
-  const dataLength = Object.keys(data).length
-  console.log(dataLength, 'tablePrivew data length')
+  // console.log(data, 'tablePrivew data')
+  
+  // console.log(dataLength, 'tablePrivew data length')
 
   // const handleDelete = (key) => {
   //   console.log("Deleting key:", key);
@@ -65,31 +65,43 @@ export default function MetaTablePreview() {
 
   
   const handleDelete = (key) => {
-    console.log("Attempting to delete key:", key);
+    // console.log("Attempting to delete key:", key);
     const updatedMeta = productData.meta;
-    console.log("Current meta before deletion:", updatedMeta);
+    // console.log("Current meta before deletion:", updatedMeta);
 
     if (updatedMeta[key] !== undefined) {
       delete updatedMeta[key];
-      console.log("Updated meta after deletion:", updatedMeta);
+      // console.log("Updated meta after deletion:", updatedMeta);
       updateProductData({ meta: updatedMeta });
-      console.log("Updated product data after deletion", productData.meta)
+      // console.log("Updated product data after deletion", productData.meta)
     } else {
-      console.log("Key not found:", key);
+      // console.log("Key not found:", key);
     }
   };
 
+  if (data !== undefined || null) {
+    
+    const dataLength = Object.keys(data).length
+    if (dataLength <= 0) {
+      return (
+        <div className='w-full'>
+          <Typography className='font-semibold' variant='h5' align='center'>
+            There is no metafield available
+          </Typography>
+        </div>
+      )
+    }
+  }
+  
   const rows = Object.keys(data).map((key, index) => createData(key, data[key], index))
 
-  if (dataLength <= 0) {
-    return (
-      <div className='w-full'>
-        <Typography className='font-semibold' variant='h5' align='center'>
-          There is no metafield available
-        </Typography>
-      </div>
-    )
+  if (data === undefined || null) {
+    return <Typography>Given Data is not valid</Typography>
   }
+  
+
+
+
   return (
     <Card className='w-full h-full'>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>

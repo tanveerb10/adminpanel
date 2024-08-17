@@ -59,9 +59,12 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
 
   const handleFileInputChange = event => {
     const file = event.target.files[0]
+    console.log(file, 'file')
     if (file) {
       setSelectedFile(file)
+      // setImgSrc(file)
       const reader = new FileReader()
+      console.log({ reader })
       reader.onload = e => setImgSrc(e.target.result)
       reader.readAsDataURL(file)
     }
@@ -101,17 +104,19 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
       }
 
       if (selectedFile) {
-        formData.append('brand_image_src', imgSrc)
+        // formData.append('brand_image_src', selectedFile)
+        formData.append('brand_image_src', imgSrc) // org
       } else if (!isAddBrand) {
         formData.append('brand_image_src', data.brand_image_src)
       }
 
       console.log('Form Data:', data)
 
-      console.log('Form Data:', Array.from(formData.entries()))
+      console.log('Form Data   arrraayyy:  ', Array.from(formData.entries()))
       const apiUrl = isAddBrand
         ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/createBrand`
         : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/updateBrand/${id}`
+      console.log(formData, 'actuaalllll form')
       const response = await fetchFormData(apiUrl, isAddBrand ? 'POST' : 'PUT', formData)
       console.log('API Response:', response)
       const result = await response.json()
@@ -193,6 +198,7 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
                 <div className='flex flex-col sm:flex-row gap-4'>
                   <Button component='label' variant='contained' htmlFor='account-settings-upload-image'>
                     Upload New Photo
+                    {/* <form encType='multipart/form-data'> */}
                     <input
                       hidden
                       type='file'
@@ -200,6 +206,7 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
                       onChange={handleFileInputChange}
                       id='account-settings-upload-image'
                     />
+                    {/* </form> */}
                   </Button>
                   <Button variant='tonal' color='secondary' onClick={handleFileInputReset}>
                     Reset

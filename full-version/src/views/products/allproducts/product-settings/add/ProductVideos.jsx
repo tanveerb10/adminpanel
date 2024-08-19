@@ -6,10 +6,11 @@ import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
 import CustomTextField from '@/@core/components/mui/TextField'
-import { IconButton, InputAdornment, TextField, Typography } from '@mui/material'
+import { IconButton, InputAdornment } from '@mui/material'
 
 import { useProduct } from '@views/products/allproducts/productContext/ProductStateManagement'
 import { Grid } from '@mui/material'
+import { Controller, useFormContext } from 'react-hook-form'
 
 export default function ProductVideos() {
   const { productData, addProductVideos, updateProductVideos, deleteProductVideos } = useProduct()
@@ -20,6 +21,12 @@ export default function ProductVideos() {
   const deleteOption = index => {
     deleteProductVideos(index)
   }
+
+  const {
+    control,
+    formState: { errors }
+  } = useFormContext()
+
   return (
     <Grid>
       <Card>
@@ -38,9 +45,11 @@ export default function ProductVideos() {
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position='end'>
-                          <IconButton className='min-is-fit' onClick={() => deleteOption(index)}>
-                            <i className='tabler-x' />
-                          </IconButton>
+                          {index > 0 && (
+                            <IconButton className='min-is-fit' onClick={() => deleteOption(index)}>
+                              <i className='tabler-x' />
+                            </IconButton>
+                          )}
                         </InputAdornment>
                       )
                     }}
@@ -50,7 +59,7 @@ export default function ProductVideos() {
             </Grid>
 
             <Grid>
-              {productData.images.length < 5 && (
+              {productData.videos.length < 5 && (
                 <Button
                   variant='outlined'
                   color='primary'

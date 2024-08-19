@@ -11,7 +11,7 @@ export const ProductProvider = ({ children }) => {
     product_type: '',
     tags: [],
     type_standard: '',
-    published: 'TRUE'
+    published: ''
   }
 
   const productChild = [
@@ -49,29 +49,6 @@ export const ProductProvider = ({ children }) => {
     images: productImages,
     videos: productVideos
   })
-
-  // const updateProductData = updatedData => {
-  //   console.log()
-  //   setProductData(prevData => ({
-  //     // parent: { ...prevData.parent, ...updatedData.parent },
-  //     parent: prevData.parent,
-  //     // child: updatedData.child ? [...updatedData.child] : [...prevData.child],
-  //     // meta: { ...prevData.meta, ...updatedData.meta },
-  //     child: prevData.child,
-  //     meta: prevData.meta,
-  //     images: prevData.images,
-  //     videos: prevData.videos
-  //   }))
-  // }
-
-  // const updateProductChild = updateData => {
-  //   const containData = { ...productData.child }
-  //   const updateChildData = { ...containData, ...updateData }
-  //   setProductData(prevData => ({
-  //     ...prevData,
-  //     child: updateChildData
-  //   }))
-  // }
 
   const updateProductParent = updateData => {
     // console.log(updateData, 'prodduccctttttt ypdaaatee')
@@ -149,12 +126,15 @@ export const ProductProvider = ({ children }) => {
   }
   const deleteProductVideos = index => {
     const updatedVideos = [...productData.videos]
-    const arrayRemove = updatedVideos.splice(index, 1)
-    // updatedVideos[index].video_src = video_src
-    setProductData(prevData => ({
-      ...prevData,
-      videos: arrayRemove
-    }))
+    if (index >= 0 && index < updatedVideos.length) {
+      updatedVideos.splice(index, 1)
+      setProductData(prevData => ({
+        ...prevData,
+        videos: updatedVideos
+      }))
+    } else {
+      console.error('Invalid index for deletion')
+    }
   }
 
   const addProductVideos = () => {
@@ -173,7 +153,6 @@ export const ProductProvider = ({ children }) => {
       value={{
         productData,
         setProductData,
-        // updateProductData,
         updateChildData,
         addProductVideos,
         updateProductVideos,

@@ -48,15 +48,11 @@ const AddCombinationDialog = ({ open, onClose, dialogData, variant, index }) => 
   }, [open, dialogData, reset])
 
   const handleSave = data => {
-    // console.log(data, 'check raw form Data')
     const newData = productData.child
     newData[index] = data
-    // updateProductData({ child: newData })
     updateChildData(newData)
-    // console.log(variant)
     onClose()
   }
-  // console.log(productData, 'prdouctData')
   return (
     <Dialog open={open} onClose={onClose} PaperProps={{ sx: { overflow: 'visible' } }}>
       <DialogTitle>Add Variant</DialogTitle>

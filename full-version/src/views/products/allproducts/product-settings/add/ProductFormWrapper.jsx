@@ -19,33 +19,37 @@ const validationSchema = Yup.object().shape({
   product_title: Yup.string().required('Product Title is required'),
   brand_name: Yup.string().required('Brand name is required'),
   default_category: Yup.string().required('Default Category name is required'),
-  categories: Yup.array().of(Yup.string()).required('Categories are required'),
-  tags: Yup.array().of(Yup.string()).required('Tags are required'),
+  categories: Yup.array()
+    .of(Yup.string())
+    .min(1, 'At least one category is required')
+    .required('Categories are required'),
+  tags: Yup.array().of(Yup.string()).min(1, 'At least one tag is required').required('Tags are required'),
   product_description: Yup.string().required('Product description is required'),
   product_type: Yup.string().required('Product type is required'),
   type_standard: Yup.string().required('Type standard is required'),
   published: Yup.string().required('Published is required')
+  // images: Yup.string().required('Images are required'),
+  // videos: Yup.array()
+  //   .of(Yup.string().required('Each video link is required'))
+  //   .min(1, 'At least one video is required')
+  //   .required('videos are required')
 
-  // meta: Yup.object()
-  //   .test('is-empty', 'Meta field should not be empty', value => {
-  //     return Object.keys(value).length > 0
-  //   })
-  //   .test('key-value-pairs', 'Both key and value are required in each meta field', value => {
-  //     return Object.entries(value).every(([key, val]) => key.trim() !== '' && val.trim() !== '')
-  //   })
-
-  // variant_sku: '',
-  // variant_inventory_qty: 0,
-  // variant_compare_at_price: null,
-  // variant_price: 0,
-  // variant_weight: 0,
-  // variant_length: 0,
-  // variation_weight_unit: "g",
-  // variant_width: 0,
-  // variant_height: 0,
-
-  // const metafield = {}
+  // meta: Yup.object().shape({
+  // meta: Yup.object().shape({
+  //   keys: Yup.array()
+  //     .of(
+  //       Yup.object().shape({
+  //         key: Yup.string().required('Meta key is required'),
+  //         value: Yup.string().required('Meta value is required')
+  //       })
+  //     )
+  //     .min(1, 'At least one meta field is required')
+  // })
 })
+
+// const metafieldSchema =
+// });
+
 export default function ProductFormWrapper({ onSubmit, initialData, brandData, loading, isAddProduct }) {
   const { productData } = useProduct()
   const methods = useForm({

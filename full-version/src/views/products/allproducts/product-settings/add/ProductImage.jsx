@@ -307,9 +307,11 @@ const ProductImage = () => {
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position='end'>
-                          <IconButton className='min-is-fit' onClick={() => deleteOption(index)}>
-                            <i className='tabler-x' />
-                          </IconButton>
+                          {index > 0 && (
+                            <IconButton className='min-is-fit' onClick={() => deleteOption(index)}>
+                              <i className='tabler-x' />
+                            </IconButton>
+                          )}
                         </InputAdornment>
                       )
                     }}

@@ -1,18 +1,14 @@
 'use client'
-import { Button, Grid } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import ProductAddHeader from '@/views/products/allproducts/product-settings/add/ProductAddHeader'
-import ProductInformation from '@/views/products/allproducts/product-settings/add/ProductInformation'
-import ProductImage from '@/views/products/allproducts/product-settings/add/ProductImage'
-import ProductVariants from '@/views/products/allproducts/product-settings/add/ProductVariants'
-import ProductOrganize from '@/views/products/allproducts/product-settings/add/ProductOrganize'
 import fetchData from '@/utils/fetchData'
 import { useProduct } from '@views/products/allproducts/productContext/ProductStateManagement'
-import Metafield from '@views/products/allproducts/product-settings/add/Metafield'
 import { toast } from 'react-toastify'
-import { useForm, FormProvider } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useAuth } from '@/contexts/AuthContext'
+import { useParams, useRouter } from 'next/navigation'
+import ProductFormWrapper from '@views/products/allproducts/product-settings/add/ProductFormWrapper'
 
 const validationSchema = Yup.object().shape({
   product_title: Yup.string().required('Product Title is required'),
@@ -47,17 +43,19 @@ const validationSchema = Yup.object().shape({
 })
 
 export default function Page() {
-  const { productData, updateProductData, updateChildData } = useProduct()
+  const { productData, setProductData } = useProduct()
   const [brandData, setBrandData] = useState([])
   const [loading, setLoading] = useState(false)
-  const [singleProductData, setSingleProductData] = useState([])
+  const [error, setError] = useState(null)
   // const [validationErrors, setValidationErrors] = useState([])
 
   const methods = useForm({
+    // defaultValues: {productData.parent, }
     resolver: yupResolver(validationSchema)
-    // defaultValues: {parent : productData.parent}
-    // defaultValues: { meta: productData.meta }
   })
+  const { role } = useAuth()
+  const { id } = useParams()
+  const router = useRouter()
 
   useEffect(() => {
     const brandUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands`
@@ -67,7 +65,7 @@ export default function Page() {
         setBrandData(response)
       })
       .catch(error => {
-        console.log('error got', error)
+        console.log('error got in brand', error)
       })
   }, [])
 
@@ -110,185 +108,223 @@ export default function Page() {
     console.log({ vaariantvalid })
   }
 
+  const formatData = productData.child.map(child => ({
+    ...productData.parent,
+    metafields: productData.meta,
+    ...child
+  }))
+  // console.log({ formatData })
+
   const handleSaveProduct = async data => {
-    console.log('Data', data)
-    setLoading(true)
+    console.log('fetch Data', formatData)
+    console.log('clicked submit')
+    console.log('clicked data', data)
+    // setLoading(true)
     const product = {
       products: formatData,
-      images: [
-        {
-          image_src: 'https://www.dropbox.com/image1.jpg',
-          image_position: 1
-        }
-      ],
-      videos: [
-        {
-          video_src: 'http://example.com/video.mp4'
-        }
-      ]
+      images: productData.images,
+      //   [
+      //   {
+      //     image_src: 'https://www.dropbox.com/image1.jpg',
+      //     image_position: 1
+      //   }
+      // ],
+      videos: productData.videos
+      // [
+      //   {
+      //     video_src: 'http://example.com/video.mp4'
+      //   }
+      // ]
     }
 
-    try {
-      const response = await fetchData(
-        `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/uploadProduct`,
-        'POST',
-        product
-      )
-      if (!response.ok) {
-        toast.error('Got Error', response.message)
-      } else {
-        toast.success(response.message)
-      }
-    } catch (error) {
-      console.error('Got Error', error)
-      toast.error('Got Error', error.message)
-    } finally {
-      setLoading(false)
-    }
+    console.log('final format data', product)
+
+    // try {
+    //   const response = await fetchData(
+    //     `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/uploadProduct`,
+    //     'POST',
+    //     product
+    //   )
+    //   if (!response.ok) {
+    //     toast.error('Got Error', response.message)
+    //   } else {
+    //     toast.success(response.message)
+    //   }
+    // } catch (error) {
+    //   console.error('Got Error', error)
+    //   toast.error('Got Error', error.message)
+    // } finally {
+    //   setLoading(false)
+    // }
   }
 
   useEffect(() => {
-    const getSingleProduct = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/getproduct/66b21943c355ec500ef1384f`
-    fetchData(getSingleProduct, 'GET')
-      .then(response => {
-        console.log('Get single product data', response)
-        setSingleProductData(response)
-        // console.log('singgle product data', singleProductData)
-        const singleParent = response?.finalProduct?.products[0]
-        console.log('singleeeeeee', singleParent)
-        if (singleParent) {
-          const {
-            brand_name,
-            default_category,
-            categories,
-            product_description,
-            product_title,
-            product_type,
-            is_deleted,
-            tags,
-            published,
-            type_standard,
-            metafields,
-            ...rest
-          } = singleParent
-          updateProductData({
-            parent: {
-              brand_name,
-              default_category,
-              categories,
-              product_description,
-              product_title,
-              product_type,
-              tags,
-              published,
-              type_standard
-            },
-            meta: metafields
-          })
-          console.log(brand_name, 'brand data')
-          const childData = response?.finalProduct?.products?.map(childVariant => {
-            const {
-              brand_name,
-              default_category,
-              categories,
-              product_description,
-              product_title,
-              product_type,
-              is_deleted,
-              tags,
-              published,
-              type_standard,
-              metafields,
-              ...rest
-            } = childVariant
-            return rest
-            //   // const updateChildData =
-          })
-          console.log('childddddd', childData)
-          updateChildData(childData)
-          console.log(productData)
-        }
-      })
-      .catch(error => {
+    if (id !== 'addnewproduct') {
+      const getSingleProduct = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/getproduct/${id}`
+      setLoading(true)
+      try {
+        fetchData(getSingleProduct, 'GET').then(response => {
+          handleEdit(response)
+          console.log('Get single product data', response)
+          // setSingleProductData(response)
+          setLoading(false)
+        })
+      } catch (error) {
         console.log('error got', error)
-      })
+        setLoading(false)
+      }
+    }
   }, [])
 
-  // console.log('singlrProductdata', singleProductData?.finalProduct?.products)
-  // useEffect(()=>{},[])
+  const handleEdit = singleProductData => {
+    const singleParent = singleProductData?.finalProduct?.products[0]
+    console.log('singleeeeeee', singleParent)
+    const singleVideo = singleProductData?.finalProduct?.videos
+    const singleImage = singleProductData?.finalProduct.images
+    // console.log('singleVideo', singleVideo, 'singleImage', singleImage)
+    if (singleParent) {
+      const {
+        brand_name,
+        default_category,
+        categories,
+        product_description,
+        product_title,
+        product_type,
+        is_deleted,
+        tags,
+        published,
+        type_standard,
+        metafields,
+        ...rest
+      } = singleParent
 
-  // console.log('rest ', [...childData])
-  // const updateChildData = updateProductData({ child: [...childData] })
+      const parData = {
+        brand_name,
+        default_category,
+        categories,
+        product_description,
+        product_title,
+        product_type,
+        tags,
+        published,
+        type_standard
+      }
+      const parmeta = metafields
 
-  // useEffect(() => {
-  //   if (singleProductData?.finalProduct?.products) {
-  //     const childData = singleProductData.finalProduct.products.map(product => {
-  //       const {
-  //         brand_name,
-  //         default_category,
-  //         categories,
-  //         product_description,
-  //         product_title,
-  //         product_type,
-  //         is_deleted,
-  //         tags,
-  //         published,
-  //         type_standard,
-  //         metafields,
-  //         ...rest
-  //       } = product
-  //       console.log('rest', rest)
-  //       return { ...rest }
-  //     })
+      const childData = singleProductData?.finalProduct?.products?.map(childVariant => {
+        const {
+          brand_name,
+          default_category,
+          categories,
+          product_description,
+          product_title,
+          product_type,
+          is_deleted,
+          tags,
+          published,
+          type_standard,
+          metafields,
+          ...rest
+        } = childVariant
+        return rest
+      })
 
-  //     updateProductData(prevState => ({
-  //       ...prevState,
-  //       child: childData
-  //     }))
-  //   }
-  // }, [singleProductData])
+      setProductData({
+        parent: parData,
+        meta: parmeta,
+        videos: singleVideo,
+        images: singleImage,
+        child: childData
+      })
+    }
+  }
 
+  if (loading) {
+    // need to check loading
+    return <div>Loading...</div>
+  }
+
+  // if (role !== 'superadmin') {
+  //   setTimeout(() => router.push('/'), 3000)
+  //   return <div>wait you are going to redirect because you are not super admin...</div>
+  // }
+  if (error) {
+    return <div>No data available</div>
+  }
+
+  if (id == 'addnewproduct') {
+    return (
+      // <FormProvider {...methods}>
+      //   <form onSubmit={methods.handleSubmit(handleSaveProduct)}>
+      //     <Grid container spacing={6}>
+      //       <Grid item xs={12}>
+      //         <ProductAddHeader />
+      //       </Grid>
+      //       <Grid container spacing={6}>
+      //         <Grid item xs={12}>
+      //           <ProductInformation />
+      //         </Grid>
+      //         <Grid item xs={12}>
+      //           <ProductVariants />
+      //         </Grid>
+      //         <Grid item xs={12}>
+      //           <ProductImage />
+      //         </Grid>
+      //         <Grid item xs={12}>
+      //           <ProductOrganize brandName={brandData} />
+      //         </Grid>
+      //         <Grid item xs={12}>
+      //           <Metafield />
+      //         </Grid>
+      //       </Grid>
+      //       <Grid item xs={12}>
+      //         <Button variant='contained' type='submit' disabled={loading}>
+      //           {loading ? 'Saving...' : 'Save Product'}
+      //         </Button>
+      //       </Grid>
+      //     </Grid>
+      //   </form>
+      // </FormProvider>
+      <ProductFormWrapper onSubmit={handleSaveProduct} brandData={brandData} loading={loading} isAddProduct={true} />
+    )
+  }
   return (
-    <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(handleSaveProduct)}>
-        <Grid container spacing={6}>
-          <Grid item xs={12}>
-            <ProductAddHeader />
-          </Grid>
-          <Grid container spacing={6}>
-            <Grid item xs={12}>
-              <ProductInformation />
-            </Grid>
-            <Grid item xs={12}>
-              <ProductVariants />
-            </Grid>
-            <Grid item xs={12}>
-              <ProductImage />
-            </Grid>
-            <Grid item xs={12}>
-              <ProductOrganize brandName={brandData} />
-            </Grid>
-            <Grid item xs={12}>
-              <Metafield />
-            </Grid>
-          </Grid>
-          {/* {validationErrors.length > 0 && (
-            <div>
-              {validationErrors.map((error, idx) => (
-                <div key={idx}>
-                  Variant {error.index + 1}: {error.message}
-                </div>
-              ))}
-            </div>
-          )} */}
-
-          <Grid item xs={12}>
-            <Button variant='contained' type='submit' disabled={loading}>
-              {loading ? 'Saving...' : 'Save Product'}
-            </Button>
-          </Grid>
-        </Grid>
-      </form>
-    </FormProvider>
+    // <FormProvider {...methods}>
+    //   <form onSubmit={methods.handleSubmit(handleSaveProduct)}>
+    //     <Grid container spacing={6}>
+    //       <Grid item xs={12}>
+    //         <ProductAddHeader />
+    //       </Grid>
+    //       <Grid container spacing={6}>
+    //         <Grid item xs={12}>
+    //           <ProductInformation />
+    //         </Grid>
+    //         <Grid item xs={12}>
+    //           <ProductVariants />
+    //         </Grid>
+    //         <Grid item xs={12}>
+    //           <ProductImage />
+    //         </Grid>
+    //         <Grid item xs={12}>
+    //           <ProductOrganize brandName={brandData} />
+    //         </Grid>
+    //         <Grid item xs={12}>
+    //           <Metafield />
+    //         </Grid>
+    //       </Grid>
+    //       <Grid item xs={12}>
+    //         <Button variant='contained' type='submit' disabled={loading}>
+    //           {loading ? 'Saving...' : 'Save Product'}
+    //         </Button>
+    //       </Grid>
+    //     </Grid>
+    //   </form>
+    // </FormProvider>
+    <ProductFormWrapper
+      onSubmit={handleSaveProduct}
+      brandData={brandData}
+      loading={loading}
+      initialData={productData.parent}
+    />
   )
 }

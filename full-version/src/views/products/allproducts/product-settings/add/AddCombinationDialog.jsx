@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useEffect } from 'react'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -28,8 +29,8 @@ const validationSchema = yup.object().shape({
 })
 
 const AddCombinationDialog = ({ open, onClose, dialogData, variant, index }) => {
-  const { productData, updateProductData } = useProduct()
-
+  const { productData, updateProductData, updateChildData } = useProduct()
+  // console.log(variant, 'varrriaiaannnt')
   const {
     register,
     handleSubmit,
@@ -47,14 +48,15 @@ const AddCombinationDialog = ({ open, onClose, dialogData, variant, index }) => 
   }, [open, dialogData, reset])
 
   const handleSave = data => {
-    console.log(data, 'check raw form Data')
+    // console.log(data, 'check raw form Data')
     const newData = productData.child
     newData[index] = data
-    updateProductData({ child: newData })
-    console.log(variant)
+    // updateProductData({ child: newData })
+    updateChildData(newData)
+    // console.log(variant)
     onClose()
   }
-console.log(productData, "prdouctData")
+  // console.log(productData, 'prdouctData')
   return (
     <Dialog open={open} onClose={onClose} PaperProps={{ sx: { overflow: 'visible' } }}>
       <DialogTitle>Add Variant</DialogTitle>
@@ -69,7 +71,7 @@ console.log(productData, "prdouctData")
                 label='Price'
                 fullWidth
                 type='number'
-                placeholder="Price"
+                placeholder='Price'
                 error={!!errors.variant_price}
                 helperText={errors.variant_price?.message}
                 margin='normal'
@@ -84,7 +86,7 @@ console.log(productData, "prdouctData")
                 {...field}
                 label='SKU (stock keep unit)'
                 fullWidth
-                placeholder="SKU (sku keep unit)"
+                placeholder='SKU (sku keep unit)'
                 error={!!errors.variant_sku}
                 helperText={errors.variant_sku?.message}
                 margin='normal'
@@ -99,7 +101,7 @@ console.log(productData, "prdouctData")
                 {...field}
                 label='Length'
                 fullWidth
-                placeholder="Length"
+                placeholder='Length'
                 type='number'
                 error={!!errors.variant_length}
                 helperText={errors.variant_length?.message}
@@ -115,7 +117,7 @@ console.log(productData, "prdouctData")
                 {...field}
                 label='Width'
                 fullWidth
-                placeholder="Width"
+                placeholder='Width'
                 type='number'
                 error={!!errors.variant_width}
                 helperText={errors.variant_width?.message}
@@ -132,7 +134,7 @@ console.log(productData, "prdouctData")
                 label='Height'
                 fullWidth
                 type='number'
-                placeholder="Height"
+                placeholder='Height'
                 error={!!errors.variant_height}
                 helperText={errors.variant_height?.message}
                 margin='normal'
@@ -148,7 +150,7 @@ console.log(productData, "prdouctData")
                 label='Weight'
                 fullWidth
                 type='number'
-                placeholder="Weight"
+                placeholder='Weight'
                 error={!!errors.variant_weight}
                 helperText={errors.variant_weight?.message}
                 margin='normal'
@@ -164,7 +166,7 @@ console.log(productData, "prdouctData")
                 label='Inventory Qty'
                 fullWidth
                 type='number'
-                placeholder="INventory Quantity"
+                placeholder='Inventory Quantity'
                 error={!!errors.variant_inventory_qty}
                 helperText={errors.variant_inventory_qty?.message}
                 margin='normal'
@@ -179,7 +181,7 @@ console.log(productData, "prdouctData")
                 {...field}
                 label='Compare At Price'
                 fullWidth
-                placeholder="Compare at price"
+                placeholder='Compare at price'
                 type='number'
                 error={!!errors.variant_compare_at_price}
                 helperText={errors.variant_compare_at_price?.message}

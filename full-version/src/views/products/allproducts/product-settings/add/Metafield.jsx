@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from 'react'
 import { Button, Card, CardActions, CardContent, CardHeader, Grid } from '@mui/material'
 import CustomTextField from '@/@core/components/mui/TextField'
@@ -8,7 +9,7 @@ export default function Metafield() {
   const [addOption, setAddOption] = useState({ key: '', value: '' })
   const [validationMessage, setValidationMessage] = useState({ key: '', value: '' })
 
-  const { productData, updateProductData } = useProduct()
+  const { addProductMeta } = useProduct()
   // console.log(productData, 'metafield')
 
   const handleChange = e => {
@@ -43,7 +44,10 @@ export default function Metafield() {
     }
 
     const newMeta = { [addOption.key]: addOption.value }
-    updateProductData({ meta: newMeta })
+    // updateProductData({ meta: newMeta })
+    // console.log(newMeta, 'newwwwwwwwwwmwtttaaaa')
+    // console.log(addProductMeta, 'adddddddProooooductmetaaa')
+    addProductMeta({ ...newMeta })
     setAddOption({ key: '', value: '' })
   }
   const isButtonDisabled = addOption.key.trim() === '' || addOption.value.trim() === ''

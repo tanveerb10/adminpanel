@@ -30,48 +30,162 @@ export const ProductProvider = ({ children }) => {
 
   const metafield = {}
 
+  const productVideos = [
+    {
+      video_src: ''
+    }
+  ]
+  const productImages = [
+    {
+      image_src: '',
+      image_position: 1
+    }
+  ]
+
   const [productData, setProductData] = useState({
     parent: productParent,
     child: productChild,
-    meta: metafield
+    meta: metafield,
+    images: productImages,
+    videos: productVideos
   })
 
-  const updateProductData = updatedData => {
+  // const updateProductData = updatedData => {
+  //   console.log()
+  //   setProductData(prevData => ({
+  //     // parent: { ...prevData.parent, ...updatedData.parent },
+  //     parent: prevData.parent,
+  //     // child: updatedData.child ? [...updatedData.child] : [...prevData.child],
+  //     // meta: { ...prevData.meta, ...updatedData.meta },
+  //     child: prevData.child,
+  //     meta: prevData.meta,
+  //     images: prevData.images,
+  //     videos: prevData.videos
+  //   }))
+  // }
+
+  // const updateProductChild = updateData => {
+  //   const containData = { ...productData.child }
+  //   const updateChildData = { ...containData, ...updateData }
+  //   setProductData(prevData => ({
+  //     ...prevData,
+  //     child: updateChildData
+  //   }))
+  // }
+
+  const updateProductParent = updateData => {
+    // console.log(updateData, 'prodduccctttttt ypdaaatee')
+    const containData = { ...productData.parent }
+    // console.log(containData, 'conattaiiiiiiinnnnnnnnnn')
+    const updatedParent = { ...containData, ...updateData }
+    // console.log(updatedParent, 'updateeeee pareeentttt')
     setProductData(prevData => ({
-      parent: { ...prevData.parent, ...updatedData.parent },
-      child: updatedData.child ? [...updatedData.child] : [...prevData.child],
-      meta: { ...prevData.meta, ...updatedData.meta }
+      ...prevData,
+      parent: { ...updatedParent }
     }))
   }
+  const addProductMeta = updatedMetaData => {
+    // console.log(updatedMetaData, ' upmetforche')
+    // console.log(productData.meta, ' prevmetaforche')
+    const addmeta = { ...productData.meta, ...updatedMetaData }
+    // console.log(addmeta, 'addmetsforcheck')
+    setProductData(prevData => ({
+      ...prevData,
+      // meta: { key: '', value: '' }
+      meta: { ...addmeta }
+    }))
+  }
+
+  const deleteProductMeta = index => {
+    // console.log(index, ' index')
+    const containMeta = { ...productData.meta }
+    // console.log(containMeta, 'containnnnn')
+
+    delete containMeta[index]
+    // console.log('Updated meta after deletion:', containMeta)
+    setProductData(prevData => ({
+      ...prevData,
+      meta: { ...containMeta }
+    }))
+  }
+
+  const deleteProductImages = index => {
+    const updatedImages = [...productData.images]
+    if (index >= 0 && index < updatedImages.length) {
+      updatedImages.splice(index, 1)
+      // updatedVideos[index].video_src = video_src
+      setProductData(prevData => ({
+        ...prevData,
+        images: updatedImages
+      }))
+    } else {
+      console.error('Invalid index for deletion')
+    }
+  }
+
+  function addProductImages() {
+    setProductData(prevData => ({
+      ...prevData,
+      images: [...prevData.images, { image_src: '', image_position: 1 }]
+    }))
+  }
+
+  const updateProductImages = (index, image_src) => {
+    const updatedImages = [...productData.images]
+    updatedImages[index].image_src = image_src
+    setProductData(prevData => ({
+      ...prevData,
+      images: updatedImages
+    }))
+  }
+
+  const updateProductVideos = (index, video_src) => {
+    const updatedVideo = [...productData.videos]
+    updatedVideo[index].video_src = video_src
+    setProductData(prevData => ({
+      ...prevData,
+      videos: updatedVideo
+    }))
+  }
+  const deleteProductVideos = index => {
+    const updatedVideos = [...productData.videos]
+    const arrayRemove = updatedVideos.splice(index, 1)
+    // updatedVideos[index].video_src = video_src
+    setProductData(prevData => ({
+      ...prevData,
+      videos: arrayRemove
+    }))
+  }
+
+  const addProductVideos = () => {
+    setProductData(prevData => ({
+      ...prevData,
+      videos: [...prevData.videos, { video_src: '' }]
+    }))
+  }
+
   const updateChildData = updateData => {
     setProductData(prevData => ({ ...prevData, child: updateData }))
   }
-  {
-    /* 
-  const updateProductData = updatedData => {
-    setProductData(prevData => {
-      // Check if there's actually something to update to prevent unnecessary re-renders
-      const newParentData = { ...prevData.parent, ...updatedData.parent }
-      const newChildData = updatedData.child ? [...updatedData.child] : [...prevData.child]
-      const newMetaData = { ...prevData.meta, ...updatedData.meta }
-
-      // Add a condition to prevent setting the same state repeatedly
-      if (newParentData !== prevData.parent || newChildData !== prevData.child || newMetaData !== prevData.meta) {
-        return {
-          parent: newParentData,
-          child: newChildData,
-          meta: newMetaData
-        }
-      } else {
-        return prevData // Prevent unnecessary updates
-      }
-    })
-  }
-*/
-  }
 
   return (
-    <ProductContext.Provider value={{ productData, updateProductData, updateChildData }}>
+    <ProductContext.Provider
+      value={{
+        productData,
+        setProductData,
+        // updateProductData,
+        updateChildData,
+        addProductVideos,
+        updateProductVideos,
+        deleteProductVideos,
+        addProductImages,
+        updateProductImages,
+        deleteProductImages,
+        addProductMeta,
+        deleteProductMeta,
+        updateProductParent
+      }}
+    >
       {children}
     </ProductContext.Provider>
   )

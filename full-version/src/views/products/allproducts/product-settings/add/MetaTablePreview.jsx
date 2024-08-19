@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import {
   Button,
@@ -39,48 +40,15 @@ const createData = (key, value, index) => ({
 })
 
 export default function MetaTablePreview() {
-  const { productData, updateProductData } = useProduct()
+  const { productData, deleteProductMeta } = useProduct()
 
   const data = productData.meta
-  // console.log(data, 'tablePrivew data')
-  
-  // console.log(dataLength, 'tablePrivew data length')
 
-  // const handleDelete = (key) => {
-  //   console.log("Deleting key:", key);
-  //   const updatedMeta = { ...productData.meta }
-  //   delete updatedMeta[key]
-  //   updateProductData({meta:updatedMeta})
-  // }
-  // const handleDelete = (key) => {
-  //   console.log("Deleting key:", key);
-  //   const updatedMeta = { ...productData.meta };
-  //   if (updatedMeta[key] !== undefined) {
-  //     delete updatedMeta[key];
-  //     updateProductData({ meta: {updatedMeta} });
-  //   } else {
-  //     console.log("Key not found:", key);
-  //   }
-  // }
-
-  
-  const handleDelete = (key) => {
-    // console.log("Attempting to delete key:", key);
-    const updatedMeta = productData.meta;
-    // console.log("Current meta before deletion:", updatedMeta);
-
-    if (updatedMeta[key] !== undefined) {
-      delete updatedMeta[key];
-      // console.log("Updated meta after deletion:", updatedMeta);
-      updateProductData({ meta: updatedMeta });
-      // console.log("Updated product data after deletion", productData.meta)
-    } else {
-      // console.log("Key not found:", key);
-    }
-  };
+  const handleDelete = index => {
+    deleteProductMeta(index)
+  }
 
   if (data !== undefined || null) {
-    
     const dataLength = Object.keys(data).length
     if (dataLength <= 0) {
       return (
@@ -92,15 +60,12 @@ export default function MetaTablePreview() {
       )
     }
   }
-  
-  const rows = Object.keys(data).map((key, index) => createData(key, data[key], index))
 
   if (data === undefined || null) {
     return <Typography>Given Data is not valid</Typography>
   }
-  
 
-
+  const rows = Object.keys(data).map((key, index) => createData(key, data[key], index))
 
   return (
     <Card className='w-full h-full'>

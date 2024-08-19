@@ -12,23 +12,16 @@ import dynamic from 'next/dynamic'
 const RichTextEditor = dynamic(() => import('@/libs/RichTextEditor'), { ssr: false })
 
 const ProductInformation = () => {
-  const { productData, updateProductData } = useProduct()
+  const { productData, updateProductParent } = useProduct()
   const {
     control,
+    register,
     formState: { errors }
   } = useFormContext()
   console.log('doing console from oarent information', productData)
-  // const handleInputChange = e => {
-  //   const { name, value } = e.target
-  //   console.log(name, value)
-  //   updateProductData({ parent: { [name]: value } })
-  //   setValue(name, value, { shouldValidate: true })
-  // }
 
   const handleDescriptionChange = value => {
-    console.log(value, 'description')
-    // setValue('product_description', value, { shouldValidate: true })
-    updateProductData({ parent: { product_description: value } })
+    updateProductParent({ product_description: value })
   }
 
   return (
@@ -53,16 +46,18 @@ const ProductInformation = () => {
             <Controller
               name='product_title'
               control={control}
+              // defaultValue={product_title || ''}
               render={({ field }) => (
                 <CustomTextField
                   {...field}
+                  // value={productData.parent.product_title || ''}
                   label='Product Title'
-                  value={productData.parent.product_title || ''}
                   fullWidth
                   placeholder='Product name'
+                  // value={field.value || ''}
                   onChange={e => {
                     field.onChange(e)
-                    updateProductData({ parent: { product_title: e.target.value } })
+                    updateProductParent({ product_title: e.target.value })
                   }}
                   error={!!errors.product_title}
                   helperText={errors.product_title ? errors.product_title.message : ''}
@@ -82,8 +77,7 @@ const ProductInformation = () => {
               <RichTextEditor
                 {...field}
                 label
-                value={productData.parent.product_description || field.value}
-                // value={'fghjkl;'}
+                // value={productData.parent.product_description || ''}
                 // value={field.value}
                 onChange={value => {
                   field.onChange(value)

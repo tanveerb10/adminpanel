@@ -1,3 +1,5 @@
+'use client'
+
 import {
   Grid,
   TableContainer,
@@ -43,7 +45,7 @@ const generateVariants = options => {
         variant_length: 0,
         variant_width: 0,
         variant_height: 0,
-        variant_tax: "",
+        variant_tax: '',
         country_of_origin: 'IN'
       })
       return
@@ -64,7 +66,7 @@ const generateVariants = options => {
   return variants
 }
 
-const VariantRow = ({ variant, selectedItems, handleSelectItems,index }) => {
+const VariantRow = ({ variant, selectedItems, handleSelectItems, index }) => {
   const [variantData, setVariantData] = useState({
     ...variant
   })
@@ -79,7 +81,7 @@ const VariantRow = ({ variant, selectedItems, handleSelectItems,index }) => {
   }
 
   useEffect(() => {
-    setVariantData({ ...variant})
+    setVariantData({ ...variant })
   }, [variant])
 
   const handleChange = useCallback((field, value) => {
@@ -149,13 +151,16 @@ const VariantRow = ({ variant, selectedItems, handleSelectItems,index }) => {
     </>
   )
 }
-export default function VariantCombinationTable({ data }) {
-  const { productData ,updateProductData } = useProduct()
+export default function VariantCombinationTable({ data, isAddProduct }) {
+  const { productData, updateProductData, updateChildData } = useProduct()
 
   useEffect(() => {
-    const values = { child: generateVariants(data) }
-    updateProductData(values)
-  }, [data])
+    // const values = { child: generateVariants(data) }
+    // updateProductData(values)
+    if (isAddProduct) {
+      updateChildData(generateVariants(data))
+    }
+  }, [data, isAddProduct])
   // console.log(productData.child)
 
   const [openStates, setOpenStates] = useState({})
@@ -175,7 +180,7 @@ export default function VariantCombinationTable({ data }) {
       newSelectedItems[variant.variant] = newSelectAll
       // variant.combinations.forEach(combination => {
       //   newSelectedItems[combination.combination] = newSelectAll
-      // })
+      // })2
     })
     setSelectedItems(newSelectedItems)
   }, [productData, selectedItems])
@@ -223,7 +228,6 @@ export default function VariantCombinationTable({ data }) {
                 index={index}
                 selectedItems={selectedItems}
                 handleSelectItems={handleSelectItems}
-
               />
             ))}
           </TableBody>

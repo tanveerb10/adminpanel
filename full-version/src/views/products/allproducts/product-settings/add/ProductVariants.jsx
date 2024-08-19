@@ -49,13 +49,13 @@ const revertVariants = variants => {
   }))
 }
 
-const ProductVariants = () => {
+const ProductVariants = ({ isAddProduct }) => {
   const [formData, setFormData] = useState([])
 
   const { productData } = useProduct()
 
   const initialVariants = productData.child
-  console.log('Intial data in product variant', initialVariants)
+  // console.log('Intial data in product variant', initialVariants)
   useEffect(() => {
     if (initialVariants?.length) {
       const data = revertVariants(initialVariants)
@@ -75,44 +75,6 @@ const ProductVariants = () => {
   }, [initialVariants])
   const [variantTableData, setVariantTableData] = useState([])
 
-  // const handleChange = (index, e) => {
-  //   const newFormData = formData.map((data, i) =>
-  //     i === index ? { ...data, option_name: e.target.value } : data
-  //   );
-  //   setFormData(newFormData);
-  // };
-
-  // const deleteInput = (optionIndex, variantIndex) => {
-  //   const newFormData = formData.map((data, i) =>
-  //     i === optionIndex ? { ...data, option_values: data.option_values.filter((_, vIndex) => vIndex !== variantIndex) } : data
-  //   );
-  //   setFormData(newFormData);
-  // };
-
-  // const addOption = () => {
-  //   setFormData([...formData, { option_name: 'Size', option_values: [''] }]);
-  // };
-
-  // const deleteForm = (optionIndex) => {
-  //   setFormData(formData.filter((_, index) => index !== optionIndex));
-  // };
-
-  // const variantInput = (e, optionIndex, variantIndex) => {
-  //   const newFormData = formData.map((data, i) => {
-  //     if (i === optionIndex) {
-  //       const newValues = data.option_values.map((value, vIndex) =>
-  //         vIndex === variantIndex ? e.target.value : value
-  //       );
-  //       if (e.target.value.length === 1 && variantIndex === data.option_values.length - 1) {
-  //         newValues.push('');
-  //       }
-  //       return { ...data, option_values: newValues };
-  //     }
-  //     return data;
-  //   });
-  //   setFormData(newFormData);
-  // };
-
   const handleChange = useCallback((index, newValue) => {
     setFormData(prevFormData => {
       const newFormData = [...prevFormData]
@@ -120,13 +82,6 @@ const ProductVariants = () => {
       return newFormData
     })
   }, [])
-  // const handleChange = useCallback((index, e) => {
-  //   setFormData(prevFormData => {
-  //     const newFormData = [...prevFormData]
-  //     newFormData[index].option_name = e.target.value
-  //     return newFormData
-  //   })
-  // }, [])
 
   const deleteInput = useCallback((optionIndex, variantIndex) => {
     setFormData(prevFormData => {
@@ -179,8 +134,6 @@ const ProductVariants = () => {
       setVariantTableData(newVariantTableData)
     }
   }, [formData])
-  // console.log('formData', formData)
-  // console.log('variant data table', variantTableData)
   return (
     <Grid container className='flex flex-col gap-3 pl-5'>
       <Card>
@@ -251,7 +204,7 @@ const ProductVariants = () => {
         </CardContent>
       </Card>
 
-      <VariantCombinationTable data={variantTableData} />
+      <VariantCombinationTable data={variantTableData} isAddProduct={isAddProduct} />
     </Grid>
   )
 }

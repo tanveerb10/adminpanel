@@ -7,12 +7,12 @@ import { MenuItem, CardContent, CardHeader, Card, Grid, useFormControl } from '@
 import CustomTextField from '@core/components/mui/TextField'
 import CustomCheckboxAutocomplete from '@/libs/components/CustomCheckboxAutocomplete'
 import { useProduct } from '../../productContext/ProductStateManagement'
-import { TypeOfStandard } from '@views/products/allproducts/product-settings/add/TypeOfStandard'
+import { TypeOfStandard } from '@/data/typeOfStandard/TypeOfStandard'
 import CustomAutocomplete from '@core/components/mui/Autocomplete'
 import { useFormContext, Controller } from 'react-hook-form'
 
 const ProductOrganize = ({ brandName }) => {
-  const { productData, updateProductData } = useProduct()
+  const { productData, updateProductParent } = useProduct()
   const {
     control,
     formState: { errors }
@@ -25,9 +25,9 @@ const ProductOrganize = ({ brandName }) => {
   // }
 
   const handleArrayChange = (name, newValue) => {
-    updateProductData({ parent: { [name]: newValue } })
+    updateProductParent({ [name]: newValue })
   }
-const movie = ['hello','movie','sjkdl']
+  const movie = ['hello', 'movie', 'sjkdl']
   return (
     <Card>
       <CardHeader title='Organize' />
@@ -127,14 +127,14 @@ const movie = ['hello','movie','sjkdl']
               control={control}
               render={({ field }) => (
                 <CustomTextField
-                {...field}
-                select
-                value={productData.parent.brand_name || ''}
+                  {...field}
+                  select
+                  // value={productData.parent.brand_name || ''}
                   fullWidth
                   label='Brand'
                   onChange={e => {
                     field.onChange(e)
-                    updateProductData({ parent: { brand_name: e.target.value } })
+                    updateProductParent({ brand_name: e.target.value })
                   }}
                   error={!!errors.brand_name}
                   helperText={errors.brand_name ? errors.brand_name.message : ''}
@@ -155,16 +155,16 @@ const movie = ['hello','movie','sjkdl']
               control={control}
               render={({ field }) => (
                 <CustomCheckboxAutocomplete
-                {...field}
-                value={productData.parent.categories || []}
-                label='Categories'
+                  {...field}
+                  // value={productData.parent.categories || []}
+                  label='Categories'
                   placeholder='Categories select'
                   fullWidth
                   initialOptions={productData.parent.categories || []}
                   onChange={(event, newValue) => {
                     field.onChange(newValue)
                     // handleArrayChange('categories', newValue)
-                    updateProductData({ parent: { categories: newValue } })
+                    updateProductParent({ categories: newValue })
                   }}
                   error={!!errors.categories}
                   helperText={errors.categories ? errors.categories.message : ''}
@@ -178,7 +178,7 @@ const movie = ['hello','movie','sjkdl']
               <Controller
                 name='default_category'
                 control={control}
-                defaultValue={productData.parent.default_category || ''}
+                // defaultValue={productData.parent.default_category || ''}
                 render={({ field }) => (
                   <CustomAutocomplete
                     fullWidth
@@ -186,7 +186,7 @@ const movie = ['hello','movie','sjkdl']
                     options={productData.parent.categories || []}
                     onChange={(event, newValue) => {
                       field.onChange(newValue)
-                      updateProductData({ parent: { default_category: newValue, product_type: newValue } })
+                      updateProductParent({ default_category: newValue, product_type: newValue })
                     }}
                     getOptionLabel={option => option}
                     renderInput={params => (
@@ -213,14 +213,14 @@ const movie = ['hello','movie','sjkdl']
               // rules={{ required: 'Please add something' }}
               render={({ field }) => (
                 <CustomCheckboxAutocomplete
-                {...field}
-                value={productData.parent.tags || []}
+                  {...field}
+                  // value={productData.parent.tags || []}
                   fullWidth
                   label='Enter Tags'
                   placeholder='Fashion, Trending, Summer'
                   onChange={(event, newValue) => {
                     field.onChange(newValue)
-                    updateProductData({ parent: { tags: newValue } })
+                    updateProductParent({ tags: newValue })
                     // handleArrayChange('tags', newValue)
                   }}
                   initialOptions={productData.parent.tags}
@@ -237,13 +237,13 @@ const movie = ['hello','movie','sjkdl']
               control={control}
               render={({ field }) => (
                 <CustomAutocomplete
-                {...field}
+                  {...field}
                   fullWidth
-                  value={productData.parent.type_standard || ''}
+                  // value={productData.parent.type_standard || ''}
                   options={TypeOfStandard}
                   onChange={(event, newValue) => {
                     field.onChange(newValue)
-                    updateProductData({ parent: { type_standard: newValue } })
+                    updateProductParent({ type_standard: newValue })
                   }}
                   getOptionLabel={option => option}
                   renderInput={params => (
@@ -264,7 +264,7 @@ const movie = ['hello','movie','sjkdl']
             <Controller
               name='published'
               control={control}
-              defaultValue={productData.parent.published || ''}
+              // defaultValue={productData.parent.published || ''}
               render={({ field }) => (
                 <CustomTextField
                   select
@@ -273,7 +273,7 @@ const movie = ['hello','movie','sjkdl']
                   {...field}
                   onChange={e => {
                     field.onChange(e)
-                    updateProductData({ parent: { published: e.target.value } })
+                    updateProductParent({ published: e.target.value })
                   }}
                   error={!!errors.published}
                   helperText={errors.published ? errors.published.message : ''}
@@ -285,10 +285,11 @@ const movie = ['hello','movie','sjkdl']
             />
           </Grid>
           <Grid item xs={12}>
-            <CustomCheckboxAutocomplete 
+            <CustomCheckboxAutocomplete
               onChange={(event, newValue) => handleArrayChange('check', newValue)}
               initialOptions={productData.parent.tags}
-          /></Grid>
+            />
+          </Grid>
         </Grid>
       </CardContent>
     </Card>

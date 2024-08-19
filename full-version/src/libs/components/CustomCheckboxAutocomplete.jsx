@@ -73,14 +73,13 @@ const CustomCheckboxAutocomplete = forwardRef(
         )}
         renderInput={params => (
           <Tooltip title={helperText || ''} placement='top' arrow>
-          <CustomTextField
-          {...params}
-          label={label}
-          placeholder={placeholder}
-          
-          helperText={error ? helperText : ''}
-          error={error}
-          />
+            <CustomTextField
+              {...params}
+              label={label}
+              placeholder={placeholder}
+              helperText={error ? helperText : ''}
+              error={error}
+            />
           </Tooltip>
         )}
         renderTags={(tagValue, getTagProps) =>

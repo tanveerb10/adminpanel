@@ -3,44 +3,9 @@ import React, { useEffect, useState } from 'react'
 import fetchData from '@/utils/fetchData'
 import { useProduct } from '@views/products/allproducts/productContext/ProductStateManagement'
 import { toast } from 'react-toastify'
-import { useForm } from 'react-hook-form'
-import * as Yup from 'yup'
-import { yupResolver } from '@hookform/resolvers/yup'
 import { useAuth } from '@/contexts/AuthContext'
 import { useParams, useRouter } from 'next/navigation'
 import ProductFormWrapper from '@views/products/allproducts/product-settings/add/ProductFormWrapper'
-
-const validationSchema = Yup.object().shape({
-  product_title: Yup.string().required('Product Title is required'),
-  brand_name: Yup.string().required('Brand name is required'),
-  default_category: Yup.string().required('Default Category name is required'),
-  categories: Yup.array().of(Yup.string()).required('Categories are required'),
-  tags: Yup.array().of(Yup.string()).required('Tags are required'),
-  product_description: Yup.string().required('Product description is required'),
-  product_type: Yup.string().required('Product type is required'),
-  type_standard: Yup.string().required('Type standard is required'),
-  published: Yup.string().required('Published is required')
-
-  // meta: Yup.object()
-  //   .test('is-empty', 'Meta field should not be empty', value => {
-  //     return Object.keys(value).length > 0
-  //   })
-  //   .test('key-value-pairs', 'Both key and value are required in each meta field', value => {
-  //     return Object.entries(value).every(([key, val]) => key.trim() !== '' && val.trim() !== '')
-  //   })
-
-  // variant_sku: '',
-  // variant_inventory_qty: 0,
-  // variant_compare_at_price: null,
-  // variant_price: 0,
-  // variant_weight: 0,
-  // variant_length: 0,
-  // variation_weight_unit: "g",
-  // variant_width: 0,
-  // variant_height: 0,
-
-  // const metafield = {}
-})
 
 export default function Page() {
   const { productData, setProductData } = useProduct()
@@ -49,10 +14,6 @@ export default function Page() {
   const [error, setError] = useState(null)
   // const [validationErrors, setValidationErrors] = useState([])
 
-  const methods = useForm({
-    // defaultValues: {productData.parent, }
-    resolver: yupResolver(validationSchema)
-  })
   const { role } = useAuth()
   const { id } = useParams()
   const router = useRouter()
@@ -61,7 +22,6 @@ export default function Page() {
     const brandUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands`
     fetchData(brandUrl, 'GET')
       .then(response => {
-        // console.log('Get brands data', response)
         setBrandData(response)
       })
       .catch(error => {
@@ -84,57 +44,68 @@ export default function Page() {
     return null
   }
 
-  const variantValidation = data => {
-    if (data.variant_sku === '') {
-      console.log("it's empty")
+  const validateVariants = data => {
+    for (const child of data) {
+      if (!child.variant_sku) {
+        return 'Variant SKU cannot be empty'
+      }
     }
     return null
   }
-  const submitCheck = data => {
-    const metaError = metaValidation(productData.meta, 'check meta atiadat')
+
+  const validateVideos = videos => {
+    if (!videos || videos.length === 0 || videos.every(video => !video.video_src)) {
+      return 'At least one video must be provided'
+    }
+    return null
+  }
+
+  const validateImages = images => {
+    if (!images || images.length === 0 || images.every(image => !image.image_src)) {
+      return 'At least one image must be provided'
+    }
+    return null
+  }
+  const handleSaveProduct = async data => {
+    console.log('clicked submit')
+    const videoError = validateVideos(productData.videos)
+    if (videoError) {
+      toast.error(videoError)
+      return
+    }
+
+    const imageError = validateImages(productData.images)
+    if (imageError) {
+      toast.error(imageError)
+      return
+    }
+
+    const metaError = metaValidation(productData.meta)
 
     if (metaError) {
       toast.error(metaError)
       return
     }
+
+    const variantError = validateVariants(productData.child)
+    if (variantError) {
+      toast.error(variantError)
+      return
+    }
+
+    console.log('clicked data', data)
+
     const formatData = productData.child.map(child => ({
-      ...productData.parent,
+      // ...productData.parent,
+      ...data,
       metafields: productData.meta,
       ...child
     }))
-    console.log({ formatData })
-    console.log('submittt', data)
-    const vaariantvalid = variantValidation(formatData)
-    console.log({ vaariantvalid })
-  }
-
-  const formatData = productData.child.map(child => ({
-    ...productData.parent,
-    metafields: productData.meta,
-    ...child
-  }))
-  // console.log({ formatData })
-
-  const handleSaveProduct = async data => {
-    console.log('fetch Data', formatData)
-    console.log('clicked submit')
-    console.log('clicked data', data)
     // setLoading(true)
     const product = {
       products: formatData,
       images: productData.images,
-      //   [
-      //   {
-      //     image_src: 'https://www.dropbox.com/image1.jpg',
-      //     image_position: 1
-      //   }
-      // ],
       videos: productData.videos
-      // [
-      //   {
-      //     video_src: 'http://example.com/video.mp4'
-      //   }
-      // ]
     }
 
     console.log('final format data', product)
@@ -166,7 +137,6 @@ export default function Page() {
         fetchData(getSingleProduct, 'GET').then(response => {
           handleEdit(response)
           console.log('Get single product data', response)
-          // setSingleProductData(response)
           setLoading(false)
         })
       } catch (error) {
@@ -181,7 +151,6 @@ export default function Page() {
     console.log('singleeeeeee', singleParent)
     const singleVideo = singleProductData?.finalProduct?.videos
     const singleImage = singleProductData?.finalProduct.images
-    // console.log('singleVideo', singleVideo, 'singleImage', singleImage)
     if (singleParent) {
       const {
         brand_name,
@@ -254,72 +223,10 @@ export default function Page() {
 
   if (id == 'addnewproduct') {
     return (
-      // <FormProvider {...methods}>
-      //   <form onSubmit={methods.handleSubmit(handleSaveProduct)}>
-      //     <Grid container spacing={6}>
-      //       <Grid item xs={12}>
-      //         <ProductAddHeader />
-      //       </Grid>
-      //       <Grid container spacing={6}>
-      //         <Grid item xs={12}>
-      //           <ProductInformation />
-      //         </Grid>
-      //         <Grid item xs={12}>
-      //           <ProductVariants />
-      //         </Grid>
-      //         <Grid item xs={12}>
-      //           <ProductImage />
-      //         </Grid>
-      //         <Grid item xs={12}>
-      //           <ProductOrganize brandName={brandData} />
-      //         </Grid>
-      //         <Grid item xs={12}>
-      //           <Metafield />
-      //         </Grid>
-      //       </Grid>
-      //       <Grid item xs={12}>
-      //         <Button variant='contained' type='submit' disabled={loading}>
-      //           {loading ? 'Saving...' : 'Save Product'}
-      //         </Button>
-      //       </Grid>
-      //     </Grid>
-      //   </form>
-      // </FormProvider>
       <ProductFormWrapper onSubmit={handleSaveProduct} brandData={brandData} loading={loading} isAddProduct={true} />
     )
   }
   return (
-    // <FormProvider {...methods}>
-    //   <form onSubmit={methods.handleSubmit(handleSaveProduct)}>
-    //     <Grid container spacing={6}>
-    //       <Grid item xs={12}>
-    //         <ProductAddHeader />
-    //       </Grid>
-    //       <Grid container spacing={6}>
-    //         <Grid item xs={12}>
-    //           <ProductInformation />
-    //         </Grid>
-    //         <Grid item xs={12}>
-    //           <ProductVariants />
-    //         </Grid>
-    //         <Grid item xs={12}>
-    //           <ProductImage />
-    //         </Grid>
-    //         <Grid item xs={12}>
-    //           <ProductOrganize brandName={brandData} />
-    //         </Grid>
-    //         <Grid item xs={12}>
-    //           <Metafield />
-    //         </Grid>
-    //       </Grid>
-    //       <Grid item xs={12}>
-    //         <Button variant='contained' type='submit' disabled={loading}>
-    //           {loading ? 'Saving...' : 'Save Product'}
-    //         </Button>
-    //       </Grid>
-    //     </Grid>
-    //   </form>
-    // </FormProvider>
     <ProductFormWrapper
       onSubmit={handleSaveProduct}
       brandData={brandData}

@@ -1,11 +1,10 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
-import MenuItem from '@mui/material/MenuItem'
 import { useForm, Controller } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -28,9 +27,9 @@ const validationSchema = yup.object().shape({
   variant_width: yup.number().required('Width is required').positive('Width must be a positive number')
 })
 
-const AddCombinationDialog = ({ open, onClose, dialogData, variant, index }) => {
-  const { productData, updateProductData, updateChildData } = useProduct()
-  // console.log(variant, 'varrriaiaannnt')
+const AddVariantValue = ({ open, onClose, dialogData, variant, index }) => {
+  const { productData, updateChildData } = useProduct()
+
   const {
     register,
     handleSubmit,
@@ -42,7 +41,7 @@ const AddCombinationDialog = ({ open, onClose, dialogData, variant, index }) => 
     defaultValues: variant
   })
   useEffect(() => {
-    if (open) {
+    if (open && dialogData) {
       reset(dialogData)
     }
   }, [open, dialogData, reset])
@@ -199,4 +198,4 @@ const AddCombinationDialog = ({ open, onClose, dialogData, variant, index }) => 
   )
 }
 
-export default AddCombinationDialog
+export default AddVariantValue

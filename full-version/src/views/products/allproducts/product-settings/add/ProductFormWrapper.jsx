@@ -1,6 +1,6 @@
 'use client'
 import { Grid, Button } from '@mui/material'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import * as Yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -13,7 +13,8 @@ import ProductOrganize from '@/views/products/allproducts/product-settings/add/P
 import Metafield from '@/views/products/allproducts/product-settings/add/Metafield'
 import ProductDelete from '@/views/products/allproducts/product-settings/add/ProductDelete'
 import { useProduct } from '../../productContext/ProductStateManagement'
-// import { useEffect } from 'react'
+import { toast } from 'react-toastify'
+import fetchData from '@/utils/fetchData'
 
 const validationSchema = Yup.object().shape({
   product_title: Yup.string().required('Product Title is required'),
@@ -28,47 +29,147 @@ const validationSchema = Yup.object().shape({
   product_type: Yup.string().required('Product type is required'),
   type_standard: Yup.string().required('Type standard is required'),
   published: Yup.string().required('Published is required')
-  // images: Yup.string().required('Images are required'),
-  // videos: Yup.array()
-  //   .of(Yup.string().required('Each video link is required'))
-  //   .min(1, 'At least one video is required')
-  //   .required('videos are required')
-
-  // meta: Yup.object().shape({
-  // meta: Yup.object().shape({
-  //   keys: Yup.array()
-  //     .of(
-  //       Yup.object().shape({
-  //         key: Yup.string().required('Meta key is required'),
-  //         value: Yup.string().required('Meta value is required')
-  //       })
-  //     )
-  //     .min(1, 'At least one meta field is required')
-  // })
 })
 
-// const metafieldSchema =
-// });
-
-export default function ProductFormWrapper({ onSubmit, initialData, brandData, loading, isAddProduct }) {
+export default function ProductFormWrapper({ onSubmit, initialData, brandData, isAddProduct, id }) {
   const { productData } = useProduct()
+  const [loading, setLoading] = useState(false)
   const methods = useForm({
     resolver: yupResolver(validationSchema),
-    defaultValues: initialData
+    defaultValues: initialData || {
+      brand_name: '',
+      default_category: '',
+      categories: [],
+      product_title: '',
+      product_description: '',
+      product_type: '',
+      tags: [],
+      type_standard: '',
+      published: ''
+    }
   })
+
+  const metaValidation = meta => {
+    if (Object.keys(meta).length == 0) {
+      return 'Meta field should not be empty'
+    }
+    for (const [key, value] of Object.entries(meta)) {
+      if (typeof key !== 'string' || typeof value !== 'string') {
+        return 'Both key and value must be strings'
+      }
+      if (!key.trim() || !value.trim()) {
+        return 'Both key and value are required in each meta field'
+      }
+    }
+    return null
+  }
+
+  const validateVariants = data => {
+    for (const child of data) {
+      if (!child.variant_sku) {
+        return 'Variant SKU cannot be empty'
+      }
+    }
+    return null
+  }
+
+  const validateVideos = videos => {
+    if (!videos || videos.length === 0 || videos.every(video => !video.video_src)) {
+      return 'At least one video must be provided'
+    }
+    return null
+  }
+
+  const validateImages = images => {
+    if (!images || images.length === 0 || images.every(image => !image.image_src)) {
+      return 'At least one image must be provided'
+    }
+    return null
+  }
+  const handleSaveProduct = async data => {
+    console.log('clicked submit')
+    setLoading(true)
+    const videoError = validateVideos(productData.videos)
+    if (videoError) {
+      toast.error(videoError)
+      return
+    }
+
+    const imageError = validateImages(productData.images)
+    if (imageError) {
+      toast.error(imageError)
+      return
+    }
+
+    const metaError = metaValidation(productData.meta)
+
+    if (metaError) {
+      toast.error(metaError)
+      return
+    }
+
+    const variantError = validateVariants(productData.child)
+    if (variantError) {
+      toast.error(variantError)
+      return
+    }
+
+    console.log('clicked data', data)
+
+    const formatData = productData.child.map(child => ({
+      // ...productData.parent,
+      ...data,
+      metafields: productData.meta,
+      ...child
+    }))
+    const product = {
+      products: formatData,
+      images: productData.images,
+      videos: productData.videos
+    }
+
+    console.log('final format data', product)
+
+    try {
+      const baseUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}`
+      const uploadProduct = `${baseUrl}/admin/products/uploadProduct`
+      const editProduct = `${baseUrl}/admin/products/updateProduct/${id}`
+
+      const url = isAddProduct ? uploadProduct : editProduct
+      const method = isAddProduct ? 'POST' : 'PUT'
+      const response = await fetchData(url, method, product)
+
+      if (!response.success) {
+        const errorMessage = response.message || 'An Error Occurred'
+        toast.error(`Error: ${errorMessage}`)
+        setLoading(false)
+        return
+      }
+
+      const successMessage = response.message || 'Successfully done'
+      toast.success(successMessage)
+      setLoading(false)
+    } catch (error) {
+      console.error('An unexpected error occurred', error)
+      toast.error(`Unexpected Error: ${error.message || 'An error occurred'}`)
+      setLoading(false)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const { reset } = methods
 
   // Use useEffect to reset form values when productData changes
   useEffect(() => {
-    if (productData) {
+    if (productData && productData.parent) {
       reset(productData.parent) // Reset the form values when productData changes
     }
   }, [productData, reset])
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)}>
+      <form onSubmit={methods.handleSubmit(handleSaveProduct)}>
         <Grid container spacing={6}>
           <Grid item xs={12}>
             <ProductAddHeader />

@@ -1,21 +1,20 @@
 'use client'
 import React, { useState } from 'react'
-import { Button, Card, CardActions, CardContent, CardHeader, Grid } from '@mui/material'
+import { Button, Card, CardHeader, Grid } from '@mui/material'
 import CustomTextField from '@/@core/components/mui/TextField'
 import { useProduct } from '../../productContext/ProductStateManagement'
 import MetaTablePreview from './MetaTablePreview'
+import { toast } from 'react-toastify'
 
 export default function Metafield() {
   const [addOption, setAddOption] = useState({ key: '', value: '' })
   const [validationMessage, setValidationMessage] = useState({ key: '', value: '' })
 
   const { addProductMeta } = useProduct()
-  // console.log(productData, 'metafield')
 
   const handleChange = e => {
     const { name, value } = e.target
     setAddOption({ ...addOption, [name]: value })
-    // Clear validation message on change
     if (value.trim() !== '') {
       setValidationMessage({ ...validationMessage, [name]: '' })
     }
@@ -34,19 +33,17 @@ export default function Metafield() {
     }
 
     if (!isValid) {
-      console.warn('Cannot save empty fields')
+      toast.error('Cannot save empty fields')
       return
     }
 
     if (addOption.key.trim() === '' || addOption.value.trim() === '') {
-      console.warn('Cannot save empty strings')
+      toast.error('Cannot save empty fields')
+
       return
     }
 
     const newMeta = { [addOption.key]: addOption.value }
-    // updateProductData({ meta: newMeta })
-    // console.log(newMeta, 'newwwwwwwwwwmwtttaaaa')
-    // console.log(addProductMeta, 'adddddddProooooductmetaaa')
     addProductMeta({ ...newMeta })
     setAddOption({ key: '', value: '' })
   }

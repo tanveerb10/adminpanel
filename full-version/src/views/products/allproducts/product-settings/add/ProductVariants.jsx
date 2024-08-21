@@ -9,16 +9,15 @@ import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
-import MenuItem from '@mui/material/MenuItem'
 
 // Components Imports
-import { IconButton, InputAdornment, TextField, Typography } from '@mui/material'
+import { IconButton, InputAdornment, Typography } from '@mui/material'
 import CustomTextField from '@core/components/mui/TextField'
 import CustomControlledAutoComplete from '@/libs/components/CustomControlledAutoComplete'
-// import Typography from '@mui/material/Typography'
 import VariantCombinationTable from './VariantCombinationTable'
 import debounce from 'lodash.debounce'
 import { useProduct } from '@/views/products/allproducts/productContext/ProductStateManagement'
+import { generateVariants } from './VariantCombinationTable'
 
 const revertVariants = variants => {
   const optionMap = {}
@@ -27,11 +26,11 @@ const revertVariants = variants => {
       const match = key.match(/option(\d+)_name/)
       if (match) {
         const index = match[1]
-        // console.log(index, "index")
+        // console.log(index, 'index')
         const optionName = variant[`option${index}_name`]
-        // console.log("Option name", optionName)
+        // console.log('Option name', optionName)
         const optionValue = variant[`option${index}_value`]
-        // console.log("Option Value", optionValue)
+        // console.log('Option Value', optionValue)
         if (!optionMap[optionName]) {
           optionMap[optionName] = new Set()
         }
@@ -50,30 +49,34 @@ const revertVariants = variants => {
 }
 
 const ProductVariants = ({ isAddProduct }) => {
-  const [formData, setFormData] = useState([])
-
-  const { productData } = useProduct()
-
-  const initialVariants = productData.child
-  // console.log('Intial data in product variant', initialVariants)
-  useEffect(() => {
-    if (initialVariants?.length) {
-      const data = revertVariants(initialVariants)
-      setFormData(revertVariants(initialVariants))
-    } else {
-      setFormData([
+  const [formData, setFormData] = useState([
+    {
+      option_name: 'Size',
+      option_values: [
         {
-          option_name: 'Size',
-          option_values: [
-            {
-              option_value: ''
-            }
-          ]
+          option_value: ''
         }
-      ])
+      ]
     }
-  }, [initialVariants])
+  ])
+
+  const { productData, updateChildData } = useProduct()
+  console.log(productData.child, 'childdddddddddd')
+  const initialVariants = productData.child
+  const isEdit = productData.isEdit
+  console.log('Intial data in product variant', initialVariants.length)
   const [variantTableData, setVariantTableData] = useState([])
+  const [isOptionChange, setoptionChange] = useState(false)
+
+  useEffect(() => {
+    if (isEdit) {
+      console.log(initialVariants, 'befroe revertssssssssssssssss')
+      console.log(initialVariants?.length)
+      const data = revertVariants(initialVariants)
+      console.log(data, 'after revert data---------------------')
+      setFormData(data)
+    }
+  }, [isEdit])
 
   const handleChange = useCallback((index, newValue) => {
     setFormData(prevFormData => {
@@ -81,6 +84,7 @@ const ProductVariants = ({ isAddProduct }) => {
       newFormData[index].option_name = newValue
       return newFormData
     })
+    !isOptionChange && setoptionChange(true)
   }, [])
 
   const deleteInput = useCallback((optionIndex, variantIndex) => {
@@ -123,17 +127,26 @@ const ProductVariants = ({ isAddProduct }) => {
       newFormData[optionIndex].option_values = newValues
       return newFormData
     })
+    !isOptionChange && setoptionChange(true)
   }, [])
 
   useEffect(() => {
-    const newVariantTableData = formData.map(option => ({
-      option_name: option.option_name,
-      option_values: option.option_values?.filter(opt => opt.option_value !== '')
-    }))
-    if (JSON.stringify(newVariantTableData) !== JSON.stringify(variantTableData)) {
-      setVariantTableData(newVariantTableData)
+    if (isOptionChange) {
+      const newVariantTableData = formData.map(option => ({
+        option_name: option.option_name,
+        option_values: option.option_values?.filter(opt => opt.option_value !== '')
+      }))
+      if (JSON.stringify(newVariantTableData) !== JSON.stringify(variantTableData)) {
+        setVariantTableData(newVariantTableData)
+      }
     }
   }, [formData])
+
+  useEffect(() => {
+    if (variantTableData.length) {
+      updateChildData(generateVariants(variantTableData))
+    }
+  }, [variantTableData])
   return (
     <Grid container className='flex flex-col gap-3 pl-5'>
       <Card>

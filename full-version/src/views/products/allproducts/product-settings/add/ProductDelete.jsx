@@ -1,74 +1,34 @@
 'use client'
 
-// React Imports
-import { useState } from 'react'
-
-// MUI Imports
-import Card from '@mui/material/Card'
-import CardHeader from '@mui/material/CardHeader'
-import CardContent from '@mui/material/CardContent'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Checkbox from '@mui/material/Checkbox'
-import Button from '@mui/material/Button'
-import FormControl from '@mui/material/FormControl'
-import FormHelperText from '@mui/material/FormHelperText'
-
-// Third-party Imports
-import { useForm, Controller } from 'react-hook-form'
-
-// Component Imports
-import ProductConfirmationDialog from '@views/products/allproducts/product-settings/add/ProductConfirmationDialog'
-
-const ProductDelete = ({ id, status }) => {
-  // States
-  const [open, setOpen] = useState(false)
-
-  // Hooks
-  const {
-    control,
-    watch,
-    handleSubmit,
-    formState: { errors }
-  } = useForm({ defaultValues: { checkbox: false } })
-
-  // Vars
-  const checkboxValue = watch('checkbox')
-
-  const onSubmit = () => {
-    setOpen(true)
+import { Typography, Button, CardContent, CardHeader, Card, Grid } from '@mui/material'
+import { useProduct } from '../../productContext/ProductStateManagement'
+const ProductDelete = () => {
+  const { productData, updateProductParent } = useProduct()
+  const currentStatus = productData.parent.is_deleted ? 'Deactivated' : 'Activated'
+  const status = productData.parent.is_deleted
+  const name = productData.parent.product_title
+  const handleSubmit = () => {
+    console.log('tanveer')
+    console.log(currentStatus)
+    console.log(!status)
+    updateProductParent({ is_deleted: !status })
   }
-
   return (
     <Card>
-      <CardHeader title='Deactived Brand' />
+      <CardHeader title={`${currentStatus} product`} />
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FormControl error={Boolean(errors.checkbox)} className='is-full mbe-6'>
-            <Controller
-              name='checkbox'
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <FormControlLabel control={<Checkbox {...field} />} label='I confirm this brand deactivation' />
-              )}
-            />
-            {errors.checkbox && (
-              <FormHelperText error>Please confirm you want to deactivate this product</FormHelperText>
-            )}
-          </FormControl>
+        <Typography variant='h6' gutterBottom>
+          Currently {name} product is {currentStatus}
+        </Typography>
+        <Grid container gap={5}>
+          <Button variant='contained' color='success' disabled={!status} onClick={handleSubmit}>
+            Activate Product
+          </Button>
 
-          {status ? (
-            <Button variant='contained' color='success' type='submit' disabled={!checkboxValue}>
-              Activate Product
-            </Button>
-          ) : (
-            <Button variant='contained' color='error' type='submit' disabled={!checkboxValue}>
-              Deactivate Product
-            </Button>
-          )}
-
-          <ProductConfirmationDialog open={open} setOpen={setOpen} id={id} status={status} />
-        </form>
+          <Button variant='contained' color='error' disabled={status} onClick={handleSubmit}>
+            Deactivate Product
+          </Button>
+        </Grid>
       </CardContent>
     </Card>
   )

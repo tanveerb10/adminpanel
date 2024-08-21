@@ -10,33 +10,24 @@ import {
   TableCell,
   Checkbox,
   TableBody,
-  TextField,
-  // IconButton,
-  Box,
   Button,
-  Collapse,
   Typography,
   Card,
   CardContent
 } from '@mui/material'
 import CustomTextField from '@/@core/components/mui/TextField'
-import { useEffect, useState, useCallback, useMemo } from 'react'
-import AddCombinationDialog from './AddCombinationDialog'
-import { useProduct } from '../../productContext/ProductStateManagement'
+import { useEffect, useState, useCallback } from 'react'
+import AddVariantValue from '@/views/products/allproducts/product-settings/add/AddVariantValue'
+import { useProduct } from '@/views/products/allproducts/productContext/ProductStateManagement'
+import { toast } from 'react-toastify'
 
-const generateVariants = options => {
+export const generateVariants = options => {
   const variants = []
 
   const combineOptions = (index, current) => {
     if (index >= options.length) {
-      const values = Object.keys(current)
-        .filter(key => key.endsWith('_value'))
-        .map(key => current[key])
-        .join('/')
-
       variants.push({
         ...current,
-        values,
         variant_sku: '',
         variant_compare_at_price: 0,
         variant_inventory_qty: 0,
@@ -73,10 +64,10 @@ const VariantRow = ({ variant, selectedItems, handleSelectItems, index }) => {
 
   const { productData } = useProduct()
 
-  const [addCombinationDialogOpen, setAddCombinationDialogOpen] = useState(false)
+  const [AddVariantValueOpen, setAddVariantValueOpen] = useState(false)
 
   if (!variant) {
-    // console.error('Variant is undefined:', variant)
+    toast.error('Variant is undefined:', variant)
     return null
   }
 
@@ -91,22 +82,26 @@ const VariantRow = ({ variant, selectedItems, handleSelectItems, index }) => {
     }))
   }, [])
 
-  const openAddCombinationDialog = useCallback(() => {
-    setAddCombinationDialogOpen(true)
+  const openAddVariantValue = useCallback(() => {
+    setAddVariantValueOpen(true)
   }, [])
 
-  const closeAddCombinationDialog = useCallback(() => {
-    setAddCombinationDialogOpen(false)
+  const closeAddVariantValue = useCallback(() => {
+    setAddVariantValueOpen(false)
   }, [])
 
   const handleRowClick = useCallback(
     e => {
       if (e.target.type !== 'checkbox' && e.target.type !== 'file') {
-        openAddCombinationDialog()
+        openAddVariantValue()
       }
     },
-    [openAddCombinationDialog]
+    [openAddVariantValue]
   )
+  const values = Object.keys(variant)
+    .filter(key => key.endsWith('_value'))
+    .map(key => variant[key])
+    .join('/')
 
   return (
     <>
@@ -120,7 +115,7 @@ const VariantRow = ({ variant, selectedItems, handleSelectItems, index }) => {
         <TableCell>
           <input type='file' accept='image/*' onChange={e => handleChange('image', e.target.files[0])} />
         </TableCell>
-        <TableCell>{variantData.values}</TableCell>
+        <TableCell>{values}</TableCell>
         <TableCell>
           <CustomTextField label='Price' disabled value={productData.child[index].variant_price} fullWidth />
         </TableCell>
@@ -133,7 +128,7 @@ const VariantRow = ({ variant, selectedItems, handleSelectItems, index }) => {
             variant='contained'
             onClick={e => {
               e.stopPropagation()
-              openAddCombinationDialog()
+              openAddVariantValue()
             }}
           >
             Add value
@@ -141,9 +136,9 @@ const VariantRow = ({ variant, selectedItems, handleSelectItems, index }) => {
         </TableCell>
       </TableRow>
 
-      <AddCombinationDialog
-        open={addCombinationDialogOpen}
-        onClose={closeAddCombinationDialog}
+      <AddVariantValue
+        open={AddVariantValueOpen}
+        onClose={closeAddVariantValue}
         dialogData={variantData}
         variant={variant}
         index={index}
@@ -151,17 +146,23 @@ const VariantRow = ({ variant, selectedItems, handleSelectItems, index }) => {
     </>
   )
 }
-export default function VariantCombinationTable({ data, isAddProduct }) {
-  const { productData, updateProductData, updateChildData } = useProduct()
+export default function VariantCombinationTable() {
+  const { productData } = useProduct()
 
-  useEffect(() => {
-    // const values = { child: generateVariants(data) }
-    // updateProductData(values)
-    if (isAddProduct) {
-      updateChildData(generateVariants(data))
-    }
-  }, [data, isAddProduct])
-  // console.log(productData.child)
+  // useEffect(() => {
+  //   // if (data?.length) {
+  //   console.log('------------------------------')
+  //   console.log(data, '..................DATAAAAAAAAAA')
+  //   console.log('------------------------------')
+  //   console.log(JSON.stringify(productData.child))
+  //   console.log('------------------------------')
+  //   console.log(data !== productData.child)
+  //   // console.log(isAddProduct || data?.length)
+  //   if (isAddProduct) {
+  //     updateChildData(generateVariants(data))
+  //     console.log('tanveer')
+  //   }
+  // }, [data])
 
   const [openStates, setOpenStates] = useState({})
   const [selectedItems, setSelectedItems] = useState({})
@@ -178,9 +179,6 @@ export default function VariantCombinationTable({ data, isAddProduct }) {
     const newSelectedItems = {}
     structuredData.forEach(variant => {
       newSelectedItems[variant.variant] = newSelectAll
-      // variant.combinations.forEach(combination => {
-      //   newSelectedItems[combination.combination] = newSelectAll
-      // })2
     })
     setSelectedItems(newSelectedItems)
   }, [productData, selectedItems])

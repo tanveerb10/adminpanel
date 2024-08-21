@@ -18,9 +18,6 @@ const ProductOrganize = ({ brandName }) => {
     formState: { errors }
   } = useFormContext()
 
-  const handleArrayChange = (name, newValue) => {
-    updateProductParent({ [name]: newValue })
-  }
   return (
     <Card>
       <CardHeader title='Organize' />

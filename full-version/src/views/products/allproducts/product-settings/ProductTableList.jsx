@@ -99,36 +99,10 @@ const truncateText = (text, maxLength) => {
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const tableData21 = [
-  {
-    name: 'Men Blue Denim Jeans - ABCD-12',
-    description: 'basu',
-    isDeleted: false,
-    id: '66b21943c355ec500ef1384f',
-    productBrand: 'Livein',
-    productType: 'Jeans',
-    productCategory: 'Jeans'
-  },
-  {
-    name: 'shirt',
-    description:
-      'Stay in the zone while you train in this crop designed with printed panel details to keep you cool. Girls love standing in these tight fitting, printed panel to handle every kind of activity they set their mind to',
-    isDeleted: false,
-    id: '66b4a94c342c7227fde7d772',
-    productBrand: 'Livein',
-    productType: 'Jeans',
-    productCategory: 'shirt'
-  }
-]
-
 const ProductTableList = ({ tableData = [], totalProducts }) => {
   console.log('table list', tableData)
   // States
   const [rowSelection, setRowSelection] = useState({})
-
-  // if (tableData == undefined) {
-  //   return <Typography>not table data </Typography>
-  // }
 
   const [data, setData] = useState(tableData)
   const [globalFilter, setGlobalFilter] = useState('')
@@ -209,7 +183,9 @@ const ProductTableList = ({ tableData = [], totalProducts }) => {
                 whiteSpace: 'pre-wrap'
               }}
             >
-              {truncatedDescription}
+              <p dangerouslySetInnerHTML={{ __html: truncatedDescription }} />
+
+              {/* {truncatedDescription} */}
             </Typography>
           )
         }

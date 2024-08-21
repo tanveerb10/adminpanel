@@ -16,12 +16,11 @@ const ProductInformation = () => {
     control,
     formState: { errors }
   } = useFormContext()
-  console.log('doing console from oarent information', productData)
 
   const handleDescriptionChange = value => {
     updateProductParent({ product_description: value })
   }
-
+  console.log(productData, 'product data information')
   return (
     <Card>
       <CardHeader title='Product Information' />

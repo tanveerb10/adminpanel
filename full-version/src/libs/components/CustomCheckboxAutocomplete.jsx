@@ -1,12 +1,11 @@
 'use client'
 import React, { useState, forwardRef } from 'react'
 import Checkbox from '@mui/material/Checkbox'
-// import TextField from '@mui/material/TextField'
 import CustomTextField from '@/@core/components/mui/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
-import { Button, Chip, Paper, Tooltip } from '@mui/material'
+import { Button, Chip, Paper } from '@mui/material'
 import { createFilterOptions } from '@mui/material/Autocomplete'
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />
@@ -72,15 +71,15 @@ const CustomCheckboxAutocomplete = forwardRef(
           </li>
         )}
         renderInput={params => (
-          <Tooltip title={helperText || ''} placement='top' arrow>
-            <CustomTextField
-              {...params}
-              label={label}
-              placeholder={placeholder}
-              helperText={error ? helperText : ''}
-              error={error}
-            />
-          </Tooltip>
+          // <Tooltip title={helperText || ''} placement='top' arrow>
+          <CustomTextField
+            {...params}
+            label={label}
+            placeholder={placeholder}
+            helperText={error ? helperText : ''}
+            error={error}
+          />
+          // </Tooltip>
         )}
         renderTags={(tagValue, getTagProps) =>
           tagValue.map((option, index) => <Chip label={option} {...getTagProps({ index })} key={index} size='small' />)

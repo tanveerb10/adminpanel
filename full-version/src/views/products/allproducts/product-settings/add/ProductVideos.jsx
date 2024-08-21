@@ -10,7 +10,6 @@ import { IconButton, InputAdornment } from '@mui/material'
 
 import { useProduct } from '@views/products/allproducts/productContext/ProductStateManagement'
 import { Grid } from '@mui/material'
-import { Controller, useFormContext } from 'react-hook-form'
 
 export default function ProductVideos() {
   const { productData, addProductVideos, updateProductVideos, deleteProductVideos } = useProduct()
@@ -21,58 +20,53 @@ export default function ProductVideos() {
   const deleteOption = index => {
     deleteProductVideos(index)
   }
-
-  const {
-    control,
-    formState: { errors }
-  } = useFormContext()
-
   return (
-    <Grid>
-      <Card>
-        <CardHeader title='Product Videos' />
-        <CardContent>
-          <Grid container gap={7} xs={12} className='flex flex-col'>
-            <Grid item xs={12} className=''>
-              {productData.videos.map((video, index) => (
-                <Grid className='my-2' key={index}>
-                  {/* {console.log(img)} */}
-                  <CustomTextField
-                    fullWidth
-                    placeholder='Enter Vidoes Link'
-                    value={video.video_src}
-                    onChange={e => updateProductVideos(index, e.target.value)}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position='end'>
-                          {index > 0 && (
-                            <IconButton className='min-is-fit' onClick={() => deleteOption(index)}>
-                              <i className='tabler-x' />
-                            </IconButton>
-                          )}
-                        </InputAdornment>
-                      )
-                    }}
-                  />
-                </Grid>
-              ))}
-            </Grid>
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Card>
+          <CardHeader title='Product Videos' />
+          <CardContent>
+            <Grid container spacing={2} direction='column'>
+              <Grid item xs={12} className=''>
+                {productData.videos.map((video, index) => (
+                  <Grid className='my-2' key={index}>
+                    <CustomTextField
+                      fullWidth
+                      placeholder='Enter Vidoes Link'
+                      value={video.video_src}
+                      onChange={e => updateProductVideos(index, e.target.value)}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position='end'>
+                            {index > 0 && (
+                              <IconButton className='min-is-fit' onClick={() => deleteOption(index)}>
+                                <i className='tabler-x' />
+                              </IconButton>
+                            )}
+                          </InputAdornment>
+                        )
+                      }}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
 
-            <Grid>
-              {productData.videos.length < 5 && (
-                <Button
-                  variant='outlined'
-                  color='primary'
-                  onClick={() => addOption()}
-                  endIcon={<i className='tabler-plus' />}
-                >
-                  Add Video
-                </Button>
-              )}
+              <Grid>
+                {productData.videos.length < 5 && (
+                  <Button
+                    variant='outlined'
+                    color='primary'
+                    onClick={() => addOption()}
+                    endIcon={<i className='tabler-plus' />}
+                  >
+                    Add Video
+                  </Button>
+                )}
+              </Grid>
             </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </Grid>
     </Grid>
   )
 }

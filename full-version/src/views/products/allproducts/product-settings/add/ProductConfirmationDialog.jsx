@@ -9,24 +9,17 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import fetchData from '@/utils/fetchData'
-import { toast } from 'react-toastify'
-import { getLocalizedUrl } from '@/utils/i18n'
-import { useRouter, useParams } from 'next/navigation'
 
 // Third-party Imports
 import classnames from 'classnames'
 
-const ProductConfirmationDialog = ({ open, setOpen, type, id, status }) => {
+const ProductConfirmationDialog = ({ open, setOpen, type, status }) => {
   // States
   const [secondDialog, setSecondDialog] = useState(false)
   const [userInput, setUserInput] = useState(false)
 
-  const router = useRouter()
-  const { lang: locale } = useParams()
-
   // Vars
-  const Wrapper = type === 'suspend-brand' ? 'div' : Fragment
+  const Wrapper = type === 'suspend-product' ? 'div' : Fragment
 
   const handleSecondDialogClose = () => {
     setSecondDialog(false)
@@ -39,35 +32,20 @@ const ProductConfirmationDialog = ({ open, setOpen, type, id, status }) => {
     setOpen(false)
   }
 
-  const handleDeleteBrand = async () => {
-    try {
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/deleteBrand/${id}`
-      const responseData = await fetchData(apiUrl, 'DELETE', {})
-      console.log('API Response:', responseData)
-      if (responseData.success === true) {
-        setTimeout(() => router.push(getLocalizedUrl(`/products/brands`, locale)), 5000)
-        return toast.success(responseData.message)
-      }
-    } catch (error) {
-      console.error('API Error:', error)
-      toast.error(error.message || 'An Error occurred')
-    }
-  }
-
   return (
     <>
       <Dialog fullWidth maxWidth='xs' open={open} onClose={() => setOpen(false)}>
         <DialogContent className='flex items-center flex-col text-center sm:pbs-16 sm:pbe-6 sm:pli-16'>
           <i className='tabler-alert-circle text-[88px] mbe-6 text-warning' />
           <Wrapper
-            {...(type === 'suspend-brand' && {
+            {...(type === 'suspend-product' && {
               className: 'flex flex-col items-center gap-5'
             })}
           >
             <Typography variant='h5'>
               {status
-                ? 'Are you sure you want to Activate this brand?'
-                : 'Are you sure you want to deactivate this brand?'}
+                ? 'Are you sure you want to Activate this product?'
+                : 'Are you sure you want to deactivate this product?'}
             </Typography>
           </Wrapper>
         </DialogContent>
@@ -76,7 +54,6 @@ const ProductConfirmationDialog = ({ open, setOpen, type, id, status }) => {
             variant='contained'
             onClick={() => {
               handleConfirmation(true)
-              handleDeleteBrand()
             }}
           >
             Yes
@@ -93,7 +70,7 @@ const ProductConfirmationDialog = ({ open, setOpen, type, id, status }) => {
         </DialogActions>
       </Dialog>
 
-      {/* Delete brand Dialog */}
+      {/* Delete product Dialog */}
       <Dialog open={secondDialog} onClose={handleSecondDialogClose}>
         <DialogContent className='flex items-center flex-col text-center sm:pbs-16 sm:pbe-6 sm:pli-16'>
           <i
@@ -112,13 +89,13 @@ const ProductConfirmationDialog = ({ open, setOpen, type, id, status }) => {
               <>
                 <Typography>
                   {status
-                    ? 'This brand has been Deactivated successfully.'
-                    : 'This brand has been deactivated successfully.'}
+                    ? 'This product has been Deactivated successfully.'
+                    : 'This product has been deactivated successfully.'}
                 </Typography>
-                <Typography>You are going to redirect at brands page.</Typography>
+                <Typography>You are going to redirect at products page.</Typography>
               </>
             ) : (
-              <Typography>{status ? 'Brand Activation Cancelled!' : 'Brand Deactivation Cancelled!'}</Typography>
+              <Typography>{status ? 'product Activation Cancelled!' : 'product Deactivation Cancelled!'}</Typography>
             )}
           </Typography>
         </DialogContent>

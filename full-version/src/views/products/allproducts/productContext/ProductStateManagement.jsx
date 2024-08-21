@@ -11,7 +11,8 @@ export const ProductProvider = ({ children }) => {
     product_type: '',
     tags: [],
     type_standard: '',
-    published: ''
+    published: '',
+    is_deleted: false
   }
 
   const productChild = [
@@ -47,39 +48,29 @@ export const ProductProvider = ({ children }) => {
     child: productChild,
     meta: metafield,
     images: productImages,
-    videos: productVideos
+    videos: productVideos,
+    isEdit: false
   })
 
   const updateProductParent = updateData => {
-    // console.log(updateData, 'prodduccctttttt ypdaaatee')
-    const containData = { ...productData.parent }
-    // console.log(containData, 'conattaiiiiiiinnnnnnnnnn')
-    const updatedParent = { ...containData, ...updateData }
-    // console.log(updatedParent, 'updateeeee pareeentttt')
+    // const containData = { ...productData.parent }
+    // const updatedParent = { ...containData, ...updateData }
     setProductData(prevData => ({
       ...prevData,
-      parent: { ...updatedParent }
+      parent: { ...productData.parent, ...updateData }
     }))
   }
   const addProductMeta = updatedMetaData => {
-    // console.log(updatedMetaData, ' upmetforche')
-    // console.log(productData.meta, ' prevmetaforche')
     const addmeta = { ...productData.meta, ...updatedMetaData }
-    // console.log(addmeta, 'addmetsforcheck')
     setProductData(prevData => ({
       ...prevData,
-      // meta: { key: '', value: '' }
       meta: { ...addmeta }
     }))
   }
 
   const deleteProductMeta = index => {
-    // console.log(index, ' index')
     const containMeta = { ...productData.meta }
-    // console.log(containMeta, 'containnnnn')
-
     delete containMeta[index]
-    // console.log('Updated meta after deletion:', containMeta)
     setProductData(prevData => ({
       ...prevData,
       meta: { ...containMeta }
@@ -90,7 +81,6 @@ export const ProductProvider = ({ children }) => {
     const updatedImages = [...productData.images]
     if (index >= 0 && index < updatedImages.length) {
       updatedImages.splice(index, 1)
-      // updatedVideos[index].video_src = video_src
       setProductData(prevData => ({
         ...prevData,
         images: updatedImages
@@ -145,7 +135,10 @@ export const ProductProvider = ({ children }) => {
   }
 
   const updateChildData = updateData => {
-    setProductData(prevData => ({ ...prevData, child: updateData }))
+    setProductData(prevData => ({
+      ...prevData,
+      child: updateData
+    }))
   }
 
   return (

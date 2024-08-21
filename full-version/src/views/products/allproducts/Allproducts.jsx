@@ -22,7 +22,6 @@ const Allproducts = ({ allProductData }) => {
 
   return (
     <div>
-      {/* <ProductTable /> */}
       <ProductTableList tableData={tableData} totalProducts={totalProducts} />
     </div>
   )

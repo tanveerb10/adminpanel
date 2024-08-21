@@ -14,10 +14,11 @@ import Button from '@mui/material/Button'
 import { IconButton, InputAdornment, Typography } from '@mui/material'
 import CustomTextField from '@core/components/mui/TextField'
 import CustomControlledAutoComplete from '@/libs/components/CustomControlledAutoComplete'
-import VariantCombinationTable from './VariantCombinationTable'
-import debounce from 'lodash.debounce'
 import { useProduct } from '@/views/products/allproducts/productContext/ProductStateManagement'
-import { generateVariants } from './VariantCombinationTable'
+import {
+  generateVariants,
+  VariantCombinationTable
+} from '@/views/products/allproducts/product-settings/add/VariantCombinationTable'
 
 const revertVariants = variants => {
   const optionMap = {}
@@ -61,19 +62,14 @@ const ProductVariants = ({ isAddProduct }) => {
   ])
 
   const { productData, updateChildData } = useProduct()
-  console.log(productData.child, 'childdddddddddd')
   const initialVariants = productData.child
   const isEdit = productData.isEdit
-  console.log('Intial data in product variant', initialVariants.length)
   const [variantTableData, setVariantTableData] = useState([])
   const [isOptionChange, setoptionChange] = useState(false)
 
   useEffect(() => {
     if (isEdit) {
-      console.log(initialVariants, 'befroe revertssssssssssssssss')
-      console.log(initialVariants?.length)
       const data = revertVariants(initialVariants)
-      console.log(data, 'after revert data---------------------')
       setFormData(data)
     }
   }, [isEdit])
@@ -114,6 +110,7 @@ const ProductVariants = ({ isAddProduct }) => {
   const deleteForm = useCallback(optionIndex => {
     setFormData(prevFormData => prevFormData.filter((_, index) => index !== optionIndex))
   }, [])
+
   const variantInput = useCallback((e, optionIndex, variantIndex) => {
     setFormData(prevFormData => {
       const newFormData = [...prevFormData]

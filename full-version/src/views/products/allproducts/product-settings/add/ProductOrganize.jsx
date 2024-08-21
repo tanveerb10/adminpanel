@@ -6,13 +6,14 @@ import { MenuItem, CardContent, CardHeader, Card, Grid } from '@mui/material'
 // Component Imports
 import CustomTextField from '@core/components/mui/TextField'
 import CustomCheckboxAutocomplete from '@/libs/components/CustomCheckboxAutocomplete'
-import { useProduct } from '../../productContext/ProductStateManagement'
+import { useProduct } from '@views/products/allproducts/productContext/ProductStateManagement'
 import { TypeOfStandard } from '@/data/typeOfStandard/TypeOfStandard'
 import CustomAutocomplete from '@core/components/mui/Autocomplete'
 import { useFormContext, Controller } from 'react-hook-form'
 
 const ProductOrganize = ({ brandName }) => {
   const { productData, updateProductParent } = useProduct()
+
   const {
     control,
     formState: { errors }

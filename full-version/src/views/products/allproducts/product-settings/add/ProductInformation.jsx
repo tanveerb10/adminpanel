@@ -12,6 +12,7 @@ const RichTextEditor = dynamic(() => import('@/libs/RichTextEditor'), { ssr: fal
 
 const ProductInformation = () => {
   const { productData, updateProductParent } = useProduct()
+
   const {
     control,
     formState: { errors }
@@ -20,7 +21,7 @@ const ProductInformation = () => {
   const handleDescriptionChange = value => {
     updateProductParent({ product_description: value })
   }
-  console.log(productData, 'product data information')
+
   return (
     <Card>
       <CardHeader title='Product Information' />

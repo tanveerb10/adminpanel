@@ -21,7 +21,6 @@ const validationSchema = yup.object().shape({
     .positive('Inventory Quantity must be a positive number')
     .integer('Inventory Quantity must be an integer'),
   variant_compare_at_price: yup.number().positive('Compare At Price must be a positive number'),
-  // variant_tax: yup.string().required('Taxable status is required'),
   variant_height: yup.number().required('Height is required').positive('Height must be a positive number'),
   variant_length: yup.number().required('Length is required').positive('Length must be a positive number'),
   variant_width: yup.number().required('Width is required').positive('Width must be a positive number')

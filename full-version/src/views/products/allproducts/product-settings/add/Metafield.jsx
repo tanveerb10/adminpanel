@@ -2,8 +2,8 @@
 import React, { useState } from 'react'
 import { Button, Card, CardHeader, Grid } from '@mui/material'
 import CustomTextField from '@/@core/components/mui/TextField'
-import { useProduct } from '../../productContext/ProductStateManagement'
-import MetaTablePreview from './MetaTablePreview'
+import { useProduct } from '@views/products/allproducts/productContext/ProductStateManagement'
+import MetaTablePreview from '@views/products/allproducts/product-settings/add/MetaTablePreview'
 import { toast } from 'react-toastify'
 
 export default function Metafield() {

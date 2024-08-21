@@ -146,23 +146,8 @@ const VariantRow = ({ variant, selectedItems, handleSelectItems, index }) => {
     </>
   )
 }
-export default function VariantCombinationTable() {
+export const VariantCombinationTable = () => {
   const { productData } = useProduct()
-
-  // useEffect(() => {
-  //   // if (data?.length) {
-  //   console.log('------------------------------')
-  //   console.log(data, '..................DATAAAAAAAAAA')
-  //   console.log('------------------------------')
-  //   console.log(JSON.stringify(productData.child))
-  //   console.log('------------------------------')
-  //   console.log(data !== productData.child)
-  //   // console.log(isAddProduct || data?.length)
-  //   if (isAddProduct) {
-  //     updateChildData(generateVariants(data))
-  //     console.log('tanveer')
-  //   }
-  // }, [data])
 
   const [openStates, setOpenStates] = useState({})
   const [selectedItems, setSelectedItems] = useState({})

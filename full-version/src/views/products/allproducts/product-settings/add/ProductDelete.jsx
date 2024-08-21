@@ -1,18 +1,21 @@
 'use client'
 
 import { Typography, Button, CardContent, CardHeader, Card, Grid } from '@mui/material'
-import { useProduct } from '../../productContext/ProductStateManagement'
+import { useProduct } from '@views/products/allproducts/productContext/ProductStateManagement'
+
 const ProductDelete = () => {
   const { productData, updateProductParent } = useProduct()
+
   const currentStatus = productData.parent.is_deleted ? 'Deactivated' : 'Activated'
   const status = productData.parent.is_deleted
   const name = productData.parent.product_title
+
   const handleSubmit = () => {
-    console.log('tanveer')
     console.log(currentStatus)
     console.log(!status)
     updateProductParent({ is_deleted: !status })
   }
+
   return (
     <Card>
       <CardHeader title={`${currentStatus} product`} />

@@ -13,7 +13,7 @@ import {
   Typography
 } from '@mui/material'
 
-import { useProduct } from '../../productContext/ProductStateManagement'
+import { useProduct } from '@views/products/allproducts/productContext/ProductStateManagement'
 
 const columns = [
   { id: 'id', label: 'Sr.No', minWidth: 20 },

@@ -12,7 +12,7 @@ import ProductVariants from '@/views/products/allproducts/product-settings/add/P
 import ProductOrganize from '@/views/products/allproducts/product-settings/add/ProductOrganize'
 import Metafield from '@/views/products/allproducts/product-settings/add/Metafield'
 import ProductDelete from '@/views/products/allproducts/product-settings/add/ProductDelete'
-import { useProduct } from '../../productContext/ProductStateManagement'
+import { useProduct } from '@views/products/allproducts/productContext/ProductStateManagement'
 import { toast } from 'react-toastify'
 import fetchData from '@/utils/fetchData'
 
@@ -117,11 +117,11 @@ export default function ProductFormWrapper({ onSubmit, initialData, brandData, i
     console.log('clicked data', data)
 
     const formatData = productData.child.map(child => ({
-      // ...productData.parent,
       ...data,
       metafields: productData.meta,
       ...child
     }))
+
     const product = {
       products: formatData,
       images: productData.images,
@@ -160,10 +160,9 @@ export default function ProductFormWrapper({ onSubmit, initialData, brandData, i
 
   const { reset } = methods
 
-  // Use useEffect to reset form values when productData changes
   useEffect(() => {
     if (productData && productData.parent) {
-      reset(productData.parent) // Reset the form values when productData changes
+      reset(productData.parent)
     }
   }, [productData, reset])
 

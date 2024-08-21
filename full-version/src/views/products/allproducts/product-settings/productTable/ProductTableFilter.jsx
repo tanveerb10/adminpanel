@@ -37,8 +37,8 @@ const ProductTableFilter = ({ setData, tableData }) => {
             SelectProps={{ displayEmpty: true }}
           >
             <MenuItem value=''>Select Status</MenuItem>
-            <MenuItem value='active'>Active</MenuItem>
-            <MenuItem value='inactive'>Inactive</MenuItem>
+            <MenuItem value={false}>Active</MenuItem>
+            <MenuItem value={true}>Inactive</MenuItem>
           </CustomTextField>
         </Grid>
       </Grid>

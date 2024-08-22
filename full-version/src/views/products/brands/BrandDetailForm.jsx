@@ -3,14 +3,12 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-// import debounce from 'lodash.debounce'
+
 import { Card, CardContent, Button, Typography, Grid, MenuItem } from '@mui/material'
 import CustomTextField from '@core/components/mui/TextField'
 import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
-// import fetchData from '@/utils/fetchData'
-import fetchFormData from '@/utils/fetchFormData'
-
+import fetchData from '@/utils/fetchData'
 import { getLocalizedUrl } from '@/utils/i18n'
 import BrandDelete from '@views/products/brands/BrandDelete'
 
@@ -31,14 +29,15 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
   const validationSchema = yup.object().shape({
     brand_name: yup.string().required('Brand name is required'),
     brand_description: yup.string().required('Brand description is required'),
-    products_count: yup.number().required('Product count is required'),
+    // products_count: yup.number().positive().required('Product count is required'),
     sort_order: yup.string().required('Sort order is required'),
-    brand_image_src: yup.string(),
-    // brand_image_src: yup.string().required('Brand image is required'),
-    // is_deleted: yup.boolean().required('Is Deleted is required'),
-    is_deleted: yup.boolean(),
-    // brand_slug: yup.string(),
-    brand_image_alt: yup.string()
+
+    ...(isAddBrand
+      ? {}
+      : {
+          is_deleted: yup.boolean().required('Is Deleted is required'),
+          brand_image_alt: yup.string().required('imaga alt')
+        })
   })
 
   const {
@@ -77,56 +76,62 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
   const { id, lang: locale } = useParams()
   const router = useRouter()
 
-  const handleSlug = brandName => {
-    return brandName
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, '')
-      .replace(/\s+/g, '-')
-  }
+  // const handleSlug = brandName => {
+  //   return brandName
+  //     .toLowerCase()
+  //     .replace(/[^a-z0-9\s]/g, '')
+  //     .replace(/\s+/g, '-')
+  // }
   const handleFormSubmit = async data => {
+    console.log('tanveer')
     console.log('Form Submit called', data)
 
     // if (isAddBrand) {
     //   data.brand_slug = handleSlug(data.brand_name)
     // }
+
     try {
+      if (selectedFile === null) {
+        toast.error('Image is required')
+        return
+      }
       const formData = new FormData()
       formData.append('brand_name', data.brand_name)
-      formData.append('products_count', data.products_count)
       formData.append('brand_description', data.brand_description)
-      formData.append('is_deleted', data.is_deleted)
       formData.append('sort_order', data.sort_order)
-      formData.append('brand_image_alt', data.brand_image_alt)
-      // formData.append('brand_slug', data.brand_slug);
+      // formData.append('brand_slug', data.brand_slug)
 
       if (!isAddBrand) {
-        formData.append('brand_slug', data.brand_slug)
+        // formData.append('products_count', data.products_count)
+        formData.append('is_deleted', data.is_deleted)
+        formData.append('brand_image_alt', data.brand_image_alt)
+        // formData.append('brand_slug', data.brand_slug)
       }
 
       if (selectedFile) {
-        // formData.append('brand_image_src', selectedFile)
-        formData.append('brand_image_src', imgSrc) // org
+        formData.append('brand_image_src', selectedFile)
+        // formData.append('brand_image_src', imgSrc) // org
       } else if (!isAddBrand) {
         formData.append('brand_image_src', data.brand_image_src)
       }
 
-      console.log('Form Data:', data)
+      console.log('Form Data gahle wale:', data)
 
-      console.log('Form Data   arrraayyy:  ', Array.from(formData.entries()))
+      console.log('formimimimimi', formData)
       const apiUrl = isAddBrand
         ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/createBrand`
         : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/updateBrand/${id}`
-      console.log(formData, 'actuaalllll form')
-      const response = await fetchFormData(apiUrl, isAddBrand ? 'POST' : 'PUT', formData)
-      console.log('API Response:', response)
-      const result = await response.json()
-      console.log('API Response:', result)
 
-      if (!response.ok) {
+      const response = await fetchData(apiUrl, isAddBrand ? 'POST' : 'PUT', formData)
+      console.log('API Response:', response)
+      // const result = await response.json()
+      // console.log('API Response:', result)
+
+      if (!response.success) {
         console.log('error response', response.message)
         toast.error(response.message)
       }
-      if (response.success === true) {
+      if (response.success) {
         setTimeout(() => router.push(getLocalizedUrl(`/products/brands`, locale)), 3000)
         return toast.success(response.message)
       }
@@ -135,58 +140,6 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
       toast.error(error.message || 'An Error occurred')
     }
   }
-  // const handleFormSubmit = async data => {
-  //   console.log('Form Submit called')
-  //   try {
-  //     // if (isAddBrand) {
-  //     //   data.brand_slug = handleSlug(data.brand_name)
-  //     // }
-
-  //     const formData = new FormData()
-  //     formData.append('brand_name', data.brand_name)
-  //     formData.append('products_count', data.products_count)
-  //     formData.append('brand_description', data.brand_description)
-  //     formData.append('is_deleted', data.is_deleted)
-  //     formData.append('sort_order', data.sort_order)
-  //     formData.append('brand_image_alt', data.brand_image_alt)
-  //     // formData.append('brand_slug', data.brand_slug);
-
-  //     if (!isAddBrand) {
-  //       formData.append('brand_slug', data.brand_slug)
-  //     }
-
-  //     if (selectedFile) {
-  //       formData.append('brand_image_src', imgSrc)
-  //     } else if (!isAddBrand) {
-  //       formData.append('brand_image_src', data.brand_image_src)
-  //     }
-
-  //     console.log('Form Data:', data)
-
-  //     console.log('Form Data:', Array.from(formData.entries()))
-  //     const apiUrl = isAddBrand
-  //       ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/createBrand`
-  //       : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/updateBrand/${id}`
-  //     const response = await fetchFormData(apiUrl, isAddBrand ? 'POST' : 'PUT', formData)
-  //     console.log('API Response:', response)
-  //     const result = await response.json()
-  //     console.log('API Response:', result)
-
-  //     if (!response.ok) {
-  //       console.log('error response', response.message)
-  //       toast.error(response.message)
-  //     }
-  //     if (response.success === true) {
-  //       setTimeout(() => router.push(getLocalizedUrl(`/products/brands`, locale)), 3000)
-  //       return toast.success(response.message)
-  //     }
-  //   } catch (error) {
-  //     console.error('API Error:', error)
-  //     toast.error(error.message || 'An Error occurred')
-  //   }
-  // }
-  // console.log(imgSrc, 'img src ')
-  // console.log(selectedFile, 'selected file src ')
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
@@ -241,6 +194,7 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
                     <Controller
                       name='brand_slug'
                       control={control}
+                      disabled
                       render={({ field }) => (
                         <CustomTextField
                           {...field}
@@ -270,39 +224,43 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
                     )}
                   />
                 </Grid> */}
-                <Grid item xs={12} sm={6}>
-                  <Controller
-                    name='brand_image_alt'
-                    control={control}
-                    render={({ field }) => (
-                      <CustomTextField
-                        {...field}
-                        fullWidth
-                        label='Image Alt'
-                        placeholder='Image Alt'
-                        error={Boolean(errors.brand_image_alt)}
-                        helperText={errors.brand_image_alt?.message}
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Controller
-                    name='products_count'
-                    control={control}
-                    render={({ field }) => (
-                      <CustomTextField
-                        {...field}
-                        fullWidth
-                        type='number'
-                        label='Product Count'
-                        placeholder='Product Count'
-                        error={Boolean(errors.products_count)}
-                        helperText={errors.products_count?.message}
-                      />
-                    )}
-                  />
-                </Grid>
+                {!isAddBrand && (
+                  <Grid item xs={12} sm={6}>
+                    <Controller
+                      name='brand_image_alt'
+                      control={control}
+                      render={({ field }) => (
+                        <CustomTextField
+                          {...field}
+                          fullWidth
+                          label='Image Alt'
+                          placeholder='Image Alt'
+                          error={Boolean(errors.brand_image_alt)}
+                          helperText={errors.brand_image_alt?.message}
+                        />
+                      )}
+                    />
+                  </Grid>
+                )}
+                {/* {!isAddBrand && (
+                  <Grid item xs={12} sm={6}>
+                    <Controller
+                      name='products_count'
+                      control={control}
+                      render={({ field }) => (
+                        <CustomTextField
+                          {...field}
+                          fullWidth
+                          type='number'
+                          label='Product Count'
+                          placeholder='Product Count'
+                          error={Boolean(errors.products_count)}
+                          helperText={errors.products_count?.message}
+                        />
+                      )}
+                    />
+                  </Grid>
+                )} */}
                 {!isAddBrand && (
                   <Grid item xs={12} sm={6}>
                     <Controller

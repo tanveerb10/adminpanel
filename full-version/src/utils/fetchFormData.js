@@ -1,6 +1,7 @@
 import CryptoJS from 'crypto-js'
 import Cookies from 'js-cookie'
-import { convertFormDataIntoObject } from '@/utils/convertFormDataIntoObject'
+import { convertFormdataInObject } from '@/utils/convertFormdataInObject'
+
 const generateNonce = () => CryptoJS.lib.WordArray.random(16).toString()
 const generateTimestamp = () => Date.now().toString()
 const generateSignature = (payloaddata, secret, nonce, timestamp) => {
@@ -16,9 +17,10 @@ const fetchFormData = async (url, method = 'POST', formData) => {
     throw new Error('Secret key or token is not defined')
   }
 
-  const payloaddata = formData
-  // instanceof FormData ? convertFormDataIntoObject(formData) : formData
-  console.log(payloaddata, 'payyyyyyyyylllllllooooaaaddd')
+  const converted = convertFormdataInObject(formData)
+  const isFormData = formData instanceof FormData
+
+  const payloaddata = converted
   const nonce = generateNonce()
   const timestamp = generateTimestamp()
   const signature = generateSignature(JSON.stringify(payloaddata), secret, nonce, timestamp)

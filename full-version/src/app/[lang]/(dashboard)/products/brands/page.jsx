@@ -24,9 +24,7 @@ export default function page() {
     }
     fetchBrands()
   }, [])
-  // console.log(responseData)
 
- 
   if (loading) {
     return <div>Loading...</div>
   }

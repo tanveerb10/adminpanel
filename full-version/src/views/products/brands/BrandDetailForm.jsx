@@ -23,13 +23,11 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
     brand_image_alt: brandData?.brand?.brand_image_alt || '',
     brand_slug: brandData?.brand?.brand_slug
   }
-  // const [formData, setFormData] = useState(initialFormData)
   const [imgSrc, setImgSrc] = useState(initialFormData.brand_image_src)
   const [selectedFile, setSelectedFile] = useState(null)
   const validationSchema = yup.object().shape({
     brand_name: yup.string().required('Brand name is required'),
     brand_description: yup.string().required('Brand description is required'),
-    // products_count: yup.number().positive().required('Product count is required'),
     sort_order: yup.string().required('Sort order is required'),
 
     ...(isAddBrand
@@ -61,7 +59,6 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
     console.log(file, 'file')
     if (file) {
       setSelectedFile(file)
-      // setImgSrc(file)
       const reader = new FileReader()
       console.log({ reader })
       reader.onload = e => setImgSrc(e.target.result)
@@ -76,19 +73,9 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
   const { id, lang: locale } = useParams()
   const router = useRouter()
 
-  // const handleSlug = brandName => {
-  //   return brandName
-  //     .toLowerCase()
-  //     .replace(/[^a-z0-9\s]/g, '')
-  //     .replace(/\s+/g, '-')
-  // }
   const handleFormSubmit = async data => {
     console.log('tanveer')
     console.log('Form Submit called', data)
-
-    // if (isAddBrand) {
-    //   data.brand_slug = handleSlug(data.brand_name)
-    // }
 
     try {
       if (selectedFile === null) {
@@ -99,18 +86,13 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
       formData.append('brand_name', data.brand_name)
       formData.append('brand_description', data.brand_description)
       formData.append('sort_order', data.sort_order)
-      // formData.append('brand_slug', data.brand_slug)
-
       if (!isAddBrand) {
-        // formData.append('products_count', data.products_count)
         formData.append('is_deleted', data.is_deleted)
         formData.append('brand_image_alt', data.brand_image_alt)
-        // formData.append('brand_slug', data.brand_slug)
       }
 
       if (selectedFile) {
         formData.append('brand_image_src', selectedFile)
-        // formData.append('brand_image_src', imgSrc) // org
       } else if (!isAddBrand) {
         formData.append('brand_image_src', data.brand_image_src)
       }
@@ -124,9 +106,6 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
 
       const response = await fetchData(apiUrl, isAddBrand ? 'POST' : 'PUT', formData)
       console.log('API Response:', response)
-      // const result = await response.json()
-      // console.log('API Response:', result)
-
       if (!response.success) {
         console.log('error response', response.message)
         toast.error(response.message)
@@ -151,7 +130,6 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
                 <div className='flex flex-col sm:flex-row gap-4'>
                   <Button component='label' variant='contained' htmlFor='account-settings-upload-image'>
                     Upload New Photo
-                    {/* <form encType='multipart/form-data'> */}
                     <input
                       hidden
                       type='file'
@@ -159,7 +137,6 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
                       onChange={handleFileInputChange}
                       id='account-settings-upload-image'
                     />
-                    {/* </form> */}
                   </Button>
                   <Button variant='tonal' color='secondary' onClick={handleFileInputReset}>
                     Reset
@@ -184,7 +161,6 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
                         placeholder='Brand Name'
                         error={Boolean(errors.brand_name)}
                         helperText={errors.brand_name?.message}
-                        // onChange={handleSlug(e)}
                       />
                     )}
                   />
@@ -208,22 +184,6 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
                     />
                   </Grid>
                 )}
-                {/* <Grid item xs={12} sm={6}>
-                  <Controller
-                    name='brand_image_src'
-                    control={control}
-                    render={({ field }) => (
-                      <CustomTextField
-                        {...field}
-                        fullWidth
-                        label='Image Link'
-                        placeholder='Image Link'
-                        error={Boolean(errors.brand_image_src)}
-                        helperText={errors.brand_image_src?.message}
-                      />
-                    )}
-                  />
-                </Grid> */}
                 {!isAddBrand && (
                   <Grid item xs={12} sm={6}>
                     <Controller
@@ -242,25 +202,6 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
                     />
                   </Grid>
                 )}
-                {/* {!isAddBrand && (
-                  <Grid item xs={12} sm={6}>
-                    <Controller
-                      name='products_count'
-                      control={control}
-                      render={({ field }) => (
-                        <CustomTextField
-                          {...field}
-                          fullWidth
-                          type='number'
-                          label='Product Count'
-                          placeholder='Product Count'
-                          error={Boolean(errors.products_count)}
-                          helperText={errors.products_count?.message}
-                        />
-                      )}
-                    />
-                  </Grid>
-                )} */}
                 {!isAddBrand && (
                   <Grid item xs={12} sm={6}>
                     <Controller

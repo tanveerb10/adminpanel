@@ -15,7 +15,7 @@ export default function page() {
   console.log(id)
 
   useEffect(() => {
-    if (id !== 'addnewcategories') {
+    if (id !== 'addnewcategory') {
       const individualCategories = async () => {
         try {
           const getIndividualCategories = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/categories/${id}`
@@ -45,9 +45,9 @@ export default function page() {
     return <div>No data available</div>
   }
 
-  if (id === 'addnewcategories') {
+  if (id === 'addnewcategory') {
     return <CategoriesDetailForm isAddCategories={true} />
   }
 
-  return <CategoriesDetailForm CategoriesData={getIndividualData} />
+  return <CategoriesDetailForm categoryData={getIndividualData} />
 }

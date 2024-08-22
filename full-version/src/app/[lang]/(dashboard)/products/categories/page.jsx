@@ -4,16 +4,16 @@ import Categories from '@/views/products/Categories/Categories'
 import fetchData from '@/utils/fetchData'
 
 export default function page() {
-  const [CategoriesResponse, setCategoriesResponse] = useState([])
+  const [categoriesResponse, setCategoriesResponse] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const CategoriesUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/categories`
+        const categoriesUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/categories`
 
-        const responseData = await fetchData(CategoriesUrl, 'GET')
+        const responseData = await fetchData(categoriesUrl, 'GET')
         setCategoriesResponse(responseData)
       } catch (error) {
         console.log('error got', error.message)
@@ -33,11 +33,11 @@ export default function page() {
   if (error) {
     return <div>Error: {error}</div>
   }
-  console.log(CategoriesResponse, 'Categories all')
+  console.log(categoriesResponse, 'categories all')
 
   return (
     <div>
-      <Categories CategoriesData={CategoriesResponse} />
+      <Categories CategoriesData={categoriesResponse} />
     </div>
   )
 }

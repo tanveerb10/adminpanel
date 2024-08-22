@@ -37,7 +37,6 @@ import {
 
 // Component Imports
 import CategoriesTableFilter from '@views/products/Categories/CategoriesTableFilter'
-import OptionMenu from '@core/components/option-menu'
 import TablePaginationComponent from '@components/TablePaginationComponent'
 import CustomTextField from '@core/components/mui/TextField'
 import CustomAvatar from '@core/components/mui/Avatar'
@@ -89,18 +88,18 @@ const userStatusObj = {
   Inactive: 'secondary'
 }
 
-
 const truncateText = (text, maxLength) => {
-    if (text.length > maxLength) {
-      return text.substring(0, maxLength) + '...';
-    }
-    return text;
-};
-  
+  if (text.length > maxLength) {
+    return text.substring(0, maxLength) + '...'
+  }
+  return text
+}
+
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const CategoriesTableList = ({ tableData }) => {
+const CategoriesTableList = ({ tableData, totalCategories }) => {
+  console.log(tableData, 'table daata abhi walwa')
   // States
   const [rowSelection, setRowSelection] = useState({})
 
@@ -137,12 +136,12 @@ const CategoriesTableList = ({ tableData }) => {
           />
         )
       },
-      columnHelper.accessor('CategoriesId', {
+      columnHelper.accessor('categoryId', {
         header: 'Sr.no',
         cell: ({ row }) => (
           <div className='flex items-center gap-2'>
             <Typography className='capitalize' color='text.primary'>
-              {row.original.CategoriesId}
+              {row.original.categoryId}
             </Typography>
           </div>
         )
@@ -163,34 +162,33 @@ const CategoriesTableList = ({ tableData }) => {
 
       columnHelper.accessor('description', {
         header: 'Description',
-          cell: ({ row }) => {
-            const description = row.original.description;
-            const maxLength = 50; 
-            const truncatedDescription = truncateText(description, maxLength);
-            return (
-              <Typography
-                variant="body2"
-                color="text.primary"
-                style={{
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  display: '-webkit-box',
-                  WebkitBoxOrient: 'vertical',
-                  WebkitLineClamp: 2,
-                  wordBreak: 'break-word',
-                  whiteSpace: 'pre-wrap'
-                }}
-              >
-                {truncatedDescription}
-              </Typography>
-            );
-          }
-          }
-      ),
-      columnHelper.accessor('sortOrder', {
-        header: 'Sort Order',
-        cell: ({ row }) => <Typography>{row.original.sortOrder}</Typography>
+        cell: ({ row }) => {
+          const description = row.original.description
+          const maxLength = 50
+          const truncatedDescription = truncateText(description, maxLength)
+          return (
+            <Typography
+              variant='body2'
+              color='text.primary'
+              style={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: 2,
+                wordBreak: 'break-word',
+                whiteSpace: 'pre-wrap'
+              }}
+            >
+              {truncatedDescription}
+            </Typography>
+          )
+        }
       }),
+      // columnHelper.accessor('sortOrder', {
+      //   header: 'Sort Order',
+      //   cell: ({ row }) => <Typography>{row.original.sortOrder}</Typography>
+      // }),
       columnHelper.accessor('isDeleted', {
         header: 'Status',
         cell: ({ row }) => (
@@ -223,31 +221,16 @@ const CategoriesTableList = ({ tableData }) => {
       columnHelper.accessor('action', {
         header: 'Action',
         cell: ({ row }) => (
-          <div className='flex items-center'>
-            <IconButton>
-              <i className='tabler-trash text-[22px] text-textSecondary' />
-            </IconButton>
-            <IconButton>
-              <Link href={getLocalizedUrl(`/products/Categories/${row.original.id}`, locale)} className='flex'>
-                <i className='tabler-eye text-[22px] text-textSecondary' />
-              </Link>
-            </IconButton>
-            <OptionMenu
-              iconClassName='text-[22px] text-textSecondary'
-              options={[
-                {
-                  text: 'Download',
-                  icon: 'tabler-download text-[22px]',
-                  menuItemProps: { className: 'flex items-center gap-2 text-textSecondary' }
-                },
-                {
-                  text: 'Edit',
-                  icon: 'tabler-edit text-[22px]',
-                  menuItemProps: { className: 'flex items-center gap-2 text-textSecondary' }
-                }
-              ]}
-            />
-          </div>
+          // <div className='flex items-center'>
+          //   <IconButton>
+          //     <i className='tabler-trash text-[22px] text-textSecondary' />
+          //   </IconButton>
+          <IconButton>
+            <Link href={getLocalizedUrl(`/products/categories/${row.original.id}`, locale)} className='flex'>
+              <i className='tabler-edit text-[25px] text-textSecondary' />
+            </Link>
+          </IconButton>
+          // </div>
         ),
         enableSorting: false
       })
@@ -313,10 +296,9 @@ const CategoriesTableList = ({ tableData }) => {
           </CustomTextField>
 
           <div>
-                Total Categories:
-                {/* <Chip variant='outlined' label={totalAdmin} color='warning' size='small' className='ml-2' /> */}
-                <Chip variant='outlined' label="soon" color='warning' size='small' className='ml-2' />
-              </div>
+            Total Categories:
+            <Chip variant='outlined' label={totalCategories} color='warning' size='small' className='ml-2' />
+          </div>
 
           <div className='flex flex-col sm:flex-row is-full sm:is-auto items-start sm:items-center gap-4'>
             <DebouncedInput
@@ -336,9 +318,7 @@ const CategoriesTableList = ({ tableData }) => {
             <Button
               variant='contained'
               startIcon={<i className='tabler-plus' />}
-              // onClick={() => router.push(getLocalizedUrl(`/admin/adminusers/addadminuser`,locale))}
-
-              onClick={() => router.push(getLocalizedUrl(`/products/Categories/addnewCategories`, locale))}
+              onClick={() => router.push(getLocalizedUrl(`/products/categories/addnewcategory`, locale))}
               className='is-full sm:is-auto'
             >
               Add New Categories

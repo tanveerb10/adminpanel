@@ -85,22 +85,21 @@ const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...prop
 }
 
 const userStatusObj = {
-  Active: 'success',
-  Inactive: 'secondary'
+  Active: 'error',
+  Inactive: 'error'
 }
 
-
 const truncateText = (text, maxLength) => {
-    if (text.length > maxLength) {
-      return text.substring(0, maxLength) + '...';
-    }
-    return text;
-};
-  
+  if (text.length > maxLength) {
+    return text.substring(0, maxLength) + '...'
+  }
+  return text
+}
+
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const BrandTableList = ({ tableData }) => {
+const BrandTableList = ({ tableData, totalBrands }) => {
   // States
   const [rowSelection, setRowSelection] = useState({})
 
@@ -110,8 +109,6 @@ const BrandTableList = ({ tableData }) => {
   // Hooks
   const { lang: locale } = useParams()
   const router = useRouter()
-  const params = useParams()
-  const { id } = params // Destructure id from params
 
   const columns = useMemo(
     () => [
@@ -163,30 +160,29 @@ const BrandTableList = ({ tableData }) => {
 
       columnHelper.accessor('description', {
         header: 'Description',
-          cell: ({ row }) => {
-            const description = row.original.description;
-            const maxLength = 50; 
-            const truncatedDescription = truncateText(description, maxLength);
-            return (
-              <Typography
-                variant="body2"
-                color="text.primary"
-                style={{
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  display: '-webkit-box',
-                  WebkitBoxOrient: 'vertical',
-                  WebkitLineClamp: 2,
-                  wordBreak: 'break-word',
-                  whiteSpace: 'pre-wrap'
-                }}
-              >
-                {truncatedDescription}
-              </Typography>
-            );
-          }
-          }
-      ),
+        cell: ({ row }) => {
+          const description = row.original.description
+          const maxLength = 50
+          const truncatedDescription = truncateText(description, maxLength)
+          return (
+            <Typography
+              variant='body2'
+              color='text.primary'
+              style={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: 2,
+                wordBreak: 'break-word',
+                whiteSpace: 'pre-wrap'
+              }}
+            >
+              {truncatedDescription}
+            </Typography>
+          )
+        }
+      }),
       columnHelper.accessor('sortOrder', {
         header: 'Sort Order',
         cell: ({ row }) => <Typography>{row.original.sortOrder}</Typography>
@@ -198,8 +194,13 @@ const BrandTableList = ({ tableData }) => {
             <Chip
               variant='tonal'
               className='capitalize'
-              label={row.original.isDeleted ? 'Active' : 'Inactive'}
-              color={userStatusObj[row.original.isDeleted]}
+              label={row.original.isDeleted ? 'Inactive' : 'Active'}
+              // color={userStatusObj[row.original.isDeleted]}
+              //   color={statusO={
+              //     "Inactive" : 'error'
+
+              // }
+              // }
               size='small'
             />
           </div>
@@ -229,7 +230,7 @@ const BrandTableList = ({ tableData }) => {
             </IconButton>
             <IconButton>
               <Link href={getLocalizedUrl(`/products/brands/${row.original.id}`, locale)} className='flex'>
-                <i className='tabler-eye text-[22px] text-textSecondary' />
+                <i className='tabler-edit text-[22px] text-textSecondary' />
               </Link>
             </IconButton>
             <OptionMenu
@@ -313,10 +314,10 @@ const BrandTableList = ({ tableData }) => {
           </CustomTextField>
 
           <div>
-                Total Brands:
-                {/* <Chip variant='outlined' label={totalAdmin} color='warning' size='small' className='ml-2' /> */}
-                <Chip variant='outlined' label="soon" color='warning' size='small' className='ml-2' />
-              </div>
+            Total Brands:
+            {/* <Chip variant='outlined' label={totalAdmin} color='warning' size='small' className='ml-2' /> */}
+            <Chip variant='outlined' label={totalBrands} color='warning' size='small' className='ml-2' />
+          </div>
 
           <div className='flex flex-col sm:flex-row is-full sm:is-auto items-start sm:items-center gap-4'>
             <DebouncedInput
@@ -336,8 +337,6 @@ const BrandTableList = ({ tableData }) => {
             <Button
               variant='contained'
               startIcon={<i className='tabler-plus' />}
-              // onClick={() => router.push(getLocalizedUrl(`/admin/adminusers/addadminuser`,locale))}
-
               onClick={() => router.push(getLocalizedUrl(`/products/brands/addnewbrand`, locale))}
               className='is-full sm:is-auto'
             >

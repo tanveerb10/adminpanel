@@ -42,7 +42,6 @@ import {
 
 // Component Imports
 import CustomAvatar from '@core/components/mui/Avatar'
-import OptionMenu from '@core/components/option-menu'
 import CustomTextField from '@core/components/mui/TextField'
 import TablePaginationComponent from '@components/TablePaginationComponent'
 
@@ -88,35 +87,26 @@ const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...prop
   return <CustomTextField {...props} value={value} onChange={e => setValue(e.target.value)} />
 }
 
-// Vars
-// const userRoleObj = {
-//   admin: { icon: 'tabler-crown', color: 'primary' },
-//   author: { icon: 'tabler-device-desktop', color: 'error' },
-//   editor: { icon: 'tabler-edit', color: 'warning' },
-//   maintainer: { icon: 'tabler-chart-pie', color: 'info' },
-//   subscriber: { icon: 'tabler-user', color: 'success' }
-// }
-
 const userStatusObj = {
   active: 'success',
-  pending: 'warning',
   inactive: 'secondary'
 }
 
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const RolesTable = ({ tableData, totalAdmin, roleData }) => {
+const RolesTable = ({ tableData, totalRole, roleData }) => {
   // States
   const [role, setRole] = useState('')
   const [rowSelection, setRowSelection] = useState({})
+  const [openDialog, setOpenDialog] = useState(false)
 
   const [data, setData] = useState(...[tableData])
   const [globalFilter, setGlobalFilter] = useState('')
-
   // Hooks
   const { lang: locale } = useParams()
-
+  const passId = data.map(id => ({ id: id.id, name: id.name }))
+  console.log(passId)
   const columns = useMemo(
     () => [
       {
@@ -141,45 +131,33 @@ const RolesTable = ({ tableData, totalAdmin, roleData }) => {
           />
         )
       },
-      columnHelper.accessor('fullName', {
-        header: 'User',
+      columnHelper.accessor('id', {
+        header: 'Sr.no',
         cell: ({ row }) => (
           <div className='flex items-center gap-4'>
-            {getAvatar({ avatar: row.original.avatar, fullName: row.original.fullName })}
-            <div className='flex flex-col'>
-              <Typography className='font-medium' color='text.primary'>
-                {row.original.fullName}
-              </Typography>
-              <Typography variant='body2'>{row.original.email}</Typography>
-            </div>
-          </div>
-        )
-      }),
-      columnHelper.accessor('role', {
-        header: 'Role',
-        cell: ({ row }) => (
-          <div className='flex items-center gap-2'>
-            {/* <Icon
-              className={userRoleObj[row.original.role].icon}
-              sx={{ color: `var(--mui-palette-${userRoleObj[row.original.role].color}-main)`, fontSize: '1.375rem' }}
-            /> */}
-            <Typography className='capitalize' color='text.primary'>
-              {row.original.role}
+            <Typography className='font-medium' color='text.primary'>
+              {row.original.id}
             </Typography>
           </div>
         )
       }),
-      columnHelper.accessor('contact', {
-        header: 'contact',
+      columnHelper.accessor('name', {
+        header: 'Role',
         cell: ({ row }) => (
-          <Typography className='capitalize' color='text.primary'>
-            {row.original.contact}
-          </Typography>
+          <div className='flex items-center gap-2'>
+            <Typography className='capitalize' color='text.primary'>
+              {row.original.name}
+            </Typography>
+          </div>
         )
       }),
-      columnHelper.accessor('city', {
-        header: 'city',
-        cell: ({ row }) => <Typography className='capitalize'>{row.original.city}</Typography>
+      columnHelper.accessor('ability', {
+        header: 'Ability',
+        cell: ({ row }) => (
+          <Typography className='capitalize' color='text.primary'>
+            {row.original.abilityCount}
+          </Typography>
+        )
       }),
       columnHelper.accessor('status', {
         header: 'Status',
@@ -197,31 +175,16 @@ const RolesTable = ({ tableData, totalAdmin, roleData }) => {
       }),
       columnHelper.accessor('action', {
         header: 'Actions',
-        cell: () => (
+        cell: ({ row }) => (
           <div className='flex items-center'>
             <IconButton>
               <i className='tabler-trash text-[22px] text-textSecondary' />
             </IconButton>
             <IconButton>
-              <Link href={getLocalizedUrl('apps/user/view', locale)} className='flex'>
-                <i className='tabler-eye text-[22px] text-textSecondary' />
+              <Link href={getLocalizedUrl(`admin/adminroles/${row.original.roleId}`, locale)} className='flex'>
+                <i className='tabler-edit text-[25px] text-textSecondary' />
               </Link>
             </IconButton>
-            <OptionMenu
-              iconClassName='text-[22px] text-textSecondary'
-              options={[
-                {
-                  text: 'Download',
-                  icon: 'tabler-download text-[22px]',
-                  menuItemProps: { className: 'flex items-center gap-2 text-textSecondary' }
-                },
-                {
-                  text: 'Edit',
-                  icon: 'tabler-edit text-[22px]',
-                  menuItemProps: { className: 'flex items-center gap-2 text-textSecondary' }
-                }
-              ]}
-            />
           </div>
         ),
         enableSorting: false
@@ -309,9 +272,9 @@ const RolesTable = ({ tableData, totalAdmin, roleData }) => {
             <MenuItem value='50'>50</MenuItem>
           </CustomTextField>
         </div>
-        <div>
-          Total Admins:
-          <Chip variant='outlined' icon={totalAdmin} label={totalAdmin} color='warning' size='small' className='ml-2' />
+        <div className='flex flex-row items-center'>
+          <Typography variant='h6'>Total Roles:</Typography>
+          <Chip variant='outlined' label={totalRole} color='primary' size='medium' className='ml-2' />
         </div>
         <div className='flex gap-4 flex-col !items-start is-full sm:flex-row sm:is-auto sm:items-center'>
           <DebouncedInput

@@ -15,7 +15,6 @@ import OpenDialogOnElementClick from '@components/dialogs/OpenDialogOnElementCli
 import Link from '@components/Link'
 
 const RoleCards = ({ cardData }) => {
-  console.log({cardData})
   // Vars
   const typographyProps = {
     children: 'Edit Role',
@@ -55,7 +54,9 @@ const RoleCards = ({ cardData }) => {
                 </div>
                 <div className='flex justify-between items-center'>
                   <div className='flex flex-col items-start gap-1'>
-                    <Typography variant='h5'>{item.title}</Typography>
+                    <Typography variant='h5' className='capitalize'>
+                      {item.title}
+                    </Typography>
                     <OpenDialogOnElementClick
                       element={Typography}
                       elementProps={typographyProps}

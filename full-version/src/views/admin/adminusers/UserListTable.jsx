@@ -100,7 +100,7 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
   const [globalFilter, setGlobalFilter] = useState('')
 
   // Hooks
-  const {lang : locale} = useParams()
+  const { lang: locale } = useParams()
   const router = useRouter()
   // const { id } = params // Destructure id from params
 
@@ -137,7 +137,7 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
               <Typography color='text.primary' className='font-medium'>
                 {row.original.fullName}
               </Typography>
-              <Typography variant='body2'>{row.original.username}</Typography>
+              <Typography variant='body2'>{row.original.email}</Typography>
             </div>
           </div>
         )
@@ -186,10 +186,7 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
               <i className='tabler-trash text-[22px] text-textSecondary' />
             </IconButton>
             <IconButton>
-              <Link
-                href={getLocalizedUrl(`/admin/adminusers/${row.original.id}`, locale)}
-                className='flex'
-              >
+              <Link href={getLocalizedUrl(`/admin/adminusers/${row.original.id}`, locale)} className='flex'>
                 <i className='tabler-eye text-[22px] text-textSecondary' />
               </Link>
             </IconButton>
@@ -297,8 +294,8 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
               variant='contained'
               startIcon={<i className='tabler-plus' />}
               // onClick={() => router.push(getLocalizedUrl(`/admin/adminusers/addadminuser`,locale))}
-              
-              onClick={() => router.push(getLocalizedUrl(`/admin/adminusers/addadminuser`,locale))}
+
+              onClick={() => router.push(getLocalizedUrl(`/admin/adminusers/addadminuser`, locale))}
               className='is-full sm:is-auto'
             >
               Add New User

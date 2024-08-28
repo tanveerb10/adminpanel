@@ -37,7 +37,7 @@ const columns = [
   }
 ]
 
-export default function BulkHistoryTable({ callAgain }) {
+export default function InventoryHistoryTable({ callAgain }) {
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [historyLogData, setHistoryLogData] = useState(null)
@@ -87,6 +87,7 @@ export default function BulkHistoryTable({ callAgain }) {
     username: data.admin_id ? data.admin_id.firstname : 'Unknown'
   }))
   if (tableLog.length === 0) {
+    // console.log('history null')
     return <div>There is no history data log</div>
   }
   console.log(tableLog, 'table log')

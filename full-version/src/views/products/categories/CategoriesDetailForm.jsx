@@ -113,7 +113,7 @@ const CategoriesDetailForm = ({ isAddCategories, categoryData }) => {
         formData.append('category_image_src', data.category_image_src)
       }
 
-      const response = await fetchData(apiUrl, isAddCategories ? 'POST' : 'PUT', formData)
+      const response = await fetchData(apiUrl, isAddCategories ? 'POST' : 'PUT', formData,'image')
 
       console.log('API Response:', response)
 

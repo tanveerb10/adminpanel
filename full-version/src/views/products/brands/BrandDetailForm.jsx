@@ -107,7 +107,7 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
         ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/createBrand`
         : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/updateBrand/${id}`
 
-      const response = await fetchData(apiUrl, isAddBrand ? 'POST' : 'PUT', formData)
+      const response = await fetchData(apiUrl, isAddBrand ? 'POST' : 'PUT', formData,'image')
       console.log('API Response:', response)
 
       if (!response.success) {

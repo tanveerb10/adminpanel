@@ -2,9 +2,6 @@ import CryptoJS from 'crypto-js'
 import Cookies from 'js-cookie'
 import { convertFormdataInObject } from '@/utils/convertFormdataInObject'
 
-import { convertFormdataInObject } from '@/utils/convertFormdataInObject'
-
-
 const generateNonce = () => CryptoJS.lib.WordArray.random(16).toString()
 const generateTimestamp = () => Date.now().toString()
 const generateSignature = (payloaddata, secret, nonce, timestamp) => {
@@ -12,16 +9,12 @@ const generateSignature = (payloaddata, secret, nonce, timestamp) => {
   return CryptoJS.HmacSHA256(payload, secret).toString(CryptoJS.enc.Hex)
 }
 
-const fetchData = async (url, method = 'GET', data = null) => {
+const fetchData = async (url, method = 'GET', data = null, type="default") => {
   const secret = process.env.NEXT_PUBLIC_SECRET_KEY || ''
   const token = Cookies.get('accessToken')
 
-  if (!secret) {
-    throw new Error('Secret key is not defined')
-  }
-
-  if (!token) {
-    throw new Error('Token is not defined')
+  if (!secret || !token) {
+    throw new Error('Secret key or token is not defined')
   }
 
   const isFormData = data instanceof FormData
@@ -29,7 +22,7 @@ const fetchData = async (url, method = 'GET', data = null) => {
   let signPayload
 
   if (isFormData) {
-    signPayload = convertFormdataInObject(data)
+    signPayload = convertFormdataInObject(data, type)
   } else {
     signPayload = data
   }
@@ -42,7 +35,6 @@ const fetchData = async (url, method = 'GET', data = null) => {
   const signature = generateSignature(payloaddata, secret, nonce, timestamp)
 
   const headers = {
-
     'livein-key': 'livein-key',
     Nonce: nonce,
     Timestamp: timestamp,
@@ -57,7 +49,6 @@ const fetchData = async (url, method = 'GET', data = null) => {
     method,
     headers,
     body: method !== 'GET' ? (isFormData ? data : payloaddata) : null
-
   }
   try {
     const response = await fetch(url, requestOptions)

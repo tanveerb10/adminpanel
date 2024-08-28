@@ -4,7 +4,7 @@ import AppReactDropzone from '@/libs/styles/AppReactDropzone'
 import { Button } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
 
-const BulkDropzone = ({ onDrop, loading }) => {
+const ProjectDropZone = ({ onDrop, loading }) => {
   const { getRootProps, getInputProps, acceptedFiles, isDragActive, open } = useDropzone({
     multiple: false,
 
@@ -45,4 +45,4 @@ const BulkDropzone = ({ onDrop, loading }) => {
   )
 }
 
-export default BulkDropzone
+export default ProjectDropZone

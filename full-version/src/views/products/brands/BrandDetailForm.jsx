@@ -3,7 +3,6 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-
 import { Card, CardContent, Button, Typography, Grid, MenuItem } from '@mui/material'
 import CustomTextField from '@core/components/mui/TextField'
 import { useParams, useRouter } from 'next/navigation'
@@ -21,6 +20,7 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
     is_deleted: brandData?.brand?.is_deleted || false,
     sort_order: brandData?.brand?.sort_order || '',
     brand_image_alt: brandData?.brand?.brand_image_alt || '',
+
     brand_slug: brandData?.brand?.brand_slug
   }
   const [imgSrc, setImgSrc] = useState(initialFormData.brand_image_src)
@@ -28,6 +28,7 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
   const validationSchema = yup.object().shape({
     brand_name: yup.string().required('Brand name is required'),
     brand_description: yup.string().required('Brand description is required'),
+
     sort_order: yup.string().required('Sort order is required'),
 
     ...(isAddBrand
@@ -73,6 +74,7 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
   const { id, lang: locale } = useParams()
   const router = useRouter()
 
+
   const handleFormSubmit = async data => {
     console.log('tanveer')
     console.log('Form Submit called', data)
@@ -93,6 +95,7 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
 
       if (selectedFile) {
         formData.append('brand_image_src', selectedFile)
+
       } else if (!isAddBrand) {
         formData.append('brand_image_src', data.brand_image_src)
       }
@@ -100,17 +103,20 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
       console.log('Form Data gahle wale:', data)
 
       console.log('formimimimimi', formData)
+
       const apiUrl = isAddBrand
         ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/createBrand`
         : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/updateBrand/${id}`
 
       const response = await fetchData(apiUrl, isAddBrand ? 'POST' : 'PUT', formData)
       console.log('API Response:', response)
+
       if (!response.success) {
         console.log('error response', response.message)
         toast.error(response.message)
       }
       if (response.success) {
+
         setTimeout(() => router.push(getLocalizedUrl(`/products/brands`, locale)), 3000)
         return toast.success(response.message)
       }
@@ -170,7 +176,9 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
                     <Controller
                       name='brand_slug'
                       control={control}
+
                       disabled
+
                       render={({ field }) => (
                         <CustomTextField
                           {...field}
@@ -202,6 +210,7 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
                     />
                   </Grid>
                 )}
+
                 {!isAddBrand && (
                   <Grid item xs={12} sm={6}>
                     <Controller

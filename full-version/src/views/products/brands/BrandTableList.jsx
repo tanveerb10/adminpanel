@@ -196,6 +196,7 @@ const BrandTableList = ({ tableData, totalBrands }) => {
               className='capitalize'
               label={row.original.isDeleted ? 'Inactive' : 'Active'}
               // color={userStatusObj[row.original.isDeleted]}
+
               //   color={statusO={
               //     "Inactive" : 'error'
 
@@ -314,10 +315,12 @@ const BrandTableList = ({ tableData, totalBrands }) => {
           </CustomTextField>
 
           <div>
+
             Total Brands:
             {/* <Chip variant='outlined' label={totalAdmin} color='warning' size='small' className='ml-2' /> */}
             <Chip variant='outlined' label={totalBrands} color='warning' size='small' className='ml-2' />
           </div>
+
 
           <div className='flex flex-col sm:flex-row is-full sm:is-auto items-start sm:items-center gap-4'>
             <DebouncedInput

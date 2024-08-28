@@ -74,7 +74,6 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
   const { id, lang: locale } = useParams()
   const router = useRouter()
 
-
   const handleFormSubmit = async data => {
     console.log('tanveer')
     console.log('Form Submit called', data)
@@ -176,9 +175,7 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
                     <Controller
                       name='brand_slug'
                       control={control}
-
                       disabled
-
                       render={({ field }) => (
                         <CustomTextField
                           {...field}

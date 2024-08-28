@@ -41,7 +41,6 @@ const BrandConfirmationDialog = ({ open, setOpen, type, id, status }) => {
 
   const handleDeleteBrand = async () => {
     try {
-
       const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/deactivateBrand/${id}`
       const responseData = await fetchData(apiUrl, 'POST', {})
 

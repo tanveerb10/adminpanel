@@ -2,6 +2,9 @@ import CryptoJS from 'crypto-js'
 import Cookies from 'js-cookie'
 import { convertFormdataInObject } from '@/utils/convertFormdataInObject'
 
+import { convertFormdataInObject } from '@/utils/convertFormdataInObject'
+
+
 const generateNonce = () => CryptoJS.lib.WordArray.random(16).toString()
 const generateTimestamp = () => Date.now().toString()
 const generateSignature = (payloaddata, secret, nonce, timestamp) => {
@@ -33,11 +36,13 @@ const fetchData = async (url, method = 'GET', data = null) => {
   console.log(signPayload, 'signpayloaddddddd')
   console.log(data, 'normallll datataatatata')
   const payloaddata = data ? JSON.stringify(signPayload) : JSON.stringify({})
+
   const nonce = generateNonce()
   const timestamp = generateTimestamp()
   const signature = generateSignature(payloaddata, secret, nonce, timestamp)
 
   const headers = {
+
     'livein-key': 'livein-key',
     Nonce: nonce,
     Timestamp: timestamp,
@@ -52,6 +57,7 @@ const fetchData = async (url, method = 'GET', data = null) => {
     method,
     headers,
     body: method !== 'GET' ? (isFormData ? data : payloaddata) : null
+
   }
   try {
     const response = await fetch(url, requestOptions)

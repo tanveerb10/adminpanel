@@ -36,8 +36,7 @@ import {
 } from '@tanstack/react-table'
 
 // Component Imports
-import BrandTableFilter from '@views/products/brands/BrandTableFilter'
-import OptionMenu from '@core/components/option-menu'
+import CategoriesTableFilter from '@views/products/Categories/CategoriesTableFilter'
 import TablePaginationComponent from '@components/TablePaginationComponent'
 import CustomTextField from '@core/components/mui/TextField'
 import CustomAvatar from '@core/components/mui/Avatar'
@@ -85,8 +84,8 @@ const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...prop
 }
 
 const userStatusObj = {
-  Active: 'error',
-  Inactive: 'error'
+  Active: 'success',
+  Inactive: 'secondary'
 }
 
 const truncateText = (text, maxLength) => {
@@ -99,7 +98,8 @@ const truncateText = (text, maxLength) => {
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const BrandTableList = ({ tableData, totalBrands }) => {
+const CategoriesTableList = ({ tableData, totalCategories }) => {
+  console.log(tableData, 'table daata abhi walwa')
   // States
   const [rowSelection, setRowSelection] = useState({})
 
@@ -109,6 +109,8 @@ const BrandTableList = ({ tableData, totalBrands }) => {
   // Hooks
   const { lang: locale } = useParams()
   const router = useRouter()
+  const params = useParams()
+  const { id } = params // Destructure id from params
 
   const columns = useMemo(
     () => [
@@ -134,12 +136,12 @@ const BrandTableList = ({ tableData, totalBrands }) => {
           />
         )
       },
-      columnHelper.accessor('brandId', {
+      columnHelper.accessor('categoryId', {
         header: 'Sr.no',
         cell: ({ row }) => (
           <div className='flex items-center gap-2'>
             <Typography className='capitalize' color='text.primary'>
-              {row.original.brandId}
+              {row.original.categoryId}
             </Typography>
           </div>
         )
@@ -183,10 +185,10 @@ const BrandTableList = ({ tableData, totalBrands }) => {
           )
         }
       }),
-      columnHelper.accessor('sortOrder', {
-        header: 'Sort Order',
-        cell: ({ row }) => <Typography>{row.original.sortOrder}</Typography>
-      }),
+      // columnHelper.accessor('sortOrder', {
+      //   header: 'Sort Order',
+      //   cell: ({ row }) => <Typography>{row.original.sortOrder}</Typography>
+      // }),
       columnHelper.accessor('isDeleted', {
         header: 'Status',
         cell: ({ row }) => (
@@ -194,13 +196,8 @@ const BrandTableList = ({ tableData, totalBrands }) => {
             <Chip
               variant='tonal'
               className='capitalize'
-              label={row.original.isDeleted ? 'Inactive' : 'Active'}
-              // color={userStatusObj[row.original.isDeleted]}
-              //   color={statusO={
-              //     "Inactive" : 'error'
-
-              // }
-              // }
+              label={row.original.isDeleted ? 'Active' : 'Inactive'}
+              color={userStatusObj[row.original.isDeleted]}
               size='small'
             />
           </div>
@@ -224,31 +221,16 @@ const BrandTableList = ({ tableData, totalBrands }) => {
       columnHelper.accessor('action', {
         header: 'Action',
         cell: ({ row }) => (
-          <div className='flex items-center'>
-            <IconButton>
-              <i className='tabler-trash text-[22px] text-textSecondary' />
-            </IconButton>
-            <IconButton>
-              <Link href={getLocalizedUrl(`/products/brands/${row.original.id}`, locale)} className='flex'>
-                <i className='tabler-edit text-[22px] text-textSecondary' />
-              </Link>
-            </IconButton>
-            <OptionMenu
-              iconClassName='text-[22px] text-textSecondary'
-              options={[
-                {
-                  text: 'Download',
-                  icon: 'tabler-download text-[22px]',
-                  menuItemProps: { className: 'flex items-center gap-2 text-textSecondary' }
-                },
-                {
-                  text: 'Edit',
-                  icon: 'tabler-edit text-[22px]',
-                  menuItemProps: { className: 'flex items-center gap-2 text-textSecondary' }
-                }
-              ]}
-            />
-          </div>
+          // <div className='flex items-center'>
+          //   <IconButton>
+          //     <i className='tabler-trash text-[22px] text-textSecondary' />
+          //   </IconButton>
+          <IconButton>
+            <Link href={getLocalizedUrl(`/products/categories/${row.original.id}`, locale)} className='flex'>
+              <i className='tabler-edit text-[25px] text-textSecondary' />
+            </Link>
+          </IconButton>
+          // </div>
         ),
         enableSorting: false
       })
@@ -300,7 +282,7 @@ const BrandTableList = ({ tableData, totalBrands }) => {
     <>
       <Card>
         <CardHeader title='Filters' className='pbe-4' />
-        <BrandTableFilter setData={setData} tableData={tableData} />
+        <CategoriesTableFilter setData={setData} tableData={tableData} />
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select
@@ -312,12 +294,11 @@ const BrandTableList = ({ tableData, totalBrands }) => {
             <MenuItem value='25'>25</MenuItem>
             <MenuItem value='50'>50</MenuItem>
           </CustomTextField>
-          <div>
-            Total Brands:
-            {/* <Chip variant='outlined' label={totalAdmin} color='warning' size='small' className='ml-2' /> */}
-            <Chip variant='outlined' label={totalBrands} color='warning' size='small' className='ml-2' />
-          </div>
 
+          <div>
+            Total Categories:
+            <Chip variant='outlined' label={totalCategories} color='warning' size='small' className='ml-2' />
+          </div>
 
           <div className='flex flex-col sm:flex-row is-full sm:is-auto items-start sm:items-center gap-4'>
             <DebouncedInput
@@ -337,10 +318,10 @@ const BrandTableList = ({ tableData, totalBrands }) => {
             <Button
               variant='contained'
               startIcon={<i className='tabler-plus' />}
-              onClick={() => router.push(getLocalizedUrl(`/products/brands/addnewbrand`, locale))}
+              onClick={() => router.push(getLocalizedUrl(`/products/categories/addnewcategory`, locale))}
               className='is-full sm:is-auto'
             >
-              Add New Brand
+              Add New Categories
             </Button>
           </div>
         </div>
@@ -413,4 +394,4 @@ const BrandTableList = ({ tableData, totalBrands }) => {
   )
 }
 
-export default BrandTableList
+export default CategoriesTableList

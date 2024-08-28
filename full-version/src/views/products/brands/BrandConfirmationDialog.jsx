@@ -43,6 +43,7 @@ const BrandConfirmationDialog = ({ open, setOpen, type, id, status }) => {
     try {
       const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/deactivateBrand/${id}`
       const responseData = await fetchData(apiUrl, 'POST', {})
+
       console.log('API Response:', responseData)
       if (responseData.success === true) {
         setTimeout(() => router.push(getLocalizedUrl(`/products/brands`, locale)), 5000)
@@ -69,6 +70,7 @@ const BrandConfirmationDialog = ({ open, setOpen, type, id, status }) => {
                 ? 'Are you sure you want to Activate this brand?'
                 : 'Are you sure you want to deactivate this brand?'}
             </Typography>
+
           </Wrapper>
         </DialogContent>
         <DialogActions className='justify-center pbs-0 sm:pbe-16 sm:pli-16'>
@@ -105,7 +107,9 @@ const BrandConfirmationDialog = ({ open, setOpen, type, id, status }) => {
             })}
           />
           <Typography variant='h3' className='mbe-5'>
+
             {status ? 'Activated' : 'Deactivated'}
+
           </Typography>
           <Typography color='text.primary' variant='h5'>
             {userInput ? (
@@ -119,6 +123,7 @@ const BrandConfirmationDialog = ({ open, setOpen, type, id, status }) => {
               </>
             ) : (
               <Typography>{status ? 'Brand Activation Cancelled!' : 'Brand Deactivation Cancelled!'}</Typography>
+
             )}
           </Typography>
         </DialogContent>

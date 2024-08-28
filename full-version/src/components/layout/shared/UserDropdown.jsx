@@ -19,15 +19,16 @@ import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
 import Button from '@mui/material/Button'
-
-// Third-party Imports
-// import { signOut, useSession } from 'next-auth/react'
-
+import { useAuth } from '@/contexts/AuthContext'
+import fetchData from '@/utils/fetchData'
+import { toast } from 'react-toastify'
 // Hook Imports
 import { useSettings } from '@core/hooks/useSettings'
 
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
+
+import { deleteCookie } from 'cookies-next'
 
 // Styled component for badge content
 const BadgeContentSpan = styled('span')({
@@ -48,7 +49,6 @@ const UserDropdown = () => {
 
   // Hooks
   const router = useRouter()
-  // const { data: session } = useSession()
   const { settings } = useSettings()
   const { lang: locale } = useParams()
 
@@ -67,19 +67,26 @@ const UserDropdown = () => {
 
     setOpen(false)
   }
+  const { role, email, userId } = useAuth()
+  console.log(role, email, 'role check')
 
   const handleUserLogout = async () => {
     try {
-      // Sign out from the app
-      await signOut({ redirect: false })
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/logout/${userId}`
+      const responseData = await fetchData(apiUrl, 'POST', {})
 
-      // Redirect to login page
-      router.push(getLocalizedUrl('/login', locale))
+      console.log('API Response:', responseData)
+      if (responseData.success === true) {
+        // setCookie('accessToken', '')
+        deleteCookie('accessToken')
+        deleteCookie('refreshToken')
+        // setCookie('refreshToken', '')
+        router.push(getLocalizedUrl('/login', locale))
+        return toast.success(responseData.message)
+      }
     } catch (error) {
       console.error(error)
-
-      // Show above error in a toast like following
-      // toastService.error((err as Error).message)
+      toast.error(error.message || 'An Error occurred')
     }
   }
 
@@ -119,12 +126,12 @@ const UserDropdown = () => {
               <ClickAwayListener onClickAway={e => handleDropdownClose(e)}>
                 <MenuList>
                   <div className='flex items-center plb-2 pli-6 gap-2' tabIndex={-1}>
-                    <Avatar alt={session?.user?.name || ''} src={session?.user?.image || ''} />
+                    <Avatar alt={'test name'} src={'testname'} />
                     <div className='flex items-start flex-col'>
                       <Typography className='font-medium' color='text.primary'>
-                        {session?.user?.name || ''}
+                        {'test nameeeee'}
                       </Typography>
-                      <Typography variant='caption'>{session?.user?.email || ''}</Typography>
+                      <Typography variant='caption'>{email || ''}</Typography>
                     </div>
                   </div>
                   <Divider className='mlb-1' />
@@ -151,7 +158,7 @@ const UserDropdown = () => {
                       color='error'
                       size='small'
                       endIcon={<i className='tabler-logout' />}
-                      // onClick={handleUserLogout}
+                      onClick={handleUserLogout}
                       sx={{ '& .MuiButton-endIcon': { marginInlineStart: 1.5 } }}
                     >
                       Logout

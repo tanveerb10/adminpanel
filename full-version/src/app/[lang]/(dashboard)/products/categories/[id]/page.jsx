@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import BrandDetailForm from '@/views/products/brands/BrandDetailForm'
+import CategoriesDetailForm from '@/views/products/Categories/CategoriesDetailForm'
 import { useAuth } from '@/contexts/AuthContext'
 import fetchData from '@/utils/fetchData'
 import { useParams, useRouter } from 'next/navigation'
@@ -15,11 +15,11 @@ export default function page() {
   console.log(id)
 
   useEffect(() => {
-    if (id !== 'addnewbrand') {
-      const individualBrand = async () => {
+    if (id !== 'addnewcategory') {
+      const individualCategories = async () => {
         try {
-          const getIndividualBrand = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/getbrand/${id}`
-          const responseData = await fetchData(getIndividualBrand, 'GET')
+          const getIndividualCategories = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/categories/${id}`
+          const responseData = await fetchData(getIndividualCategories, 'GET')
           setGetIndividualData(responseData)
         } catch (error) {
           setError(error)
@@ -27,7 +27,7 @@ export default function page() {
           setLoading(false)
         }
       }
-      individualBrand()
+      individualCategories()
     } else {
       setLoading(false)
     }
@@ -45,9 +45,9 @@ export default function page() {
     return <div>No data available</div>
   }
 
-  if (id === 'addnewbrand') {
-    return <BrandDetailForm isAddBrand={true} />
+  if (id === 'addnewcategory') {
+    return <CategoriesDetailForm isAddCategories={true} />
   }
 
-  return <BrandDetailForm brandData={getIndividualData} />
+  return <CategoriesDetailForm categoryData={getIndividualData} />
 }

@@ -15,24 +15,24 @@ export default function page() {
 
         const responseData = await fetchData(brandUrl, 'GET')
         setBrands(responseData)
-      } catch (error) {
-        console.log('error got', error.message)
-        setError(error)
+      } catch (err) {
+        console.log('Error received:', err)
+        setError(err)
       } finally {
         setLoading(false)
       }
     }
     fetchBrands()
   }, [])
-  // console.log(responseData)
 
   if (loading) {
     return <div>Loading...</div>
   }
 
   if (error) {
-    return <div>Error: {error}</div>
+    return <div>Error: {error.message || 'An unknown error occurred.'}</div>
   }
+
   console.log(brands, 'brands all')
 
   return (

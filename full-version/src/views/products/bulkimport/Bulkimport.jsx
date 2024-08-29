@@ -8,7 +8,7 @@ import BulkHistoryTable from './BulkHistoryTable'
 import fetchFormData from '@/utils/fetchFormData'
 import fetchData from '@/utils/fetchData'
 
-const Bulkimport = () => {
+const Bulkimport = ({isUpdate}) => {
   const [bulkFile, setBulkFile] = useState(null)
   const [loading, setLoading] = useState(false)
   const [fileName, setFileName] = useState('')
@@ -38,12 +38,13 @@ const Bulkimport = () => {
     const formData = new FormData()
     formData.append('file', bulkFile)
 
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/uploadProducts`
+    const uploadUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/uploadProducts`
+    const updateUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/updateWholeProducts`
 
     setLoading(true)
 
     try {
-      const response = await fetchFormData(apiUrl, 'POST', formData)
+      const response = await fetchFormData(isUpdate?updateUrl:uploadUrl, isUpdate? "PUT":'POST', formData)
       console.log('data of response', response)
 
       if (response.success) {
@@ -85,92 +86,6 @@ const Bulkimport = () => {
   }
 
   return (
-    // <>
-    //   <Grid>
-    //     <Card>
-    //       <CardContent>
-    //         {!isFailed ? (
-    //           <>
-    //             <BulkDropZone onDrop={onDrop} loading={loading} />
-    //             {fileName ? (
-    //               <>
-    //                 <Box className='my-4 p-2' sx={{ border: '1px solid gray' }}>
-    //                   <Grid container alignItems='center' spacing={2}>
-    //                     <Grid item xs={12} md={8} justifyContent={{ xs: 'center', md: 'flex-center' }}>
-    //                       <Grid container pl={3} alignItems='center' spacing={2}>
-    //                         <Typography>{fileName}</Typography>
-    //                       </Grid>
-    //                     </Grid>
-
-    //                     <Grid item xs={12} md={4}>
-    //                       <Grid container justifyContent={{ xs: 'center', md: 'flex-end' }} spacing={2}>
-    //                         <Grid item>
-    //                           <Button onClick={handleRemoveFile}>Remove</Button>
-    //                         </Grid>
-    //                         {loading ? (
-    //                           <Grid item>
-    //                             <Button variant='contained'>Uploading...</Button>
-    //                           </Grid>
-    //                         ) : (
-    //                           <Grid item>
-    //                             <Button variant='contained' onClick={handleUploadFile} disabled={!bulkFile || loading}>
-    //                               Upload file
-    //                             </Button>
-    //                           </Grid>
-    //                         )}
-    //                       </Grid>
-    //                     </Grid>
-    //                   </Grid>
-    //                 </Box>
-    //               </>
-    //             ) : null}
-    //           </>
-    //         ) : (
-    //           <>
-    //             <div className='flex justify-center'>
-    //               <Button variant='contained' className='text-center' onClick={handleUploadAgain}>
-    //                 Upload Again
-    //               </Button>
-    //             </div>
-    //             <Box className='my-4 p-2' sx={{ border: '1px solid gray' }}>
-    //               <Grid container alignItems='center' spacing={2}>
-    //                 <Grid item xs={12} md={8}>
-    //                   <Grid
-    //                     container
-    //                     justifyContent={{ xs: 'center', md: 'flex-start' }}
-    //                     alignItems='center'
-    //                     spacing={2}
-    //                   >
-    //                     <Typography>{responseMessage} check</Typography>
-    //                   </Grid>
-    //                 </Grid>
-    //                 <Grid item xs={12} md={4}>
-    //                   <Grid container justifyContent={{ xs: 'center', md: 'flex-end' }} spacing={2}>
-    //                     <Grid item>
-    //                       {isFailed && fileUrl && (
-    //                         <Button variant='contained' color='error' onClick={DownloadErrorFile}>
-    //                           Download Error File
-    //                         </Button>
-    //                       )}
-    //                     </Grid>
-    //                   </Grid>
-    //                 </Grid>
-    //               </Grid>
-    //             </Box>
-    //           </>
-    //         )}
-    //       </CardContent>
-    //     </Card>
-    //     <Grid className='mt-3'>
-    //       <Card>
-    //         <CardHeader title={fileName} />
-    //         <CardContent>
-    //           <BulkHistoryTable />
-    //         </CardContent>
-    //       </Card>
-    //     </Grid>
-    //   </Grid>
-    // </>
     <Grid container spacing={3}>
       <Grid item xs={12}>
         <Card>

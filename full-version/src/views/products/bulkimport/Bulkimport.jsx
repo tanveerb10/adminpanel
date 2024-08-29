@@ -7,7 +7,7 @@ import { toast } from 'react-toastify'
 import BulkHistoryTable from './BulkHistoryTable'
 import fetchData from '@/utils/fetchData'
 
-const Bulkimport = () => {
+const Bulkimport = ({isUpdate}) => {
   const [bulkFile, setBulkFile] = useState(null)
   const [loading, setLoading] = useState(false)
   const [fileName, setFileName] = useState('')
@@ -37,12 +37,15 @@ const Bulkimport = () => {
     const formData = new FormData()
     formData.append('file', bulkFile)
 
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/uploadProducts`
+    const uploadUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/uploadProducts`
+    const updateUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/updateWholeProducts`
 
     setLoading(true)
 
     try {
-      const response = await fetchData(apiUrl, 'POST', formData,'file')
+
+      const response = await fetchFormData(isUpdate?updateUrl:uploadUrl, isUpdate? "PUT":'POST', formData)
+
       console.log('data of response', response)
 
       if (response.success) {

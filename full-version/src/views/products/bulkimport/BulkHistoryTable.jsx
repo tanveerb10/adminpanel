@@ -79,7 +79,7 @@ export default function BulkHistoryTable({ callAgain }) {
   }
 
   const tableLog = historyLogData.data.map(data => ({
-    csvId: data.csv_upload_id,
+    csvId: data.bulk_product_meta_id,
     fileName: data.file_name,
     exportFile: data.fileUrl,
     status: data.upload_status,

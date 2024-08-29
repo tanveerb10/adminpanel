@@ -1,11 +1,10 @@
 'use client'
 import React, { useState, useCallback, useEffect } from 'react'
 import { Button, Card, CardContent, Grid, Box, Chip, CardHeader } from '@mui/material'
-import BulkDropZone from './BulkDropZone'
+import ProjectDropZone from '@/libs/components/ProjectDropZone'
 import Typography from '@mui/material/Typography'
 import { toast } from 'react-toastify'
 import BulkHistoryTable from './BulkHistoryTable'
-import fetchFormData from '@/utils/fetchFormData'
 import fetchData from '@/utils/fetchData'
 
 const Bulkimport = ({isUpdate}) => {
@@ -44,7 +43,9 @@ const Bulkimport = ({isUpdate}) => {
     setLoading(true)
 
     try {
+
       const response = await fetchFormData(isUpdate?updateUrl:uploadUrl, isUpdate? "PUT":'POST', formData)
+
       console.log('data of response', response)
 
       if (response.success) {
@@ -92,7 +93,7 @@ const Bulkimport = ({isUpdate}) => {
           <CardContent>
             {!isFailed ? (
               <>
-                <BulkDropZone onDrop={onDrop} loading={loading} />
+                <ProjectDropZone onDrop={onDrop} loading={loading} />
                 {fileName && (
                   <Box my={4} p={2} sx={{ border: '1px solid gray' }}>
                     <Grid container alignItems='center' spacing={2}>

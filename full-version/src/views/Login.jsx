@@ -41,7 +41,7 @@ import { useSettings } from '@core/hooks/useSettings'
 import { getLocalizedUrl } from '@/utils/i18n'
 
 // import { apiClient } from '@/utils/apiClient'
-import {apiAuthentication} from '@/utils/apiAuthentication'
+import { apiAuthentication } from '@/utils/apiAuthentication'
 
 // Styled Custom Components
 const LoginIllustration = styled('img')(({ theme }) => ({
@@ -104,8 +104,8 @@ const Login = ({ mode }) => {
   } = useForm({
     resolver: valibotResolver(schema),
     defaultValues: {
-      email: 'admin@livein.in',
-      password: 'Livein@20243$'
+      email: 'superadmin@livein.in',
+      password: 'admin@123'
     }
   })
 

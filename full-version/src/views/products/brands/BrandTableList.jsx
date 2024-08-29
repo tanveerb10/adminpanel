@@ -15,7 +15,7 @@ import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
 import Checkbox from '@mui/material/Checkbox'
 import IconButton from '@mui/material/IconButton'
-import { styled } from '@mui/material/styles'
+import { styled } from '@mui/material'
 import TablePagination from '@mui/material/TablePagination'
 import MenuItem from '@mui/material/MenuItem'
 
@@ -36,7 +36,7 @@ import {
 } from '@tanstack/react-table'
 
 // Component Imports
-import TableFilters from './TableFilters'
+import BrandTableFilter from '@views/products/brands/BrandTableFilter'
 import OptionMenu from '@core/components/option-menu'
 import TablePaginationComponent from '@components/TablePaginationComponent'
 import CustomTextField from '@core/components/mui/TextField'
@@ -85,14 +85,21 @@ const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...prop
 }
 
 const userStatusObj = {
-  active: 'success',
-  inactive: 'secondary'
+  Active: 'error',
+  Inactive: 'error'
+}
+
+const truncateText = (text, maxLength) => {
+  if (text.length > maxLength) {
+    return text.substring(0, maxLength) + '...'
+  }
+  return text
 }
 
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const UserListTable = ({ tableData, totalAdmin, roleData }) => {
+const BrandTableList = ({ tableData, totalBrands }) => {
   // States
   const [rowSelection, setRowSelection] = useState({})
 
@@ -102,7 +109,6 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
   // Hooks
   const { lang: locale } = useParams()
   const router = useRouter()
-  // const { id } = params // Destructure id from params
 
   const columns = useMemo(
     () => [
@@ -128,56 +134,93 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
           />
         )
       },
-      columnHelper.accessor('fullName', {
-        header: 'User',
-        cell: ({ row }) => (
-          <div className='flex items-center gap-4'>
-            {getAvatar({ avatar: row.original.avatar, fullName: row.original.fullName })}
-            <div className='flex flex-col'>
-              <Typography color='text.primary' className='font-medium'>
-                {row.original.fullName}
-              </Typography>
-              <Typography variant='body2'>{row.original.email}</Typography>
-            </div>
-          </div>
-        )
-      }),
-      columnHelper.accessor('role', {
-        header: 'Role',
+      columnHelper.accessor('brandId', {
+        header: 'Sr.no',
         cell: ({ row }) => (
           <div className='flex items-center gap-2'>
             <Typography className='capitalize' color='text.primary'>
-              {row.original.role}
+              {row.original.brandId}
             </Typography>
           </div>
         )
       }),
-      columnHelper.accessor('contact', {
-        header: 'Contact',
+      columnHelper.accessor('name', {
+        header: 'Name',
         cell: ({ row }) => (
-          <Typography className='capitalize' color='text.primary'>
-            {row.original.contact}
-          </Typography>
+          <div className='flex items-center gap-4'>
+            {getAvatar({ avatar: row.original.imageSrc, fullName: row.original.name })}
+            <div className='flex flex-col'>
+              <Typography color='text.primary' className='font-medium'>
+                {row.original.name}
+              </Typography>
+            </div>
+          </div>
         )
       }),
-      columnHelper.accessor('city', {
-        header: 'City',
-        cell: ({ row }) => <Typography>{row.original.city}</Typography>
+
+      columnHelper.accessor('description', {
+        header: 'Description',
+        cell: ({ row }) => {
+          const description = row.original.description
+          const maxLength = 50
+          const truncatedDescription = truncateText(description, maxLength)
+          return (
+            <Typography
+              variant='body2'
+              color='text.primary'
+              style={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: 2,
+                wordBreak: 'break-word',
+                whiteSpace: 'pre-wrap'
+              }}
+            >
+              {truncatedDescription}
+            </Typography>
+          )
+        }
       }),
-      columnHelper.accessor('status', {
+      columnHelper.accessor('sortOrder', {
+        header: 'Sort Order',
+        cell: ({ row }) => <Typography>{row.original.sortOrder}</Typography>
+      }),
+      columnHelper.accessor('isDeleted', {
         header: 'Status',
         cell: ({ row }) => (
           <div className='flex items-center gap-3'>
             <Chip
               variant='tonal'
               className='capitalize'
-              label={row.original.status}
-              color={userStatusObj[row.original.status]}
+              label={row.original.isDeleted ? 'Inactive' : 'Active'}
+              // color={userStatusObj[row.original.isDeleted]}
+              //   color={statusO={
+              //     "Inactive" : 'error'
+
+              // }
+              // }
               size='small'
             />
           </div>
         )
       }),
+      columnHelper.accessor('productCount', {
+        header: 'Product count',
+        cell: ({ row }) => (
+          <div className='flex items-center gap-3'>
+            <Chip
+              variant='tonal'
+              className='capitalize'
+              label={row.original.productCount}
+              color='success'
+              size='small'
+            />
+          </div>
+        )
+      }),
+
       columnHelper.accessor('action', {
         header: 'Action',
         cell: ({ row }) => (
@@ -186,8 +229,8 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
               <i className='tabler-trash text-[22px] text-textSecondary' />
             </IconButton>
             <IconButton>
-              <Link href={getLocalizedUrl(`/admin/adminusers/${row.original.id}`, locale)} className='flex'>
-                <i className='tabler-eye text-[22px] text-textSecondary' />
+              <Link href={getLocalizedUrl(`/products/brands/${row.original.id}`, locale)} className='flex'>
+                <i className='tabler-edit text-[22px] text-textSecondary' />
               </Link>
             </IconButton>
             <OptionMenu
@@ -244,12 +287,12 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
   })
 
   const getAvatar = params => {
-    const { avatar, fullName } = params
+    const { avatar, name } = params
 
     if (avatar) {
       return <CustomAvatar src={avatar} size={34} />
     } else {
-      return <CustomAvatar size={34}>{getInitials(fullName)}</CustomAvatar>
+      return <CustomAvatar size={34}>{getInitials(name)}</CustomAvatar>
     }
   }
 
@@ -257,7 +300,7 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
     <>
       <Card>
         <CardHeader title='Filters' className='pbe-4' />
-        <TableFilters setData={setData} tableData={tableData} roleData={roleData} />
+        <BrandTableFilter setData={setData} tableData={tableData} />
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select
@@ -269,11 +312,12 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
             <MenuItem value='25'>25</MenuItem>
             <MenuItem value='50'>50</MenuItem>
           </CustomTextField>
-
           <div>
-            Total Admins:
-            <Chip variant='outlined' label={totalAdmin} color='warning' size='small' className='ml-2' />
+            Total Brands:
+            {/* <Chip variant='outlined' label={totalAdmin} color='warning' size='small' className='ml-2' /> */}
+            <Chip variant='outlined' label={totalBrands} color='warning' size='small' className='ml-2' />
           </div>
+
 
           <div className='flex flex-col sm:flex-row is-full sm:is-auto items-start sm:items-center gap-4'>
             <DebouncedInput
@@ -293,12 +337,10 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
             <Button
               variant='contained'
               startIcon={<i className='tabler-plus' />}
-              // onClick={() => router.push(getLocalizedUrl(`/admin/adminusers/addadminuser`,locale))}
-
-              onClick={() => router.push(getLocalizedUrl(`/admin/adminusers/addadminuser`, locale))}
+              onClick={() => router.push(getLocalizedUrl(`/products/brands/addnewbrand`, locale))}
               className='is-full sm:is-auto'
             >
-              Add New User
+              Add New Brand
             </Button>
           </div>
         </div>
@@ -371,4 +413,4 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
   )
 }
 
-export default UserListTable
+export default BrandTableList

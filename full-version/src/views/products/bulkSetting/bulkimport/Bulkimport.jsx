@@ -1,18 +1,31 @@
-
 'use client'
-import { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { Button, Card, CardContent, Grid, Box, Chip, CardHeader } from '@mui/material'
-// import ProjectDropZone from '@libs/components/ProjectDropZone'
 import ProjectDropZone from '@/libs/components/ProjectDropZone'
 import Typography from '@mui/material/Typography'
 import { toast } from 'react-toastify'
-import InventoryHistoryTable from './InventoryHistoryTable'
+import BulkHistoryTable from '@views/products/bulkSetting/bulkimport/BulkHistoryTable'
 import fetchData from '@/utils/fetchData'
+import BulkHeader from '@views/products/bulkSetting/bulkimport/BulkHeader'
 
-const Inventory = () => {
-  
+const API_URLS = {
+  productUploadTab: '/admin/products/uploadProducts',
+  productUpdateTab: '/admin/products/updateWholeProducts',
+  priceTab: '/admin/products/updatePrice',
+  categoryTab: '/admin/products/updateCategories',
+  metasTab: '/admin/products/bulkProductMeta',
+  inventoryTab: '/admin/products/updateStock'
+}
 
-  const [inventoryFile, setInventoryFile] = useState(null)
+const exportUrls = {
+  productUploadTab: `/admin/products/exportProductToCSV`,
+  priceTab: `/admin/products/exportPrice`,
+  categoryTab: `/admin/products/exportCategories`,
+  inventoryTab: `/admin/products/exportStock`
+}
+
+const Bulkimport = ({ TabValue, HeaderValue }) => {
+  const [bulkFile, setBulkFile] = useState(null)
   const [loading, setLoading] = useState(false)
   const [fileName, setFileName] = useState('')
   const [isFailed, setIsFailed] = useState(false)
@@ -21,45 +34,52 @@ const Inventory = () => {
 
   const onDrop = useCallback(acceptedFiles => {
     if (acceptedFiles.length && acceptedFiles[0].type === 'text/csv') {
-      setInventoryFile(acceptedFiles[0])
+      setBulkFile(acceptedFiles[0])
       setFileName(acceptedFiles[0].name)
     } else {
-      setInventoryFile(null)
+      setBulkFile(null)
       toast.error('Upload valid file', 'bottom')
       setFileName('')
     }
   }, [])
 
   const handleRemoveFile = () => {
-    setInventoryFile(null)
+    setBulkFile(null)
     setFileName('')
   }
   const handleUploadAgain = () => {
     setIsFailed(false)
   }
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL_LIVE
+
   const handleUploadFile = async () => {
     const formData = new FormData()
-    formData.append('file', inventoryFile)
-
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/updateStock`
+    formData.append('file', bulkFile)
 
     setLoading(true)
 
     try {
-      const response = await fetchData(apiUrl, 'PUT', formData,'file')
-      console.log('data of response', response)
+      const url = `${baseUrl}${API_URLS[TabValue]}`
+      if (!url) {
+        toast.error('API endpoint not found')
+        return
+      }
+      const methods = ['productUploadTab', 'metasTab'].includes(TabValue) ? 'POST' : 'PUT'
+
+      const response = await fetchData(url, methods, formData, 'file')
 
       if (response.success) {
         console.log('Data submitted successfully:', response)
         toast.success('File uploaded successfully')
 
-        setInventoryFile(null)
+        setBulkFile(null)
         setFileName('')
       } else if (!response.ok || response.fileUrl) {
         setFileUrl(response.fileUrl)
         console.log('response fileUrl', response.fileUrl)
         setIsFailed(true)
-        setInventoryFile(null)
+        setBulkFile(null)
         setFileName('')
         throw new Error(response.message)
       } else {
@@ -70,7 +90,7 @@ const Inventory = () => {
     } catch (error) {
       console.error('Error submitting data:', error.message)
       toast.error(`${error.message}`)
-      setInventoryFile(null)
+      setBulkFile(null)
       setFileName('')
       setIsFailed(true)
       setResponseMessage(error.message)
@@ -87,8 +107,73 @@ const Inventory = () => {
     }
   }
 
+  const getExportFile = async () => {
+    const urls = exportUrls[TabValue]
+    const url = `${baseUrl}${urls}`
+
+    try {
+      if (!url) {
+        toast.error('Api do not have endPoint')
+        return
+      }
+
+      // switch (TabValue) {
+      //   case 'productUploadTab': {
+      //     const response = await fetchData(exportProductUrl, 'GET')
+      //     break
+      //   }
+      //   // case 'productUpdateTab': {
+      //   //   const response = await fetchData(updateProductUrl, 'GET')
+      //   //   break
+      //   // }
+      //   case 'priceTab': {
+      //     const response = await fetchData(priceExportUrl, 'GET')
+      //     break
+      //   }
+      //   case 'categoryTab': {
+      //     const response = await fetchData(categoryExportUrl, 'GET')
+      //     break
+      //   }
+      //   // case 'metasTab': {
+      //   //   const response = await fetchData(metasUpdateUrl, 'GET')
+      //   //   break
+      //   // }
+      //   case 'inventoryTab': {
+      //     const response = await fetchData(inventoryExportUrl, 'GET')
+      //     break
+      //   }
+      //   default: {
+      //     toast.error("Api haven't called")
+      //   }
+      // }
+
+      const response = await fetchData(url, 'GET')
+      if (!response.success) {
+        throw new Error('Got an error while exporting: ', response.message)
+      }
+      toast.success(response.message || 'Exported successfully')
+      console.log(response.filePath)
+
+      if (response.filePath) {
+        const fileLink = `${baseUrl}${response.filePath}`
+
+        const link = document.createElement('a')
+        link.href = fileLink
+        link.download = fileLink.split('/').pop()
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      }
+    } catch (err) {
+      toast.error(err.message || 'Failed to export products')
+    }
+  }
+
   return (
     <Grid container spacing={3}>
+      <Grid item xs={12}>
+        <BulkHeader HeaderValue={HeaderValue} handleExport={getExportFile} TabValue={TabValue} />
+      </Grid>
       <Grid item xs={12}>
         <Card>
           <CardContent>
@@ -106,7 +191,7 @@ const Inventory = () => {
                           <Button onClick={handleRemoveFile}>Remove</Button>
                         </Grid>
                         <Grid item>
-                          <Button variant='contained' onClick={handleUploadFile} disabled={!inventoryFile || loading}>
+                          <Button variant='contained' onClick={handleUploadFile} disabled={!bulkFile || loading}>
                             {loading ? 'Uploading...' : 'Upload file'}
                           </Button>
                         </Grid>
@@ -143,17 +228,16 @@ const Inventory = () => {
           </CardContent>
         </Card>
       </Grid>
-      {/* <Grid item xs={12}>
+      <Grid item xs={12}>
         <Card>
           <CardHeader title='History log' />
           <CardContent>
-            <InventoryHistoryTable callAgain={loading} />
+            <BulkHistoryTable callAgain={loading} />
           </CardContent>
         </Card>
-      </Grid> */}
+      </Grid>
     </Grid>
-  
   )
 }
 
-export default Inventory
+export default Bulkimport

@@ -9,7 +9,8 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Paper
+  Paper,
+  Chip
 } from '@mui/material'
 import fetchData from '@/utils/fetchData'
 
@@ -37,7 +38,7 @@ const columns = [
   }
 ]
 
-export default function InventoryHistoryTable({ callAgain }) {
+export default function BulkHistoryTable({ callAgain }) {
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [historyLogData, setHistoryLogData] = useState(null)
@@ -74,12 +75,20 @@ export default function InventoryHistoryTable({ callAgain }) {
   console.log(historyLogData, 'history data log')
 
   function formatDate(dataData) {
-    const date = new Date(dataData)
-    return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`
+    const dates = new Date(dataData)
+    const date = ` ${dates.getDate()}/${dates.getMonth() + 1}/${dates.getFullYear()}`
+    const time = `${dates.getHours() % 12 || 12}-${dates.getMinutes()}-${dates.getSeconds()} ${dates.getHours() >= 12 ? 'PM' : 'AM'}`
+    const changeFormat = dates.toLocaleString()
+    return (
+      <div className='flex gap-2 flex-col justify-center items-center'>
+        <Chip label={time} />
+        <Chip label={date} />
+      </div>
+    )
   }
 
   const tableLog = historyLogData.data.map(data => ({
-    csvId: data.csv_upload_id,
+    csvId: data.bulk_product_meta_id,
     fileName: data.file_name,
     exportFile: data.fileUrl,
     status: data.upload_status,
@@ -87,7 +96,6 @@ export default function InventoryHistoryTable({ callAgain }) {
     username: data.admin_id ? data.admin_id.firstname : 'Unknown'
   }))
   if (tableLog.length === 0) {
-    // console.log('history null')
     return <div>There is no history data log</div>
   }
   console.log(tableLog, 'table log')

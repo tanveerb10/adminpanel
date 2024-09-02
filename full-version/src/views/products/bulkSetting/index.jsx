@@ -11,70 +11,6 @@ import TabPanel from '@mui/lab/TabPanel'
 // Component Imports
 import CustomTabList from '@core/components/mui/TabList'
 
-// const tabs = [
-//   <Tab
-//     key='upload'
-//     label={
-//       <div className='flex items-center gap-1.5'>
-//         {/* <i className='tabler-users text-lg' /> */}
-//         Product Import
-//       </div>
-//     }
-//     value='upload'
-//   />,
-//   <Tab
-//     key='update'
-//     label={
-//       <div className='flex items-center gap-1.5'>
-//         {/* <i className='tabler-users text-lg' /> */}
-//         Product Update
-//       </div>
-//     }
-//     value='update'
-//   />,
-//   <Tab
-//     key='price'
-//     value='price'
-//     label={
-//       <div className='flex items-center gap-1.5'>
-//         {/* <i className='tabler-users text-lg' /> */}
-//         Price Update
-//       </div>
-//     }
-//   />,
-
-//   <Tab
-//     key='category'
-//     value='category'
-//     label={
-//       <div className='flex items-center gap-1.5'>
-//         {/* <i className='tabler-users text-lg' /> */}
-//         Category Update
-//       </div>
-//     }
-//   />,
-//   <Tab
-//     key='metas'
-//     value='metas'
-//     label={
-//       <div className='flex items-center gap-1.5'>
-//         {/* <i className='tabler-users text-lg' /> */}
-//         Metas Update
-//       </div>
-//     }
-//   />,
-//   <Tab
-//     key='inventory'
-//     value='inventory'
-//     label={
-//       <div className='flex items-center gap-1.5'>
-//         {/* <i className='tabler-users text-lg' /> */}
-//         Inventory Update
-//       </div>
-//     }
-//   />
-// ]
-
 const tabs = [
   { key: 'upload', label: 'Product Import' },
   { key: 'update', label: 'Product Update' },
@@ -83,34 +19,20 @@ const tabs = [
   { key: 'metas', label: 'Metas Update' },
   { key: 'inventory', label: 'Inventory Update' }
 ].map(({ key, label }) => (
-  <Tab
-    key={key}
-    value={key}
-    label={
-      <div className='flex items-center gap-1.5'>
-        {/* <i className='tabler-users text-lg' /> */}
-        {label}
-      </div>
-    }
-  />
+  <Tab key={key} value={key} label={<div className='flex items-center gap-1.5'>{label}</div>} />
 ))
 
-// const tabContent = {
-//   update: <div>Update page</div>,
-//   upload: <div>Upload page</div>
-// }
 export default function BulkSetting({ tabContent }) {
   const [activeTab, setActiveTab] = useState('upload')
 
-  const handleChange = (event, value) => {
-    console.log('active tab value ', value)
-    setActiveTab(value)
+  const handleChange = (event, newValue) => {
+    setActiveTab(newValue)
   }
   return (
     <TabContext value={activeTab}>
       <Grid container spacing={6}>
         <Grid item xs={12} className='flex justify-center'>
-          <CustomTabList onChange={handleChange} variant='scrollable' pill='true'>
+          <CustomTabList onChange={handleChange} variant='scrollable'>
             {tabs}
           </CustomTabList>
         </Grid>

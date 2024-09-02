@@ -9,7 +9,8 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Paper
+  Paper,
+  Chip
 } from '@mui/material'
 import fetchData from '@/utils/fetchData'
 
@@ -74,8 +75,16 @@ export default function BulkHistoryTable({ callAgain }) {
   console.log(historyLogData, 'history data log')
 
   function formatDate(dataData) {
-    const date = new Date(dataData)
-    return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`
+    const dates = new Date(dataData)
+    const date = ` ${dates.getDate()}/${dates.getMonth() + 1}/${dates.getFullYear()}`
+    const time = `${dates.getHours() % 12 || 12}-${dates.getMinutes()}-${dates.getSeconds()} ${dates.getHours() >= 12 ? 'PM' : 'AM'}`
+    const changeFormat = dates.toLocaleString()
+    return (
+      <div className='flex gap-2 flex-col justify-center items-center'>
+        <Chip label={time} />
+        <Chip label={date} />
+      </div>
+    )
   }
 
   const tableLog = historyLogData.data.map(data => ({

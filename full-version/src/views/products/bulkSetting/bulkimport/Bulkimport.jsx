@@ -17,6 +17,13 @@ const API_URLS = {
   inventoryTab: '/admin/products/updateStock'
 }
 
+const exportUrls = {
+  productUploadTab: `/admin/products/exportProductToCSV`,
+  priceTab: `/admin/products/exportPrice`,
+  categoryTab: `/admin/products/exportCategories`,
+  inventoryTab: `/admin/products/exportStock`
+}
+
 const Bulkimport = ({ TabValue, HeaderValue }) => {
   const [bulkFile, setBulkFile] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -24,9 +31,6 @@ const Bulkimport = ({ TabValue, HeaderValue }) => {
   const [isFailed, setIsFailed] = useState(false)
   const [responseMessage, setResponseMessage] = useState('')
   const [fileUrl, setFileUrl] = useState(null)
-
-  console.log(TabValue, 'namee tab info')
-  console.log(HeaderValue, 'namee tab info')
 
   const onDrop = useCallback(acceptedFiles => {
     if (acceptedFiles.length && acceptedFiles[0].type === 'text/csv') {
@@ -53,23 +57,9 @@ const Bulkimport = ({ TabValue, HeaderValue }) => {
     const formData = new FormData()
     formData.append('file', bulkFile)
 
-    console.log(API_URLS[TabValue], 'Api urld and tab value ')
-    // const urls = {
-    //   uploadProductUrl: `${baseUrl}/admin/products/uploadProducts`,
-    //   updateProductUrl: `${baseUrl}/admin/products/updateWholeProducts`,
-    //   priceUpdateUrl: `${baseUrl}/admin/products/updatePrice`,
-    //   categoryUpdateUrl: `${baseUrl}/admin/products/updateCategories`,
-    //   metasUpdateUrl: `${baseUrl}/admin/products/bulkProductMeta`,
-    //   inventoryUpdateUrl: `${baseUrl}/admin/products/updateStock`
-    // }
-    // useEffect(() => {
-    // console.log(urls[TabValue], '==================================================check tabv value')
-    // }, [urls])
-
     setLoading(true)
 
     try {
-      // const url = urls[TabValue]
       const url = `${baseUrl}${API_URLS[TabValue]}`
       if (!url) {
         toast.error('API endpoint not found')
@@ -77,48 +67,7 @@ const Bulkimport = ({ TabValue, HeaderValue }) => {
       }
       const methods = ['productUploadTab', 'metasTab'].includes(TabValue) ? 'POST' : 'PUT'
 
-      const response = await fetchData(
-        // urls[TabValue],
-        // urls[TabValue] == 'uploadProductUrl' || 'metasUpdateUrl' ? 'POST' : 'PUT',
-        url,
-        methods,
-        formData,
-        'file'
-      )
-
-      // switch (TabValue) {
-      //   case 'productUploadTab': {
-      //     const response = await fetchData(uploadProductUrl, 'POST', formData, 'file')
-      //     break
-      //   }
-      //   case 'metasTab': {
-      //     const response = await fetchData(metasUpdateUrl, 'POST', formData, 'file')
-      //     break
-      //   }
-      //   case 'productUpdateTab': {
-      //     const response = await fetchData(updateProductUrl, 'PUT', formData, 'file')
-      //     break
-      //   }
-      //   case 'priceTab': {
-      //     const response = await fetchData(priceUpdateUrl, 'PUT', formData, 'file')
-      //     break
-      //   }
-      //   case 'categoryTab': {
-      //     const response = await fetchData(categoryUpdateUrl, 'PUT', formData, 'file')
-      //     break
-      //   }
-      //   case 'inventoryTab': {
-      //     const response = await fetchData(inventoryUpdateUrl, 'PUT', formData, 'file')
-      //     break
-      //   }
-      //   default: {
-      //     toast.error("Api haven't called")
-      //   }
-      // }
-
-      // const response = await fetchData(isUpdate ? updateUrl : uploadUrl, isUpdate ? 'PUT' : 'POST', formData, 'file')
-
-      console.log('data of response', response)
+      const response = await fetchData(url, methods, formData, 'file')
 
       if (response.success) {
         console.log('Data submitted successfully:', response)
@@ -159,43 +108,46 @@ const Bulkimport = ({ TabValue, HeaderValue }) => {
   }
 
   const getExportFile = async () => {
-    const exportProductUrl = `${baseUrl}/admin/products/exportProductToCSV`
-    // const updateProductUrl = `${baseUrl}/admin/products/updateWholeProducts`
-    const priceExportUrl = `${baseUrl}/admin/products/exportPrice`
-    const categoryExportUrl = `${baseUrl}/admin/products/exportCategories`
-    // const metasExportUrl = `${baseUrl}/admin/products/bulkProductMeta`
-    const inventoryExportUrl = `${baseUrl}/admin/products/exportStock`
+    const urls = exportUrls[TabValue]
+    const url = `${baseUrl}${urls}`
+
     try {
-      switch (TabValue) {
-        case 'productUploadTab': {
-          const response = await fetchData(exportProductUrl, 'GET')
-          break
-        }
-        // case 'productUpdateTab': {
-        //   const response = await fetchData(updateProductUrl, 'GET')
-        //   break
-        // }
-        case 'priceTab': {
-          const response = await fetchData(priceExportUrl, 'GET')
-          break
-        }
-        case 'categoryTab': {
-          const response = await fetchData(categoryExportUrl, 'GET')
-          break
-        }
-        // case 'metasTab': {
-        //   const response = await fetchData(metasUpdateUrl, 'GET')
-        //   break
-        // }
-        case 'inventoryTab': {
-          const response = await fetchData(inventoryExportUrl, 'GET')
-          break
-        }
-        default: {
-          toast.error("Api haven't called")
-        }
+      if (!url) {
+        toast.error('Api do not have endPoint')
+        return
       }
-      // const response = await fetchData(`${baseUrl}/admin/products/exportBulkProducts`, 'GET')
+
+      // switch (TabValue) {
+      //   case 'productUploadTab': {
+      //     const response = await fetchData(exportProductUrl, 'GET')
+      //     break
+      //   }
+      //   // case 'productUpdateTab': {
+      //   //   const response = await fetchData(updateProductUrl, 'GET')
+      //   //   break
+      //   // }
+      //   case 'priceTab': {
+      //     const response = await fetchData(priceExportUrl, 'GET')
+      //     break
+      //   }
+      //   case 'categoryTab': {
+      //     const response = await fetchData(categoryExportUrl, 'GET')
+      //     break
+      //   }
+      //   // case 'metasTab': {
+      //   //   const response = await fetchData(metasUpdateUrl, 'GET')
+      //   //   break
+      //   // }
+      //   case 'inventoryTab': {
+      //     const response = await fetchData(inventoryExportUrl, 'GET')
+      //     break
+      //   }
+      //   default: {
+      //     toast.error("Api haven't called")
+      //   }
+      // }
+
+      const response = await fetchData(url, 'GET')
       if (!response.success) {
         throw new Error('Got an error while exporting: ', response.message)
       }

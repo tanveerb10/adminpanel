@@ -4,25 +4,23 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 
 export default function BulkHeader({ TabValue, handleExport, HeaderValue }) {
-  console.log(TabValue,'headeer tab cvale')
+  console.log(TabValue, 'form export')
+  console.log(['metasTab', 'productUpdateTab'].includes(TabValue), 'check yab value for export')
+  const includeExport = ['metasTab', 'productUpdateTab']
   return (
-    <div container className='flex items-center justify-between gap-6'>
+    <div className='flex items-center justify-between gap-6'>
       <div>
-        <Typography variant='h4' className='mbe-1'>
-          {/* {isUpdate ? 'Update Bulk products' : 'Upload Whole Bulk products'} */}
+        <Typography variant='h4' className='mb-1'>
           {HeaderValue}
         </Typography>
       </div>
-      {
-        !TabValue ===
-          'metasTab' || 'productUpdateTab' ? (
-            <div className=''>
-              <Button variant='tonal' onClick={handleExport}>
-                Export Product
-              </Button>
-            </div>
-          ) : null
-      }
+      {TabValue && (
+        <div className=''>
+          <Button variant='tonal' onClick={handleExport}>
+            Export Product
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

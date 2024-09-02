@@ -3,26 +3,10 @@ import React from 'react'
 import BulkSetting from '@/views/products/BulkSetting/index'
 import dynamic from 'next/dynamic'
 
-// const UploadTab = dynamic(() => import('@/views/products/bulkSetting/bulkimport/Bulkimport'), {
-//   ssr: false
-// })
-// const UpdateTab = dynamic(() => import('@/views/products/bulkSetting/bulkimport/Bulkimport'), {
-//   ssr: false
-// })
-// const CategoryTab = dynamic(() => import('@/views/products/bulkSetting/bulkimport/Bulkimport'), {
-//   ssr: false
-// })
-// const InventoryTab = dynamic(() => import('@/views/products/bulkSetting/bulkimport/Bulkimport'), {
-//   ssr: false
-// })
-// const MetasTab = dynamic(() => import('@/views/products/bulkSetting/bulkimport/Bulkimport'), {
-//   ssr: false
-// })
 const Bulkimport = dynamic(() => import('@/views/products/bulkSetting/bulkimport/Bulkimport'), {
   ssr: false
 })
 
-// const tabConfig =
 export default function Page() {
   const tabContent = {
     upload: <Bulkimport TabValue='productUploadTab' HeaderValue='Product Import' />,
@@ -35,7 +19,6 @@ export default function Page() {
   return (
     <div>
       <BulkSetting tabContent={tabContent} />
-      {/* <Bulkimport /> */}
     </div>
   )
 }

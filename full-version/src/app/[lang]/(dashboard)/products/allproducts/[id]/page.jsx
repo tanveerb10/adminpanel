@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import fetchData from '@/utils/fetchData'
 import { useProduct } from '@views/products/allproducts/productContext/ProductStateManagement'
 import { toast } from 'react-toastify'
@@ -10,6 +10,7 @@ import ProductFormWrapper from '@views/products/allproducts/product-settings/add
 export default function Page() {
   const { productData, setProductData } = useProduct()
   const [brandData, setBrandData] = useState([])
+  const [categoryData, setCategoryData] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
@@ -17,17 +18,11 @@ export default function Page() {
   const { id } = useParams()
   const router = useRouter()
 
-  // if (role !== 'superadmin') {
-  //   setTimeout(() => router.push('/'), 3000)
-  //   return <div>wait you are going to redirect because you are not super admin...</div>
-  // }
   useEffect(() => {
     if (role !== 'superadmin') {
       const timer = setTimeout(() => {
         router.push('/')
       }, 3000)
-
-      // Clean up timer on component unmount
       return () => clearTimeout(timer)
     }
   }, [role, router])
@@ -39,110 +34,26 @@ export default function Page() {
         setBrandData(response)
       })
       .catch(error => {
-        setError('error got in brand', error)
+        toast.error('error got in brand', error)
         console.log('error got in brand', error)
       })
   }, [])
 
-  // const metaValidation = meta => {
-  //   if (Object.keys(meta).length == 0) {
-  //     return 'Meta field should not be empty'
-  //   }
-  //   for (const [key, value] of Object.entries(meta)) {
-  //     if (typeof key !== 'string' || typeof value !== 'string') {
-  //       return 'Both key and value must be strings'
-  //     }
-  //     if (!key.trim() || !value.trim()) {
-  //       return 'Both key and value are required in each meta field'
-  //     }
-  //   }
-  //   return null
-  // }
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categoryUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/categories`
+        const response = await fetchData(categoryUrl, 'GET')
+        setCategoryData(response.allCategory.map(option => option.category_name) || [])
+      } catch (error) {
+        toast.error('Error fetching categories')
+        setLoading(false)
+      }
+    }
+    fetchCategories()
+  }, [])
 
-  // const validateVariants = data => {
-  //   for (const child of data) {
-  //     if (!child.variant_sku) {
-  //       return 'Variant SKU cannot be empty'
-  //     }
-  //   }
-  //   return null
-  // }
-
-  // const validateVideos = videos => {
-  //   if (!videos || videos.length === 0 || videos.every(video => !video.video_src)) {
-  //     return 'At least one video must be provided'
-  //   }
-  //   return null
-  // }
-
-  // const validateImages = images => {
-  //   if (!images || images.length === 0 || images.every(image => !image.image_src)) {
-  //     return 'At least one image must be provided'
-  //   }
-  //   return null
-  // }
-  // const handleSaveProduct = async data => {
-  //   console.log('clicked submit')
-  //   const videoError = validateVideos(productData.videos)
-  //   if (videoError) {
-  //     toast.error(videoError)
-  //     return
-  //   }
-
-  //   const imageError = validateImages(productData.images)
-  //   if (imageError) {
-  //     toast.error(imageError)
-  //     return
-  //   }
-
-  //   const metaError = metaValidation(productData.meta)
-
-  //   if (metaError) {
-  //     toast.error(metaError)
-  //     return
-  //   }
-
-  //   const variantError = validateVariants(productData.child)
-  //   if (variantError) {
-  //     toast.error(variantError)
-  //     return
-  //   }
-
-  //   console.log('clicked data', data)
-
-  //   const formatData = productData.child.map(child => ({
-  //     // ...productData.parent,
-  //     ...data,
-  //     metafields: productData.meta,
-  //     ...child
-  //   }))
-  //   // setLoading(true)
-  //   const product = {
-  //     products: formatData,
-  //     images: productData.images,
-  //     videos: productData.videos
-  //   }
-
-  //   console.log('final format data', product)
-
-  //   try {
-  //     const response = await fetchData(
-  //       `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/uploadProduct`,
-  //       'POST',
-  //       product
-  //     )
-  //     if (!response.ok) {
-  //       toast.error('Got Error1', response.message)
-  //     }
-  //       toast.success(response.message)
-
-  //   } catch (error) {
-  //     console.error('Got Error2', error)
-  //     toast.error('Got Error3', error.message)
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
+  console.log('categoy', categoryData)
 
   useEffect(() => {
     if (id !== 'addnewproduct') {
@@ -222,7 +133,8 @@ export default function Page() {
         videos: singleVideo,
         images: singleImage,
         child: childData,
-        isEdit: true
+        isEdit: true,
+        dataOption: categoryData
       })
     }
   }
@@ -237,7 +149,20 @@ export default function Page() {
   }
 
   if (id == 'addnewproduct') {
-    return <ProductFormWrapper brandData={brandData} isAddProduct={true} />
+    return (
+      <>
+        <ProductFormWrapper brandData={brandData} isAddProduct={true} />
+      </>
+    )
   }
-  return <ProductFormWrapper brandData={brandData} initialData={productData.parent} id={id} />
+  return (
+    <>
+      <ProductFormWrapper
+        brandData={brandData}
+        initialData={productData.parent}
+        id={id}
+        categoryoption={categoryData}
+      />
+    </>
+  )
 }

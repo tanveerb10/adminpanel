@@ -13,7 +13,6 @@ import { useFormContext, Controller } from 'react-hook-form'
 
 const ProductOrganize = ({ brandName }) => {
   const { productData, updateProductParent } = useProduct()
-
   const {
     control,
     formState: { errors }
@@ -61,7 +60,9 @@ const ProductOrganize = ({ brandName }) => {
                   label='Categories'
                   placeholder='Categories select'
                   fullWidth
-                  initialOptions={productData.parent.categories || []}
+                  // initialOptions={categoryoption}
+                  initialOptions={productData.dataOption || []}
+                  // target='category_name'
                   onChange={(event, newValue) => {
                     field.onChange(newValue)
                     updateProductParent({ categories: newValue })
@@ -74,7 +75,7 @@ const ProductOrganize = ({ brandName }) => {
           </Grid>
 
           <Grid item xs={12}>
-            {productData.parent.categories.length > 0 ? (
+            {productData.parent.categories?.length > 0 ? (
               <Controller
                 name='default_category'
                 control={control}
@@ -177,6 +178,26 @@ const ProductOrganize = ({ brandName }) => {
                 </CustomTextField>
               )}
             />
+          </Grid>
+          <Grid item xs={12}>
+            {/* 
+            <Controller
+              name='check'
+              control={control}
+              render={({ field }) => ( */}
+            <CustomCheckboxAutocomplete
+              // {...field}
+              fullWidth
+              label='Enter check'
+              placeholder='Check value '
+              initialOptions={productData.dataOption || []}
+              onChange={(event, newValue) => {
+                // field.onChange(newValue)
+                console.log('Selected values:', newValue)
+              }}
+            />
+            {/* )}
+            /> */}
           </Grid>
         </Grid>
       </CardContent>

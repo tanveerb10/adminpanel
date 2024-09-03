@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, forwardRef } from 'react'
+import React, { useState, forwardRef, useEffect } from 'react'
 import Checkbox from '@mui/material/Checkbox'
 import CustomTextField from '@/@core/components/mui/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -12,13 +12,36 @@ const icon = <CheckBoxOutlineBlankIcon fontSize='small' />
 const checkedIcon = <CheckBoxIcon fontSize='small' />
 
 const CustomCheckboxAutocomplete = forwardRef(
-  ({ initialOptions = [], label, placeholder, onChange, optionKey, error, helperText, ...props }, ref) => {
-    const [dataList, setDataList] = useState(initialOptions)
+  ({ initialOptions = [], label, placeholder, onChange, optionKey, error, helperText, target, ...props }, ref) => {
+    const [dataList, setDataList] = useState([])
+    useEffect(() => {
+      const data = target ? initialOptions?.map(item => item[target]) : initialOptions
+      setDataList(data)
+    }, [initialOptions, target])
+
+    console.log(dataList, 'datalist from custom')
+
     const filter = createFilterOptions({
       matchFrom: 'start',
       stringify: option => option
     })
 
+    const handleChange = (event, newValue, reason) => {
+      if (reason === 'selectOption' && newValue[newValue.length - 1].startsWith('Add "')) {
+        const newOption = newValue[newValue.length - 1].slice(5, -1)
+        setDataList(prevDataList => {
+          if (!prevDataList.includes(newOption)) {
+            return [...prevDataList, newOption]
+          }
+          return prevDataList
+        })
+        newValue.pop()
+        newValue.push(newOption)
+        onChange(event, newValue)
+      } else {
+        onChange(event, newValue)
+      }
+    }
     return (
       <Autocomplete
         multiple
@@ -34,23 +57,17 @@ const CustomCheckboxAutocomplete = forwardRef(
           }
           return filtered
         }}
+        // getOptionLabel={option => {
+        //   return typeof option === 'string' ? option : option.inputValue
+        // }}
         getOptionLabel={option => {
-          return typeof option === 'string' ? option : option.inputValue
+          if (typeof option === 'string') return option
+          return option?.inputValue || option?.[optionKey] || ''
         }}
         isOptionEqualToValue={(option, value) => {
           return option === value
         }}
-        onChange={(event, newValue, reason) => {
-          if (reason === 'selectOption' && newValue[newValue.length - 1].startsWith('Add "')) {
-            const newOption = newValue[newValue.length - 1].slice(5, -1)
-            setDataList([...dataList, newOption])
-            newValue.pop()
-            newValue.push(newOption)
-            onChange(event, newValue)
-          } else {
-            onChange(event, newValue)
-          }
-        }}
+        onChange={handleChange}
         renderOption={(props, option, { selected }) => (
           <li {...props}>
             {option.startsWith('Add "') ? (
@@ -71,15 +88,13 @@ const CustomCheckboxAutocomplete = forwardRef(
           </li>
         )}
         renderInput={params => (
-          // <Tooltip title={helperText || ''} placement='top' arrow>
           <CustomTextField
             {...params}
             label={label}
             placeholder={placeholder}
-            helperText={error ? helperText : ''}
+            helperText={error ? helperText || 'invalid input' : ''}
             error={error}
           />
-          // </Tooltip>
         )}
         renderTags={(tagValue, getTagProps) =>
           tagValue.map((option, index) => <Chip label={option} {...getTagProps({ index })} key={index} size='small' />)

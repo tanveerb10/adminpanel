@@ -1,58 +1,56 @@
+'use client'
+
 // MUI Imports
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
 import Grid from '@mui/material/Grid'
+import Typography from '@mui/material/Typography'
+import Avatar from '@mui/material/Avatar'
+import AvatarGroup from '@mui/material/AvatarGroup'
+import { Chip } from '@mui/material'
 
-// Component Imports
-import HorizontalWithSubtitle from '@components/card-statistics/HorizontalWithSubtitle'
+const UserListCards = ({ cardData }) => {
+  console.log({ cardData })
+  // Vars
 
-// Vars
-const data = [
-  {
-    title: 'Session',
-    value: '21,459',
-    avatarIcon: 'tabler-users',
-    avatarColor: 'primary',
-    change: 'positive',
-    changeNumber: '29%',
-    subTitle: 'Total User'
-  },
-  {
-    title: 'Paid Users',
-    value: '4,567',
-    avatarIcon: 'tabler-user-plus',
-    avatarColor: 'error',
-    change: 'positive',
-    changeNumber: '18%',
-    subTitle: 'Last week analytics'
-  },
-  {
-    title: 'Active Users',
-    value: '19,860',
-    avatarIcon: 'tabler-user-check',
-    avatarColor: 'success',
-    change: 'negative',
-    changeNumber: '14%',
-    subTitle: 'Last week analytics'
-  },
-  {
-    title: 'Pending Users',
-    value: '237',
-    avatarIcon: 'tabler-user-search',
-    avatarColor: 'warning',
-    change: 'positive',
-    changeNumber: '42%',
-    subTitle: 'Last week analytics'
+  const getAvatar = params => {
+    const { avatar, fullName } = params
+
+    if (avatar) {
+      return <CustomAvatar src={avatar} skin='light' size={34} />
+    } else {
+      return (
+        <CustomAvatar skin='light' size={34}>
+          {getInitials(fullName)}
+        </CustomAvatar>
+      )
+    }
   }
-]
 
-const UserListCards = () => {
   return (
-    <Grid container spacing={6}>
-      {data.map((item, i) => (
-        <Grid key={i} item xs={12} sm={6} md={3}>
-          <HorizontalWithSubtitle {...item} />
-        </Grid>
-      ))}
-    </Grid>
+    <>
+      <Grid container spacing={6}>
+        {cardData.map((item, index) => (
+          <Grid item xs={12} sm={6} lg={4} key={index}>
+            <Card>
+              <CardContent className='flex flex-col gap-4'>
+                <div className='flex items-center justify-between'>
+                  <Typography className='flex-grow'>{`Total ${item.totalUsers} users`}</Typography>
+                  <AvatarGroup total={item.totalUsers}>
+                    {item.avatars.map((img, index) => (
+                      <Avatar key={index} alt={item.title} src={`/images/avatars/${img}`} />
+                    ))}
+                  </AvatarGroup>
+                </div>
+                <div className='flex justify-between items-center'>
+                  <Chip variant='tonal' label={item.title} color='primary' size='medium' className=' capitalize' />
+                </div>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </>
   )
 }
 

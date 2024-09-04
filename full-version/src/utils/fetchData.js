@@ -1,6 +1,6 @@
-import CryptoJS from 'crypto-js';
+import CryptoJS from 'crypto-js'
 import Cookies from 'js-cookie'
-
+import { convertFormdataInObject } from '@/utils/convertFormdataInObject'
 
 const generateNonce = () => CryptoJS.lib.WordArray.random(16).toString()
 const generateTimestamp = () => Date.now().toString()
@@ -9,54 +9,63 @@ const generateSignature = (payloaddata, secret, nonce, timestamp) => {
   return CryptoJS.HmacSHA256(payload, secret).toString(CryptoJS.enc.Hex)
 }
 
-const fetchData= async(url, method='GET', data = null) =>{
-  
-  const secret = process.env.NEXT_PUBLIC_SECRET_KEY || '';
+const fetchData = async (url, method = 'GET', data = null, type="default") => {
+  const secret = process.env.NEXT_PUBLIC_SECRET_KEY || ''
   const token = Cookies.get('accessToken')
 
-  if (!secret) {
-    throw new Error('Secret key is not defined')
-    
+  if (!secret || !token) {
+    throw new Error('Secret key or token is not defined')
   }
 
-  if (!token) {
-    throw new Error('Token is not defined')
+  const isFormData = data instanceof FormData
+
+  let signPayload
+
+  if (isFormData) {
+    signPayload = convertFormdataInObject(data, type)
+  } else {
+    signPayload = data
   }
-  
-  // const payloaddata = data ? JSON.stringify(data) : '';
-  const payloaddata = data ? JSON.stringify(data): JSON.stringify({})
+  console.log(signPayload, 'signpayloaddddddd')
+  console.log(data, 'normallll datataatatata')
+  const payloaddata = data ? JSON.stringify(signPayload) : JSON.stringify({})
+
   const nonce = generateNonce()
   const timestamp = generateTimestamp()
   const signature = generateSignature(payloaddata, secret, nonce, timestamp)
 
+  const headers = {
+    'livein-key': 'livein-key',
+    Nonce: nonce,
+    Timestamp: timestamp,
+    Signature: signature,
+    Authorization: `Bearer ${token}`
+  }
+  if (!isFormData) {
+    headers['Content-Type'] = 'application/json'
+  }
 
-    const headers= {
-      'Content-Type': 'application/json',
-      'livein-key': 'livein-key',
-      'Nonce': nonce,
-      'Timestamp': timestamp,
-      'Signature': signature,
-      'Authorization': `Bearer ${token}`
-      
-    }
-  
   const requestOptions = {
-    method, 
+    method,
     headers,
-    body: method !== 'GET'?JSON.stringify(data):null
+    body: method !== 'GET' ? (isFormData ? data : payloaddata) : null
   }
   try {
-    
-    const response = await fetch(url, requestOptions);
-    
+    const response = await fetch(url, requestOptions)
+
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      const errorMessage = await response.text()
+      throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorMessage}`)
     }
-    
-return await response.json();
-  }
-   catch (error) {
-    console.error('Error fetching data:', error);
+    // Check Content-Type and parse response accordingly
+    const contentType = response.headers.get('Content-Type')
+    if (contentType && contentType.includes('application/json')) {
+      return await response.json()
+    } else {
+      return await response.text() // Handle non-JSON responses
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error)
     throw error
   }
 }

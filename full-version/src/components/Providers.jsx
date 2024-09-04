@@ -5,7 +5,7 @@ import { VerticalNavProvider } from '@menu/contexts/verticalNavContext'
 import { SettingsProvider } from '@core/contexts/settingsContext'
 import ThemeProvider from '@components/theme'
 import { AuthProvider } from '@/contexts/AuthContext'
-
+import { ProductProvider } from '@/views/products/allproducts/productContext/ProductStateManagement'
 // Config Imports
 import themeConfig from '@configs/themeConfig'
 
@@ -31,8 +31,10 @@ const Providers = props => {
         <AuthProvider>
           <SettingsProvider settingsCookie={settingsCookie} mode={mode} demoName={demoName}>
             <ThemeProvider direction={direction} systemMode={systemMode}>
-              {children}
-              <AppReactToastify position={themeConfig.toastPosition} hideProgressBar />
+              <ProductProvider>
+                {children}
+                <AppReactToastify position={themeConfig.toastPosition} hideProgressBar />
+              </ProductProvider>
             </ThemeProvider>
           </SettingsProvider>
         </AuthProvider>

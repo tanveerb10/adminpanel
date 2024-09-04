@@ -1,122 +1,168 @@
 'use client'
-import { Button, Grid } from '@mui/material'
-import React, { useEffect, useState } from 'react'
-// import ProductSettings from '@/views/products/allproducts/product-settings/index'
-import ProductAddHeader from '@/views/products/allproducts/product-settings/add/ProductAddHeader'
-import ProductInformation from '@/views/products/allproducts/product-settings/add/ProductInformation'
-import ProductImage from '@/views/products/allproducts/product-settings/add/ProductImage'
-import ProductVariants from '@/views/products/allproducts/product-settings/add/ProductVariants'
-import ProductInventory from '@/views/products/allproducts/product-settings/add/ProductInventory'
-import ProductPricing from '@/views/products/allproducts/product-settings/add/ProductPricing'
-import ProductOrganize from '@/views/products/allproducts/product-settings/add/ProductOrganize'
-// import {CheckboxAutocomplete} from '@/libs/components/CheckboxAutocomplete'
-// import CustomCheckboxAutocomplete from '@/libs/components/CustomCheckboxAutocomplete'
+import React, { useEffect, useMemo, useState } from 'react'
 import fetchData from '@/utils/fetchData'
-// import VariantCombinationTable from '@/views/products/allproducts/product-settings/add/VariantCombinationTable'
-export default function Page() {
+import { useProduct } from '@views/products/allproducts/productContext/ProductStateManagement'
+import { toast } from 'react-toastify'
+import { useAuth } from '@/contexts/AuthContext'
+import { useParams, useRouter } from 'next/navigation'
+import ProductFormWrapper from '@views/products/allproducts/product-settings/add/ProductFormWrapper'
 
-  // const movie = [
-  //   { label: 'The Shawshank Redemption', year: 1994 },
-  //   { label: 'The Godfather', year: 1972 },
-  //   { label: 'The Godfather: Part II', year: 1974 },
-  //   { label: 'The Dark Knight', year: 2008 },
-  //   { label: '12 Angry Men', year: 1957 },
-  //   { label: "Schindler's List", year: 1993 },
-  //   { label: 'Pulp Fiction', year: 1994 },
-  //   { label: 'Amadeus', year: 1984 },
-  //   { label: 'To Kill a Mockingbird', year: 1962 },
-  //   { label: 'Toy Story 3', year: 2010 },
-  //   { label: 'Logan', year: 2017 },
-  //   { label: 'Full Metal Jacket', year: 1987 },
-  //   { label: 'Dangal', year: 2016 },
-  //   { label: 'The Sting', year: 1973 },
-  //   { label: '2001: A Space Odyssey', year: 1968 },
-  //   { label: "Singin' in the Rain", year: 1952 },
-  //   { label: 'Toy Story', year: 1995 },
-  //   { label: 'Bicycle Thieves', year: 1948 },
-  //   { label: 'The Kid', year: 1921 },
-  //   { label: 'Inglourious Basterds', year: 2009 },
-  //   { label: 'Snatch', year: 2000 },
-  //   { label: '3 Idiots', year: 2009 },
-  //   { label: 'Monty Python and the Holy Grail', year: 1975 }
-  // ]
-  
-  
-  const [productData, setProductData] = useState({
-    title: "",
-    description: "",
-    images: [],
-    brand: "",
-    categories: [],
-    published: "",
-    tags: [],
-    countryOfOrigin: "",
-    variants:[]
-  })
+export default function Page() {
+  const { productData, setProductData } = useProduct()
+  const [brandData, setBrandData] = useState([])
+  const [categoryData, setCategoryData] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const { role } = useAuth()
+  const { id } = useParams()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (role !== 'superadmin') {
+      const timer = setTimeout(() => {
+        router.push('/')
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [role, router])
 
   useEffect(() => {
     const brandUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands`
-    // const tagUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/tags/${id}`
     fetchData(brandUrl, 'GET')
       .then(response => {
-        console.log('Get brands data', response)
+        setBrandData(response)
       })
       .catch(error => {
-        console.log('error got', error)
+        toast.error('error got in brand', error)
+        console.log('error got in brand', error)
       })
   }, [])
 
-  const handleSaveProduct = () => {
-    console.log('Product Data',productData)
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categoryUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/categories`
+        const response = await fetchData(categoryUrl, 'GET')
+        setCategoryData(response.allCategory.map(option => option.category_name) || [])
+      } catch (error) {
+        toast.error('Error fetching categories')
+        setLoading(false)
+      }
+    }
+    fetchCategories()
+  }, [])
+
+  console.log('categoy', categoryData)
+
+  useEffect(() => {
+    if (id !== 'addnewproduct') {
+      const getSingleProduct = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/getproduct/${id}`
+      setLoading(true)
+      try {
+        fetchData(getSingleProduct, 'GET').then(response => {
+          handleEdit(response)
+          console.log('Get single product data', response)
+          setLoading(false)
+        })
+      } catch (error) {
+        console.log('error got', error)
+        setError('error got in brand', error)
+        setLoading(false)
+      } finally {
+        setLoading(false)
+      }
+    }
+  }, [])
+
+  const handleEdit = singleProductData => {
+    const singleParent = singleProductData?.finalProduct?.products[0]
+    console.log('singleeeeeee', singleParent)
+    const singleVideo = singleProductData?.finalProduct?.videos
+    const singleImage = singleProductData?.finalProduct.images
+    if (singleParent) {
+      const {
+        brand_name,
+        default_category,
+        categories,
+        product_description,
+        product_title,
+        product_type,
+        is_deleted,
+        tags,
+        published,
+        type_standard,
+        metafields,
+        ...rest
+      } = singleParent
+
+      const parData = {
+        brand_name,
+        default_category,
+        categories,
+        product_description,
+        product_title,
+        product_type,
+        tags,
+        published,
+        type_standard
+      }
+      const parmeta = metafields
+
+      const childData = singleProductData?.finalProduct?.products?.map(childVariant => {
+        const {
+          brand_name,
+          default_category,
+          categories,
+          product_description,
+          product_title,
+          product_type,
+          is_deleted,
+          tags,
+          published,
+          type_standard,
+          metafields,
+          ...rest
+        } = childVariant
+        return rest
+      })
+
+      setProductData({
+        parent: parData,
+        meta: parmeta,
+        videos: singleVideo,
+        images: singleImage,
+        child: childData,
+        isEdit: true,
+        dataOption: categoryData
+      })
+    }
+  }
+
+  if (loading || !productData) {
+    // need to check loading
+    return <div>Loading...</div>
+  }
+
+  if (error) {
+    return <div>No data available or {error}</div>
+  }
+
+  if (id == 'addnewproduct') {
+    return (
+      <>
+        <ProductFormWrapper brandData={brandData} isAddProduct={true} />
+      </>
+    )
   }
   return (
-    <Grid container spacing={6}>
-      {/* ============================================================== */}
-      {/* <Grid item xs={12}>
-        <CustomCheckboxAutocomplete placeholder='test check' label='test option' optionKey='label' initialOptions={movie}/>
-      </Grid> */}
-      {/* ============================================================== */}
-      <Grid item xs={12}>
-        <ProductAddHeader />
-      </Grid>
-        <Grid container spacing={6}>
-          <Grid item xs={12}>
-            <ProductInformation setProductData={ setProductData} />
-          </Grid>
-          {/* <Grid item xs={12}>
-            <ProductImage />
-          </Grid> */}
-          <Grid item xs={12}>
-            <ProductVariants setProductData={setProductData} />
-          </Grid>
-          <Grid item xs={12}>
-            <ProductImage setProductData={ setProductData} />
-          </Grid>
-          <Grid item xs={12}>
-            <ProductOrganize setProductData={ setProductData} />
-          </Grid>
-          {/* <Grid item xs={12}>
-            <ProductInventory />
-          </Grid> */}
-        </Grid>
-      {/* <Grid item xs={12} md={8}>
-      </Grid> */}
-      {/* <Grid item xs={12} md={4}> */}
-        {/* <Grid container spacing={6}> */}
-          {/* <Grid item xs={12}>
-                <ProductPricing />
-              </Grid> */}
-          
-        {/* </Grid> */}
-
-      {/* </Grid> */}
-         {/* <Grid>
-            <ProductVariants />
-          </Grid> */}
-      {/* <Testing/> */}
-      <Grid item xs={12}>
-<Button variant='contained' onClick={handleSaveProduct}>Save Product</Button>
-      </Grid>
-    </Grid>
+    <>
+      <ProductFormWrapper
+        brandData={brandData}
+        initialData={productData.parent}
+        id={id}
+        categoryoption={categoryData}
+      />
+    </>
   )
 }

@@ -11,30 +11,30 @@ import { IconButton, InputAdornment } from '@mui/material'
 import { useProduct } from '@views/products/allproducts/productContext/ProductStateManagement'
 import { Grid } from '@mui/material'
 
-const ProductImage = () => {
-  const { productData, addProductImages, updateProductImages, deleteProductImages } = useProduct()
+export default function ProductVideos() {
+  const { productData, addProductVideos, updateProductVideos, deleteProductVideos } = useProduct()
   const addOption = () => {
-    addProductImages()
+    addProductVideos()
   }
 
   const deleteOption = index => {
-    deleteProductImages(index)
+    deleteProductVideos(index)
   }
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title='Product Images' />
+          <CardHeader title='Product Videos' />
           <CardContent>
             <Grid container spacing={2} direction='column'>
               <Grid item xs={12} className=''>
-                {productData.images.map((img, index) => (
+                {productData.videos.map((video, index) => (
                   <Grid className='my-2' key={index}>
                     <CustomTextField
                       fullWidth
-                      placeholder='Enter Image Link'
-                      value={img.image_src}
-                      onChange={e => updateProductImages(index, e.target.value)}
+                      placeholder='Enter Vidoes Link'
+                      value={video.video_src}
+                      onChange={e => updateProductVideos(index, e.target.value)}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position='end'>
@@ -52,14 +52,14 @@ const ProductImage = () => {
               </Grid>
 
               <Grid>
-                {productData.images.length < 5 && (
+                {productData.videos.length < 5 && (
                   <Button
                     variant='outlined'
                     color='primary'
                     onClick={() => addOption()}
                     endIcon={<i className='tabler-plus' />}
                   >
-                    Add Image
+                    Add Video
                   </Button>
                 )}
               </Grid>
@@ -70,4 +70,3 @@ const ProductImage = () => {
     </Grid>
   )
 }
-export default ProductImage

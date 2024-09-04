@@ -1,5 +1,4 @@
 // MUI Imports
-import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 
 const ProductAddHeader = () => {
@@ -9,14 +8,6 @@ const ProductAddHeader = () => {
         <Typography variant='h4' className='mbe-1'>
           Add a new product
         </Typography>
-        <Typography>Orders placed across your store</Typography>
-      </div>
-      <div className='flex flex-wrap gap-4'>
-        <Button variant='tonal' color='secondary'>
-          Discard
-        </Button>
-        <Button variant='tonal'>Save Draft</Button>
-        <Button variant='contained'>Publish Product</Button>
       </div>
     </div>
   )

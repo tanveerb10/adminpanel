@@ -104,7 +104,9 @@ const Login = ({ mode }) => {
   } = useForm({
     resolver: valibotResolver(schema),
     defaultValues: {
+
       email: 'superadmin@livein.in',
+
       password: 'admin@123'
     }
   })

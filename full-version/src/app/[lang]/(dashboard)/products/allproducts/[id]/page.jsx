@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import fetchData from '@/utils/fetchData'
 import { useProduct } from '@views/products/allproducts/productContext/ProductStateManagement'
 import { toast } from 'react-toastify'
@@ -8,7 +8,7 @@ import { useParams, useRouter } from 'next/navigation'
 import ProductFormWrapper from '@views/products/allproducts/product-settings/add/ProductFormWrapper'
 
 export default function Page() {
-  const { productData, setProductData } = useProduct()
+  const { productData, setProductData, updateDataOption } = useProduct()
   const [brandData, setBrandData] = useState([])
   const [categoryData, setCategoryData] = useState([])
   const [loading, setLoading] = useState(false)
@@ -39,19 +39,24 @@ export default function Page() {
       })
   }, [])
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const categoryUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/categories`
-        const response = await fetchData(categoryUrl, 'GET')
-        setCategoryData(response.allCategory.map(option => option.category_name) || [])
-      } catch (error) {
-        toast.error('Error fetching categories')
-        setLoading(false)
-      }
+  const fetchCategories = useCallback(async () => {
+    try {
+      const categoryUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/categories`
+      const response = await fetchData(categoryUrl, 'GET')
+
+      // setCategoryData(response.allCategory.map(option => option.category_name) || [])
+      const categories = response.allCategory.map(option => option.category_name)
+      setCategoryData(categories)
+      updateDataOption(categories)
+    } catch (error) {
+      toast.error('Error fetching categories')
+      setLoading(false)
     }
+  }, [updateDataOption])
+
+  useEffect(() => {
     fetchCategories()
-  }, [])
+  }, [fetchCategories])
 
   console.log('categoy', categoryData)
 
@@ -73,7 +78,7 @@ export default function Page() {
         setLoading(false)
       }
     }
-  }, [])
+  }, [id])
 
   const handleEdit = singleProductData => {
     const singleParent = singleProductData?.finalProduct?.products[0]

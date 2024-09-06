@@ -1,140 +1,163 @@
 'use client'
-import React, { useState, useCallback } from 'react'
-import { Button, Card, CardContent, Grid, Box, CardHeader } from '@mui/material'
-import ProjectDropZone from '@/libs/components/ProjectDropZone'
-import Typography from '@mui/material/Typography'
+import React, { useState, useEffect } from 'react'
+import { useForm, Controller } from 'react-hook-form'
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { Card, CardContent, Button, Typography, Grid, MenuItem, Chip } from '@mui/material'
+import CustomTextField from '@core/components/mui/TextField'
+import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
-// import fetchFormData from '@/utils/fetchFormData'
 import fetchData from '@/utils/fetchData'
+import { getLocalizedUrl } from '@/utils/i18n'
 
-const Metas = () => {
-  const [metaFile, setMetaFile] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [fileName, setFileName] = useState('')
-  const [isFailed, setIsFailed] = useState(false)
-  const [responseMessage, setResponseMessage] = useState('')
-  const [fileUrl, setFileUrl] = useState(null)
+const MetasDetailForm = ({ isAddProduct, brandData }) => {
+  isAddProduct = true
 
-  const onDrop = useCallback(acceptedFiles => {
-    if (acceptedFiles.length && acceptedFiles[0].type === 'text/csv') {
-      setMetaFile(acceptedFiles[0])
-      setFileName(acceptedFiles[0].name)
-    } else {
-      setMetaFile(null)
-      toast.error('Upload valid file', 'bottom')
-      setFileName('')
+  const initialFormData = {
+    meta_title: brandData?.brand?.brand_name || '',
+    product_title: brandData?.brand?.products_count || '',
+    meta_description: brandData?.brand?.brand_description || '',
+    key_words: brandData?.brand?.brand_image_src || []
+  }
+
+  const validationSchema = yup.object().shape({
+    meta_title: yup.string().required('Meta name is required'),
+    product_title: yup.string().required('Product title is required'),
+    meta_description: yup.string().required('Meta description is required')
+  })
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    reset
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+    defaultValues: initialFormData
+  })
+
+  useEffect(() => {
+    if (brandData) {
+      reset(initialFormData)
     }
-  }, [])
+  }, [brandData, reset])
 
-  const handleRemoveFile = () => {
-    setMetaFile(null)
-    setFileName('')
-  }
-  const handleUploadAgain = () => {
-    setIsFailed(false)
-  }
-  const handleUploadFile = async () => {
-    const formData = new FormData()
-    formData.append('file', metaFile)
+  const { id, lang: locale } = useParams()
+  const router = useRouter()
 
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/bulkProductMeta`
-
-    setLoading(true)
+  const handleFormSubmit = async data => {
+    console.log('tanveer')
+    console.log('Form Submit called', data)
 
     try {
-      const response = await fetchData(apiUrl, 'POST', formData, 'file')
-      console.log('data of response', response)
+      const apiUrl = isAddProduct
+        ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/addProductMeta`
+        : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/updateProductMeta/${id}`
 
+      const response = await fetchData(apiUrl, isAddProduct ? 'POST' : 'PUT')
+      console.log('API Response:', response)
+
+      if (!response.success) {
+        console.log('error response', response.message)
+        toast.error(response.message)
+      }
       if (response.success) {
-        console.log('Data submitted successfully:', response)
-        toast.success('File uploaded successfully')
-
-        setMetaFile(null)
-        setFileName('')
-      } else if (!response.ok || response.fileUrl) {
-        setFileUrl(response.fileUrl)
-        console.log('response fileUrl', response.fileUrl)
-        setIsFailed(true)
-        setMetaFile(null)
-        setFileName('')
-        throw new Error(response.message)
-      } else {
-        setFileUrl(null)
-        setIsFailed(false)
-        console.log(fileUrl)
+        setTimeout(() => router.push(getLocalizedUrl(`/products/metas`, locale)), 3000)
+        return toast.success(response.message)
       }
     } catch (error) {
-      console.error('Error submitting data:', error.message)
-      toast.error(`Error in submitting: ${error.message}`)
-      setMetaFile(null)
-      setFileName('')
-      setIsFailed(true)
-      setResponseMessage(error.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-  console.log(fileUrl)
-  const DownloadErrorFile = () => {
-    if (fileUrl) {
-      window.location.href = fileUrl
-    } else {
-      toast.error('No file URL available for download')
+      console.error('API Error:', error)
+      toast.error(error.message || 'An Error occurred')
     }
   }
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={6}>
       <Grid item xs={12}>
         <Card>
           <CardContent>
-            {!isFailed ? (
-              <>
-                <ProjectDropZone onDrop={onDrop} loading={loading} />
-                {fileName && (
-                  <Box my={4} p={2} sx={{ border: '1px solid gray' }}>
-                    <Grid container alignItems='center' spacing={2}>
-                      <Grid item xs={12} md={8}>
-                        <Typography>{fileName}</Typography>
-                      </Grid>
-                      <Grid item xs={12} md={4} container justifyContent={{ xs: 'center', md: 'flex-end' }} spacing={2}>
-                        <Grid item>
-                          <Button onClick={handleRemoveFile}>Remove</Button>
-                        </Grid>
-                        <Grid item>
-                          <Button variant='contained' onClick={handleUploadFile} disabled={!metaFile || loading}>
-                            {loading ? 'Uploading...' : 'Upload file'}
-                          </Button>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  </Box>
-                )}
-              </>
-            ) : (
-              <>
-                <Box display='flex' justifyContent='center' mb={2}>
-                  <Button variant='contained' onClick={handleUploadAgain}>
-                    Upload Again
+            <form onSubmit={handleSubmit(handleFormSubmit)}>
+              <Grid container spacing={6}>
+                <Grid item xs={12} sm={6}>
+                  <Controller
+                    name='meta_title'
+                    control={control}
+                    render={({ field }) => (
+                      <CustomTextField
+                        {...field}
+                        fullWidth
+                        label='Meta Name'
+                        placeholder='Meta Name'
+                        error={Boolean(errors.meta_title)}
+                        helperText={errors.meta_title?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Controller
+                    name='product_title'
+                    control={control}
+                    render={({ field }) => (
+                      <CustomTextField
+                        {...field}
+                        fullWidth
+                        label='Product Title'
+                        placeholder='Product Title'
+                        error={Boolean(errors.product_title)}
+                        helperText={errors.product_title?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Controller
+                    name='meta_description'
+                    control={control}
+                    render={({ field }) => (
+                      <CustomTextField
+                        {...field}
+                        fullWidth
+                        multiline
+                        maxRows={4}
+                        label='Meta Description'
+                        placeholder='Meta Description'
+                        error={Boolean(errors.meta_description)}
+                        helperText={errors.meta_description?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                  {/* <Controller
+                    name='key_words'
+                    control={control}
+                    render={({ field }) => ( */}
+                  <CustomTextField
+                    // {...field}
+                    fullWidth
+                    multiline
+                    maxRows={4}
+                    label='Meta keywords'
+                    placeholder='Meta keywords'
+                    // error={Boolean(errors.brand_description)}
+                    // helperText={errors.brand_description?.message}
+                  >
+                    <Chip />
+                  </CustomTextField>
+                  {/* )}
+                  /> */}
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Button variant='contained' type='submit'>
+                    {isAddProduct ? 'Add Meta' : 'Save Changes'}
                   </Button>
-                </Box>
-                <Box my={4} p={2} sx={{ border: '1px solid gray' }}>
-                  <Grid container alignItems='center' spacing={2}>
-                    <Grid item xs={12} md={8}>
-                      <Typography>{responseMessage}</Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4} container justifyContent={{ xs: 'center', md: 'flex-end' }} spacing={2}>
-                      {isFailed && fileUrl && (
-                        <Grid item>
-                          <Button variant='contained' color='error' onClick={DownloadErrorFile}>
-                            Download Error File
-                          </Button>
-                        </Grid>
-                      )}
-                    </Grid>
-                  </Grid>
-                </Box>
-              </>
-            )}
+                </Grid>
+              </Grid>
+            </form>
           </CardContent>
         </Card>
       </Grid>
@@ -142,4 +165,4 @@ const Metas = () => {
   )
 }
 
-export default Metas
+export default MetasDetailForm

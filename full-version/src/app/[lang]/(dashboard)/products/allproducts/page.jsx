@@ -7,7 +7,7 @@ import { Typography } from '@mui/material'
 export default function page() {
   const [productData, setProductData] = useState([])
   const [loading, setLoading] = useState(true)
-  const productUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products`
+  const productUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/allproduct`
   useEffect(() => {
     const fetchProducts = async () => {
       try {

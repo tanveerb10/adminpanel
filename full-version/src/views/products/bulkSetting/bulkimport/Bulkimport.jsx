@@ -21,7 +21,8 @@ const exportUrls = {
   productUploadTab: `/admin/products/exportProductToCSV`,
   priceTab: `/admin/products/exportPrice`,
   categoryTab: `/admin/products/exportCategories`,
-  inventoryTab: `/admin/products/exportStock`
+  inventoryTab: `/admin/products/exportStock`,
+  metasTab: `/admin/products/exportProductMeta`
 }
 
 const Bulkimport = ({ TabValue, HeaderValue }) => {
@@ -232,7 +233,7 @@ const Bulkimport = ({ TabValue, HeaderValue }) => {
         <Card>
           <CardHeader title='History log' />
           <CardContent>
-            <BulkHistoryTable callAgain={loading} />
+            <BulkHistoryTable callAgain={loading} TabValue={TabValue} />
           </CardContent>
         </Card>
       </Grid>

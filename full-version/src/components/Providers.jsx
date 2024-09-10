@@ -6,12 +6,13 @@ import { SettingsProvider } from '@core/contexts/settingsContext'
 import ThemeProvider from '@components/theme'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ProductProvider } from '@/views/products/allproducts/productContext/ProductStateManagement'
+
 // Config Imports
 import themeConfig from '@configs/themeConfig'
 
 // Styled Component Imports
 import AppReactToastify from '@/libs/styles/AppReactToastify'
-
+import { FeedbackProvider } from '@/contexts/FeedbackContext'
 // Util Imports
 import { getDemoName, getMode, getSettingsFromCookie, getSystemMode } from '@core/utils/serverHelpers'
 
@@ -31,10 +32,12 @@ const Providers = props => {
         <AuthProvider>
           <SettingsProvider settingsCookie={settingsCookie} mode={mode} demoName={demoName}>
             <ThemeProvider direction={direction} systemMode={systemMode}>
-              <ProductProvider>
-                {children}
-                <AppReactToastify position={themeConfig.toastPosition} hideProgressBar />
-              </ProductProvider>
+              <FeedbackProvider>
+                <ProductProvider>
+                  {children}
+                  <AppReactToastify position={themeConfig.toastPosition} hideProgressBar />
+                </ProductProvider>
+              </FeedbackProvider>
             </ThemeProvider>
           </SettingsProvider>
         </AuthProvider>

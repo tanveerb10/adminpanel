@@ -1,10 +1,10 @@
 'use client'
-import React, { useEffect, useMemo, useState } from 'react'
+
+import React, { useEffect, useState } from 'react'
 import fetchData from '@/utils/fetchData'
 import { toast } from 'react-toastify'
 import { useAuth } from '@/contexts/AuthContext'
 import { useParams, useRouter } from 'next/navigation'
-import ProductFormWrapper from '@views/products/allproducts/product-settings/add/ProductFormWrapper'
 import Metas from '@/views/products/metas/Metas'
 
 export default function Page() {
@@ -30,6 +30,7 @@ export default function Page() {
       setLoading(true)
       try {
         fetchData(getSingleProduct, 'GET').then(response => {
+
           console.log('Get single product data', response)
           setLoading(false)
         })
@@ -42,7 +43,6 @@ export default function Page() {
       }
     }
   }, [])
-
   if (loading) {
     // need to check loading
     return <div>Loading...</div>
@@ -55,7 +55,9 @@ export default function Page() {
   if (id == 'addnewmetas') {
     return (
       <>
+
         <Metas isAddMetas={true} />
+
       </>
     )
   }

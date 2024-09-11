@@ -38,13 +38,34 @@ const columns = [
   }
 ]
 
-export default function BulkHistoryTable({ callAgain }) {
+const API_URLS = {
+  productUploadTab: '/admin/products/getUploadHistory',
+  productUpdateTab: '/admin/products/UpdateProductHistory',
+  priceTab: '/admin/products/priceUploadHistory',
+  categoryTab: '/admin/products/CategoryUploadHistory',
+  metasTab: '/admin/products/getProductMetHistory',
+  inventoryTab: '/admin/products/stockUploadHistory'
+}
+
+const sr_id = {
+  productUploadTab: 'bulk_product_meta_id',
+  productUpdateTab: 'update_whole_product_id',
+  priceTab: 'update_price_id',
+  categoryTab: 'update_category_id',
+  metasTab: 'update_product_meta_id',
+  inventoryTab: 'update_stock_id'
+}
+
+const baseUrl = process.env.NEXT_PUBLIC_API_URL_LIVE
+
+export default function BulkHistoryTable({ callAgain, TabValue }) {
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [historyLogData, setHistoryLogData] = useState(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  console.log(TabValue, 'Tab value from history table')
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
   }
@@ -55,10 +76,13 @@ export default function BulkHistoryTable({ callAgain }) {
   }
 
   useEffect(() => {
+    let isMounted = true
     const fetchHistoryData = async () => {
+      const urls = API_URLS[TabValue]
+      const url = `${baseUrl}${urls}`
       try {
-        const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/getUploadHistory`
-        const responseData = await fetchData(apiUrl)
+        // const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/getUploadHistory`
+        const responseData = await fetchData(url, 'GET')
         setHistoryLogData(responseData)
       } catch (error) {
         setError(error)
@@ -68,7 +92,11 @@ export default function BulkHistoryTable({ callAgain }) {
     }
 
     fetchHistoryData()
-  }, [callAgain])
+
+    return () => {
+      isMounted = false
+    }
+  }, [callAgain, TabValue])
 
   if (loading) return <div>Loading...</div>
   if (error) return <div>Error fetching data: {error.message}</div>
@@ -78,7 +106,6 @@ export default function BulkHistoryTable({ callAgain }) {
     const dates = new Date(dataData)
     const date = ` ${dates.getDate()}/${dates.getMonth() + 1}/${dates.getFullYear()}`
     const time = `${dates.getHours() % 12 || 12}-${dates.getMinutes()}-${dates.getSeconds()} ${dates.getHours() >= 12 ? 'PM' : 'AM'}`
-    const changeFormat = dates.toLocaleString()
     return (
       <div className='flex gap-2 flex-col justify-center items-center'>
         <Chip label={time} />
@@ -87,14 +114,23 @@ export default function BulkHistoryTable({ callAgain }) {
     )
   }
 
-  const tableLog = historyLogData.data.map(data => ({
-    csvId: data.bulk_product_meta_id,
-    fileName: data.file_name,
-    exportFile: data.fileUrl,
-    status: data.upload_status,
-    date: formatDate(data.createdAt),
-    username: data.admin_id ? data.admin_id.firstname : 'Unknown'
-  }))
+  const tableLog = historyLogData.data.map(
+    data => (
+      console.log(TabValue),
+      console.log(sr_id[TabValue]),
+      console.log(data),
+      console.log(data[sr_id[TabValue]]),
+      {
+        // csvId: data.bulk_product_meta_id,
+        csvId: data[sr_id[TabValue]] || 'unknown',
+        fileName: data.file_name,
+        exportFile: data.fileUrl,
+        status: data.upload_status,
+        date: formatDate(data.createdAt),
+        username: data.admin_id ? data.admin_id.firstname : 'Unknown'
+      }
+    )
+  )
   if (tableLog.length === 0) {
     return <div>There is no history data log</div>
   }

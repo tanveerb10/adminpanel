@@ -98,7 +98,7 @@ const truncateText = (text, maxLength) => {
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const ProductTableList = ({ tableData = [], totalProducts }) => {
+const ProductTableList = ({ tableData = [], totalProducts, fromMetas }) => {
   console.log('table list', tableData)
   // States
   const [rowSelection, setRowSelection] = useState({})
@@ -251,11 +251,19 @@ const ProductTableList = ({ tableData = [], totalProducts }) => {
         header: 'Action',
         cell: ({ row }) => (
           <div className='flex items-center'>
-            <IconButton>
-              <Link href={getLocalizedUrl(`/products/allproducts/${row.original.id}`, locale)} className='flex'>
-                <i className='tabler-edit text-[22px] text-textSecondary' />
-              </Link>
-            </IconButton>
+            {fromMetas ? (
+              <IconButton>
+                <Link href={getLocalizedUrl(`/products/metas/${row.original.id}`, locale)} className='flex'>
+                  <i className='tabler-edit text-[22px] text-textSecondary' />
+                </Link>
+              </IconButton>
+            ) : (
+              <IconButton>
+                <Link href={getLocalizedUrl(`/products/allproducts/${row.original.id}`, locale)} className='flex'>
+                  <i className='tabler-edit text-[22px] text-textSecondary' />
+                </Link>
+              </IconButton>
+            )}
           </div>
         ),
         enableSorting: false

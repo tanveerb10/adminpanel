@@ -30,7 +30,7 @@ export default function page() {
   console.log(productData, 'prodddsdfgdfgfdsfghfdghfdg')
   return (
     <div>
-      <Allproducts allProductData={productData} />
+      <Allproducts allProductData={productData} fromMetas={true} />
     </div>
   )
 }

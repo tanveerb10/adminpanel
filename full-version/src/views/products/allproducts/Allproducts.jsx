@@ -1,6 +1,6 @@
 import React from 'react'
 import ProductTableList from '@/views/products/allproducts/product-settings/productTable/ProductTableList'
-const Allproducts = ({ allProductData }) => {
+const Allproducts = ({ allProductData, fromMetas }) => {
   const tableData = allProductData.allProduct?.map(product => ({
     name: product.product_title,
     description: product.product_description,
@@ -15,7 +15,7 @@ const Allproducts = ({ allProductData }) => {
 
   return (
     <div>
-      <ProductTableList tableData={tableData} totalProducts={totalProducts} />
+      <ProductTableList tableData={tableData} totalProducts={totalProducts} fromMetas={fromMetas} />
     </div>
   )
 }

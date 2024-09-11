@@ -1,10 +1,11 @@
 'use client'
+
 import React, { useEffect, useState } from 'react'
 import fetchData from '@/utils/fetchData'
 import { toast } from 'react-toastify'
 import { useAuth } from '@/contexts/AuthContext'
 import { useParams, useRouter } from 'next/navigation'
-import MetasDetailForm from '@views/products/metas/MetasDetailForm'
+import Metas from '@/views/products/metas/Metas'
 
 export default function Page() {
   const [loading, setLoading] = useState(false)
@@ -25,11 +26,11 @@ export default function Page() {
 
   useEffect(() => {
     if (id !== 'addnewmetas') {
-      const getSingleProduct = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/getproduct/${id}`
+      const getSingleProduct = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/getproductmeta/${id}`
       setLoading(true)
       try {
         fetchData(getSingleProduct, 'GET').then(response => {
-          handleEdit(response)
+
           console.log('Get single product data', response)
           setLoading(false)
         })
@@ -54,13 +55,15 @@ export default function Page() {
   if (id == 'addnewmetas') {
     return (
       <>
-        <MetasDetailForm isAddMetas={true} />
+
+        <Metas isAddMetas={true} />
+
       </>
     )
   }
   return (
-    <div>
-      <MetasDetailForm />
-    </div>
+    <>
+      <Metas id={id} />
+    </>
   )
 }

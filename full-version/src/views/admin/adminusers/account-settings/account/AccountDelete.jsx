@@ -15,13 +15,17 @@ import FormHelperText from '@mui/material/FormHelperText'
 
 // Third-party Imports
 import { useForm, Controller } from 'react-hook-form'
-
-// Component Imports
-import ConfirmationDialog from '@components/dialogs/confirmation-dialog'
+import { useFeedback } from '@/contexts/FeedbackContext'
+import { useParams, useRouter } from 'next/navigation'
+import fetchData from '@/utils/fetchData'
 
 const AccountDelete = () => {
+  const { showFeedback } = useFeedback()
+  const { id } = useParams()
+  const router = useRouter()
   // States
   const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   // Hooks
   const {
@@ -36,6 +40,25 @@ const AccountDelete = () => {
 
   const onSubmit = () => {
     setOpen(true)
+  }
+
+  const handleDelete = async () => {
+    setLoading(true)
+    try {
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/deleteadmin/${id}`
+      const response = await fetchData(apiUrl, 'DELETE', {})
+      if (response.success) {
+        showFeedback('Account deleted successfully.', 'success')
+        router.push('/admin/adminusers')
+      } else {
+        throw new Error(response.message || 'Failed to delete admin.')
+      }
+    } catch (error) {
+      showFeedback(error.message || 'An error occurred.', 'error')
+    } finally {
+      setLoading(false)
+      setOpen(false)
+    }
   }
 
   return (
@@ -54,10 +77,15 @@ const AccountDelete = () => {
             />
             {errors.checkbox && <FormHelperText error>Please confirm you want to delete this account</FormHelperText>}
           </FormControl>
-          <Button variant='contained' color='error' type='submit' disabled={!checkboxValue}>
-            Deactivate Account
+          <Button
+            variant='contained'
+            color='error'
+            type='submit'
+            disabled={!checkboxValue}
+            onClick={() => handleDelete()}
+          >
+            {!loading ? 'Deactivate Account' : 'Deactivating....'}
           </Button>
-          <ConfirmationDialog open={open} setOpen={setOpen} type='delete-account' />
         </form>
       </CardContent>
     </Card>

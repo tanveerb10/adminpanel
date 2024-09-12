@@ -352,7 +352,7 @@ const BrandTableList = ({ tableData, totalBrands }) => {
               onClick={() => router.push(getLocalizedUrl(`/products/brands/addnewbrand`, locale))}
               className='is-full sm:is-auto'
             >
-              Add New Brand
+              Add New Coupon
             </Button>
           </div>
         </div>

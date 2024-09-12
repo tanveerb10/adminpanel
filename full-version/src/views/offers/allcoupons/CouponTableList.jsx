@@ -36,7 +36,7 @@ import {
 } from '@tanstack/react-table'
 
 // Component Imports
-import BrandTableFilter from '@views/products/brands/BrandTableFilter'
+import CouponTableFilter from '@views/offers/allcoupons/CouponTableFilter'
 import OptionMenu from '@core/components/option-menu'
 import TablePaginationComponent from '@components/TablePaginationComponent'
 import CustomTextField from '@core/components/mui/TextField'
@@ -99,7 +99,7 @@ const truncateText = (text, maxLength) => {
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const BrandTableList = ({ tableData, totalBrands }) => {
+const CouponTableList = ({ tableData, totalCoupons }) => {
   // States
   const [rowSelection, setRowSelection] = useState({})
 
@@ -207,13 +207,7 @@ const BrandTableList = ({ tableData, totalBrands }) => {
             <Chip
               variant='tonal'
               className='capitalize'
-              label={row.original.status ? 'Inactive' : 'Active'}
-              // color={userStatusObj[row.original.isDeleted]}
-              //   color={statusO={
-              //     "Inactive" : 'error'
-
-              // }
-              // }
+              label={row.original.status ? 'Active' : 'Inactive'}
               size='small'
             />
           </div>
@@ -313,7 +307,7 @@ const BrandTableList = ({ tableData, totalBrands }) => {
     <>
       <Card>
         <CardHeader title='Filters' className='pbe-4' />
-        <BrandTableFilter setData={setData} tableData={tableData} />
+        <CouponTableFilter setData={setData} tableData={tableData} />
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select
@@ -326,9 +320,9 @@ const BrandTableList = ({ tableData, totalBrands }) => {
             <MenuItem value='50'>50</MenuItem>
           </CustomTextField>
           <div>
-            Total Brands:
+            Total Coupons:
             {/* <Chip variant='outlined' label={totalAdmin} color='warning' size='small' className='ml-2' /> */}
-            <Chip variant='outlined' label={totalBrands} color='warning' size='small' className='ml-2' />
+            <Chip variant='outlined' label={totalCoupons} color='warning' size='small' className='ml-2' />
           </div>
 
           <div className='flex flex-col sm:flex-row is-full sm:is-auto items-start sm:items-center gap-4'>
@@ -349,7 +343,7 @@ const BrandTableList = ({ tableData, totalBrands }) => {
             <Button
               variant='contained'
               startIcon={<i className='tabler-plus' />}
-              onClick={() => router.push(getLocalizedUrl(`/products/brands/addnewbrand`, locale))}
+              onClick={() => router.push(getLocalizedUrl(`/offers/allcoupons/addnewcoupon`, locale))}
               className='is-full sm:is-auto'
             >
               Add New Coupon
@@ -425,4 +419,4 @@ const BrandTableList = ({ tableData, totalBrands }) => {
   )
 }
 
-export default BrandTableList
+export default CouponTableList

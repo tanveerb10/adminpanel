@@ -15,13 +15,16 @@ import FormHelperText from '@mui/material/FormHelperText'
 
 // Third-party Imports
 import { useForm, Controller } from 'react-hook-form'
+import { useFeedback } from '@/contexts/FeedbackContext'
+import { useParams, useRouter } from 'next/navigation'
+import fetchData from '@/utils/fetchData'
 
-// Component Imports
-import BrandConfirmationDialog from '@views/products/brands/BrandConfirmationDialog'
-
-const BrandDelete = ({ id, status }) => {
+const CouponDelete = ({ id, status }) => {
+  const { showFeedback } = useFeedback()
+  // const { id } = useParams()
+  const router = useRouter()
   // States
-  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   // Hooks
   const {
@@ -34,13 +37,31 @@ const BrandDelete = ({ id, status }) => {
   // Vars
   const checkboxValue = watch('checkbox')
 
-  const onSubmit = () => {
-    setOpen(true)
+  const onSubmit = async () => {
+    if (!checkboxValue) return
+
+    setLoading(true)
+    try {
+      const apiUrl = status
+        ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/coupons/deactivatecoupon/${id}`
+        : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/coupons/activatecoupon/${id}`
+      const response = await fetchData(apiUrl, 'POST', {})
+      if (response.success) {
+        showFeedback(`Coupon ${status ? 'deactivated' : 'activated'} successfully.`, 'success')
+        router.push('/offers/allcoupons')
+      } else {
+        throw new Error(response.message || 'Failed to process coupon request.')
+      }
+    } catch (error) {
+      showFeedback(error.message || 'An error occurred.', 'error')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <Card>
-      <CardHeader title='Deactived Brand' />
+      <CardHeader title={status ? 'Deactivate Coupon' : 'Activate Coupon'} />
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormControl error={Boolean(errors.checkbox)} className='is-full mbe-6'>
@@ -48,28 +69,29 @@ const BrandDelete = ({ id, status }) => {
               name='checkbox'
               control={control}
               rules={{ required: true }}
-              render={({ field }) => (
-                <FormControlLabel control={<Checkbox {...field} />} label='I confirm this brand deactivation' />
-              )}
+              render={({ field }) => <FormControlLabel control={<Checkbox {...field} />} label='I confirm my action' />}
             />
-            {errors.checkbox && <FormHelperText error>Please confirm you want to deactivate this brand</FormHelperText>}
+            {errors.checkbox && <FormHelperText error>Please confirm you want to proceed</FormHelperText>}
           </FormControl>
 
-          {status ? (
-            <Button variant='contained' color='success' type='submit' disabled={!checkboxValue}>
-              Activate Brand
-            </Button>
-          ) : (
-            <Button variant='contained' color='error' type='submit' disabled={!checkboxValue}>
-              Deactivate Brand
-            </Button>
-          )}
-
-          <BrandConfirmationDialog open={open} setOpen={setOpen} id={id} status={status} />
+          <Button
+            variant='contained'
+            color={status ? 'error' : 'success'}
+            type='submit'
+            disabled={!checkboxValue || loading}
+          >
+            {loading
+              ? status
+                ? 'Deactivating....'
+                : 'Activating....'
+              : status
+                ? 'Deactivate Coupon'
+                : 'Activate Coupon'}
+          </Button>
         </form>
       </CardContent>
     </Card>
   )
 }
 
-export default BrandDelete
+export default CouponDelete

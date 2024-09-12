@@ -3,13 +3,13 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Card, CardContent, Button, Typography, Grid, MenuItem, Autocomplete, CircularProgress } from '@mui/material'
+import { Card, CardContent, Button, Grid, MenuItem, Autocomplete, CircularProgress } from '@mui/material'
 import CustomTextField from '@core/components/mui/TextField'
 import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
 import fetchData from '@/utils/fetchData'
 import { getLocalizedUrl } from '@/utils/i18n'
-import BrandDelete from '@views/products/brands/BrandDelete'
+import CouponDelete from '@views/offers/allcoupons/CouponDelete'
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 
 const CouponDetailForm = ({ isAddCoupon, couponData }) => {
@@ -24,18 +24,21 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
     discount_type: couponData?.coupon?.discount_type || '',
     discount_value: couponData?.coupon?.discount_value || '',
     min_order_value: couponData?.coupon?.min_order_value || '',
-    max_order_value: couponData?.coupon?.max_order_value || ''
+    max_order_value: couponData?.coupon?.max_order_value || '',
+    valid_from: couponData?.coupon?.valid_from ? new Date(couponData.coupon.valid_from) : new Date(),
+    valid_to: couponData?.coupon?.valid_to ? new Date(couponData.coupon.valid_to) : new Date(),
+    customer_for: couponData?.coupon?.coupon_for || ''
   }
 
-  const [eligibilityValue, setEligibilityValue] = useState('')
+  const today = new Date()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [open, setOpen] = useState(false)
   const [options, setOptions] = useState([])
   const [submitting, setSubmitting] = useState(false)
   const [dateFormat, setDateFormat] = useState({
-    validFrom: new Date(),
-    validTo: new Date()
+    validFrom: today,
+    validTo: today
   })
 
   const validationSchema = yup.object().shape({
@@ -48,18 +51,20 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
     discount_value: yup.number().required('Discount value is required'),
     min_order_value: yup.number().required('Min order value is required'),
     max_order_value: yup.number().required('Max order value is required'),
-
-    sort_order: yup.string().required('Sort order is required'),
-
     status: yup.boolean().required('Is Deleted is required'),
-    coupon_image_alt: yup.string().required('imaga alt')
+
+    customer_for: yup.string().when('coupon_eligibility', {
+      is: 'single',
+      then: schema => schema.required('Customer is required when eligibility is single')
+    })
   })
 
   const {
     handleSubmit,
     control,
     formState: { errors },
-    reset
+    reset,
+    watch
   } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: initialFormData
@@ -68,13 +73,18 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
   useEffect(() => {
     if (couponData) {
       reset(initialFormData)
+      setDateFormat({
+        validFrom: couponData?.coupon?.valid_from ? new Date(couponData.coupon.valid_from) : today,
+        validTo: couponData?.coupon?.valid_to ? new Date(couponData.coupon.valid_to) : today
+      })
     }
   }, [couponData, reset])
+
+  const couponEligibility = watch('coupon_eligibility')
 
   const { id, lang: locale } = useParams()
   const router = useRouter()
 
-  console.log(eligibilityValue)
   const handleFormSubmit = async data => {
     console.log('tanveer')
     console.log('Form Submit called', data)
@@ -92,7 +102,7 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
         toast.error(response.message)
       }
       if (response.success) {
-        setTimeout(() => router.push(getLocalizedUrl(`/offers/coupons`, locale)), 3000)
+        setTimeout(() => router.push(getLocalizedUrl(`/offers/allcoupons`, locale)), 3000)
         return toast.success(response.message)
       }
     } catch (error) {
@@ -125,25 +135,11 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
     }
   }, [])
 
-  const loadingData = open && options.length === 0
-
   useEffect(() => {
-    let active = true
-
-    if (!loadingData) {
-      return undefined
-    }
-
-    return () => {
-      active = false
-    }
-  }, [loadingData])
-
-  useEffect(() => {
-    if (open && options.length === 0) {
+    if (open && couponEligibility === 'single' && options.length === 0) {
       allCustomers()
     }
-  }, [open])
+  }, [open, options.length, allCustomers, couponEligibility])
 
   return (
     <Grid container spacing={6}>
@@ -283,7 +279,6 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
                         label='Coupon Eligibility'
                         onChange={e => {
                           field.onChange(e)
-                          setEligibilityValue(e.target.value)
                         }}
                         error={Boolean(errors.coupon_eligibility)}
                         helperText={errors.coupon_eligibility?.message}
@@ -296,33 +291,45 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
-                  <Autocomplete
-                    sx={{ width: 300 }}
-                    open={open}
-                    onOpen={() => {
-                      setOpen(true)
-                    }}
-                    onClose={() => {
-                      setOpen(false)
-                    }}
-                    disabled={eligibilityValue !== 'single'}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                    getOptionLabel={option => option.label}
-                    options={options}
-                    loading={loading}
-                    renderInput={params => (
-                      <CustomTextField
-                        {...params}
-                        label='Select Customer'
-                        input={{
-                          ...params.InputProps,
-                          endAdornment: (
-                            <>
-                              {loading ? <CircularProgress color='inherit' size={20} /> : null}
-                              {params.InputProps.endAdornment}
-                            </>
-                          )
+                  <Controller
+                    name='customer_for'
+                    control={control}
+                    defaultValue={couponData?.coupon_for || ''}
+                    render={({ field }) => (
+                      <Autocomplete
+                        {...field}
+                        sx={{ width: 300 }}
+                        open={open}
+                        onOpen={() => {
+                          setOpen(true)
                         }}
+                        onClose={() => {
+                          setOpen(false)
+                        }}
+                        disabled={couponEligibility !== 'single'}
+                        onChange={(event, value) => field.onChange(value?.id || '')}
+                        isOptionEqualToValue={(option, value) => option.id === value}
+                        getOptionLabel={option => option.label || ''}
+                        options={options}
+                        loading={loading}
+                        renderInput={params => (
+                          <CustomTextField
+                            {...params}
+                            placeholder='Search for customer'
+                            error={Boolean(errors.customer_for)}
+                            helperText={errors.customer_for?.message}
+                            label='Select Customer'
+                            input={{
+                              ...params.InputProps,
+                              endAdornment: (
+                                <>
+                                  {loading ? <CircularProgress color='inherit' size={20} /> : null}
+                                  {params.InputProps.endAdornment}
+                                </>
+                              )
+                            }}
+                          />
+                        )}
                       />
                     )}
                   />
@@ -380,6 +387,7 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
                         fullWidth
                         multiline
                         maxRows={4}
+                        minDate={today}
                         label='Coupon Description'
                         placeholder='Coupon Description'
                         error={Boolean(errors.coupon_description)}
@@ -394,6 +402,7 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
                     showYearDropdown
                     showMonthDropdown
                     selected={dateFormat.validFrom}
+                    // minDate={today}
                     dateFormat='dd MMM yyyy'
                     onChange={date => setDateFormat(prev => ({ ...prev, validFrom: date || new Date() }))}
                     customInput={<CustomTextField label='Valid From' fullWidth />}
@@ -404,6 +413,7 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
                     showYearDropdown
                     showMonthDropdown
                     selected={dateFormat.validTo}
+                    // minDate={dateFormat.validFrom}
                     dateFormat='dd MMM yyyy'
                     onChange={date => setDateFormat(prev => ({ ...prev, validTo: date || new Date() }))}
                     customInput={<CustomTextField label='Valid To' fullWidth />}
@@ -411,7 +421,7 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <Button variant='contained' type='submit'>
+                  <Button variant='contained' type='submit' disabled={submitting}>
                     {submitting ? 'Submitting' : isAddCoupon ? 'Add Coupon' : 'Save Changes'}
                   </Button>
                 </Grid>
@@ -423,7 +433,7 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
       {!isAddCoupon && (
         <Grid item xs={12}>
           <Card>
-            <BrandDelete id={id} status={initialFormData.is_deleted} />
+            <CouponDelete id={id} status={initialFormData.status} />
           </Card>
         </Grid>
       )}

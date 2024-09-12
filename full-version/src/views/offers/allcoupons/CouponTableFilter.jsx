@@ -9,7 +9,7 @@ import MenuItem from '@mui/material/MenuItem'
 // Component Imports
 import CustomTextField from '@core/components/mui/TextField'
 
-const BrandTableFilters = ({ setData, tableData }) => {
+const CouponTableFilter = ({ setData, tableData }) => {
   // States
 
   const [status, setStatus] = useState('')
@@ -45,4 +45,4 @@ const BrandTableFilters = ({ setData, tableData }) => {
   )
 }
 
-export default BrandTableFilters
+export default CouponTableFilter

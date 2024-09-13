@@ -1,97 +1,33 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Adminusers from '@/views/admin/adminusers/Adminusers'
-import Cookies from 'js-cookie'
-import CryptoJS from 'crypto-js'
+import fetchFormData from '@/utils/fetchFormData'
 
-// Function to generate nonce
-const generateNonce = () => CryptoJS.lib.WordArray.random(16).toString()
-
-// Function to generate a timestamp
-const generateTimestamp = () => Date.now().toString()
-
-// Function to generate a signature
-const generateSignature = (payloaddata, secret, nonce, timestamp) => {
-  const payload = `${payloaddata}|${nonce}|${timestamp}`
-  return CryptoJS.HmacSHA256(payload, secret).toString(CryptoJS.enc.Hex)
-}
-
-// Function to get data using Fetch API
-const getData = async (setUserData, setRoleData ,setError, setLoading) => {
-  const secret = process.env.NEXT_PUBLIC_SECRET_KEY
-  const token = Cookies.get('accessToken')
-
-  console.log({ token })
-
-  if (!secret) {
-    setError('Secret key is not defined')
-    setLoading(false)
-    return
-  }
-
-  if (!token) {
-    setError('Token is not defined')
-    setLoading(false)
-    return
-  }
-
-  const payloaddata = JSON.stringify({})
-  const nonce = generateNonce()
-  const timestamp = generateTimestamp()
-  const signature = generateSignature(payloaddata, secret, nonce, timestamp)
-
+const getData = async (setUserData, setRoleData, setError, setLoading) => {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'livein-key': 'livein-key',
-        'Nonce': nonce,
-        'Timestamp': timestamp,
-        'Signature': signature,
-        'Authorization': `Bearer ${token}` // Include the token in the Authorization header
-      }
-      // credentials: 'include',
-    })
+    const [userResponse, roleResponse] = await Promise.all([
+      fetchFormData(`${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins`, 'GET'),
+      fetchFormData(`${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles`, 'GET')
+    ])
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch userData, status: ${response.status}`)
+    if (!userResponse.success) {
+      throw new Error(`Failed to fetch user data, status: ${userResponse.status}`)
     }
 
-    const data = await response.json()
-    setUserData(data)
-    console.log({ data })
-  } catch (error) {
-    console.error('Error fetching data:', error)
-    setError(error.message)
-  } finally {
-    setLoading(false)
-  }
-
-  try {
-    const roleResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'livein-key': 'livein-key',
-        'Nonce': nonce,
-        'Timestamp': timestamp,
-        'Signature': signature,
-        'Authorization': `Bearer ${token}` // Include the token in the Authorization header
-      }
-      // credentials: 'include',
-    })
-
-    if (!roleResponse.ok) {
-      throw new Error(`Failed to fetch userData, status: ${roleResponse.status}`)
+    // Check role data response
+    if (!roleResponse.success) {
+      throw new Error(`Failed to fetch role data, status: ${roleResponse.status}`)
     }
 
-    const rData = await roleResponse.json()
-    setRoleData(rData)
+    // Update state with fetched data
+    setUserData(userResponse)
+    setRoleData(roleResponse)
+    console.log(userResponse)
+    console.log(roleResponse)
   } catch (error) {
-    console.error('Error fetching data:', error)
     setError(error.message)
   } finally {
+    // Ensure loading is false after both requests finish
     setLoading(false)
   }
 }
@@ -103,7 +39,7 @@ const Page = () => {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    getData(setUserData, setRoleData ,setError, setLoading)
+    getData(setUserData, setRoleData, setError, setLoading)
   }, [])
 
   if (loading) {
@@ -111,10 +47,10 @@ const Page = () => {
   }
 
   if (error) {
-    return <div>Error: {error}</div>
+    return <div>Error: {error || 'An unexpected error occurred'}</div>
   }
 
-  return <Adminusers userData={userData} roleData={roleData}/>
+  return <Adminusers userData={userData} roleData={roleData} />
 }
 
 export default Page

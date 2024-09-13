@@ -4,7 +4,6 @@ import { NextResponse } from 'next/server'
 // Third-party Imports
 import Negotiator from 'negotiator'
 import { match as matchLocale } from '@formatjs/intl-localematcher'
-import CryptoJS from 'crypto-js'
 
 // Config Imports
 import { i18n } from '@configs/i18n'
@@ -14,6 +13,7 @@ import { getLocalizedUrl, isUrlMissingLocale } from '@/utils/i18n'
 import { ensurePrefix, withoutSuffix } from '@/utils/string'
 // import { apiClient } from '@/utils/apiClient'
 import axios from 'axios'
+import fetchFormData from '@/utils/fetchFormData'
 
 // Constants
 const HOME_PAGE_URL = '/dashboards/crm'
@@ -61,41 +61,17 @@ export async function middleware(request) {
   let isUserLoggedIn = !!token
 
   if (token) {
-    const secret = process.env.NEXT_PUBLIC_SECRET_KEY
-    const payloaddata = JSON.stringify({})
-    const nonce = CryptoJS.lib.WordArray.random(16).toString()
-    const timestamp = Date.now().toString()
-    const generateSignature = (payloaddata, secret, nonce, timestamp) => {
-      const payload = `${payloaddata}|${nonce}|${timestamp}`
-      return CryptoJS.HmacSHA256(payload, secret).toString(CryptoJS.enc.Hex)
-    }
-
-    const signature = generateSignature(payloaddata, secret, nonce, timestamp)
     // console.log(signature)
     try {
       console.log(`accessToken=${token}`)
-      const response = await axios.post(
-        VERIFY_TOKEN_API_URL,
-        {},
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'livein-key': 'livein-key',
-            Nonce: nonce,
-            Timestamp: timestamp,
-            Signature: signature,
-            Cookie: `accessToken=${token}`
-          }
-          // withCredentials: true
-        }
-      )
+      const response = await fetchFormData(VERIFY_TOKEN_API_URL, 'GET')
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`)
       }
 
       const verificationResponse = response.data
       isUserLoggedIn = verificationResponse.success
-
+      console.log('verifivation ', verificationResponse)
       if (!isUserLoggedIn) {
         // console.log('Login unsuccessful (verification failed)')
         isUserLoggedIn = true
@@ -106,103 +82,6 @@ export async function middleware(request) {
       // console.error('Verification Error')
       isUserLoggedIn = true
     }
-
-    // try {
-    //   const response = await axios.post(
-    //     VERIFY_TOKEN_API_URL,
-    //     {}, // Add your payload here if needed
-    //     {
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         'livein-key': 'livein-key',
-    //         'Nonce': nonce,
-    //         'Timestamp': timestamp,
-    //         'Signature': signature,
-    //       },
-    //       withCredentials: true, // Send cookies with the request
-    //     }
-    //   );
-
-    //   if (response.status !== 200) {
-    //     throw new Error(`HTTP error! Status: ${response.status}`);
-    //   }
-
-    //   const verificationResponse = response.data;
-    //   const isUserLoggedIn = verificationResponse.success;
-
-    //   if (!isUserLoggedIn) {
-    //     console.log('Login unsuccessful (verification failed)');
-    //   } else {
-    //     console.log('Login successful');
-    //   }
-    // } catch (error) {
-    //   console.error('Verification Error:');
-    //   isUserLoggedIn = false
-    // }
-
-    //   try {
-    //     const response = await axios.post(
-    //       VERIFY_TOKEN_API_URL,
-    //       {}, // Add your payload here if needed
-    //       {
-    //         headers: {
-    //           'Content-Type': 'application/json',
-    //           'livein-key': 'livein-key',
-    //           'Nonce': nonce,
-    //           'Timestamp': timestamp,
-    //           'Signature': signature,
-    //         },
-    //         withCredentials: true, // Ensure cookies are sent with the request
-    //       }
-    //     );
-
-    //     if (response.status !== 200) {
-    //       throw new Error(`HTTP error! Status: ${response.status}`);
-    //     }
-
-    //     const verificationResponse = response.data;
-    //     isUserLoggedIn = verificationResponse.success;
-
-    //     if (!isUserLoggedIn) {
-    //       console.log('Login unsuccessful (verification failed)');
-    //     } else {
-    //       console.log('Login successful');
-    //     }
-    //   } catch (error) {
-    //     console.error('Verification Error:', error);
-    //     isUserLoggedIn = false;
-    //   }
-
-    // try {
-    //   const response = await fetch(VERIFY_TOKEN_API_URL, {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       'livein-key': 'livein-key',
-    //       'Nonce': nonce,
-    //       'Timestamp': timestamp,
-    //       'Signature': signature,
-    //     },
-    //     credentials: 'include', // Send cookies with the request
-    //     body: JSON.stringify({}), // Add your payload here if needed
-    //   });
-
-    //   if (!response.ok) {
-    //     throw new Error(`HTTP error! Status: ${response.status}`);
-    //   }
-
-    //   const verificationResponse = await response.json();
-    //   isUserLoggedIn = verificationResponse.success;
-
-    //   if (!isUserLoggedIn) {
-    //     console.log('Login unsuccessful (verification failed)');
-    //   } else {
-    //     console.log('Login successful');
-    //   }
-    // } catch (error) {
-    //   console.error('Verification Error:', error);
-    //   // isUserLoggedIn = false;
-    // }
   }
 
   console.log('Is User Logged In: ', isUserLoggedIn)

@@ -24,7 +24,6 @@ import { object, minLength, string, email, strict } from 'valibot'
 import classnames from 'classnames'
 
 import { setCookie } from 'cookies-next'
-import Cookies from 'js-cookie'
 
 // Component Imports
 import Logo from '@components/layout/shared/Logo'
@@ -40,8 +39,25 @@ import { useSettings } from '@core/hooks/useSettings'
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
 
-// import { apiClient } from '@/utils/apiClient'
-import { apiAuthentication } from '@/utils/apiAuthentication'
+import CryptoJS from 'crypto-js'
+
+// Secret key
+const secret = process.env.NEXT_PUBLIC_SECRET_KEY
+
+// Debugging: Log the secret to ensure it's loaded correctly
+console.log('Secret Key:', secret)
+
+// Function to generate nonce
+const generateNonce = () => CryptoJS.lib.WordArray.random(16).toString()
+
+// Function to generate a timestamp
+const generateTimestamp = () => Date.now().toString()
+
+// Function to generate a signature
+const generateSignature = (payloaddata, secret, nonce, timestamp) => {
+  const payload = `${payloaddata}|${nonce}|${timestamp}`
+  return CryptoJS.HmacSHA256(payload, secret).toString(CryptoJS.enc.Hex)
+}
 
 // Styled Custom Components
 const LoginIllustration = styled('img')(({ theme }) => ({
@@ -104,7 +120,6 @@ const Login = ({ mode }) => {
   } = useForm({
     resolver: valibotResolver(schema),
     defaultValues: {
-
       email: 'superadmin@livein.in',
 
       password: 'admin@123'
@@ -123,24 +138,41 @@ const Login = ({ mode }) => {
   // console.log(token);
   // onSubmit function
   const onSubmit = async ({ email, password }) => {
+    const url = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/adminlogin`
+    const payloaddata = JSON.stringify({ email, password })
+    const nonce = generateNonce()
+    const timestamp = generateTimestamp()
+    const signature = generateSignature(payloaddata, secret, nonce, timestamp)
+    console.log(email, password)
+    console.log('payload')
     try {
-      const response = await apiAuthentication.post('/admin/admins/adminlogin', { email, password })
+      // const response = await fetch('/admin/admins/adminlogin', { email, password })
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'livein-key': 'livein-key',
+          Nonce: nonce,
+          Timestamp: timestamp,
+          Signature: signature
+        },
+        body: payloaddata
+      })
 
-      if (response) {
-        const { accessToken, refreshToken } = await response.data
-        setCookie('accessToken', accessToken)
-        setCookie('refreshToken', refreshToken)
-        // Cookies.set('accessToken',accessToken, {secure:true, sameSite:'strict'})
-        // Cookies.set('refreshToken',refreshToken, {secure:true, sameSite:'strict'})
-      } else {
-        ('you are not authenticated')
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
-      if (response && response.status == 200 && response.error == null) {
+      const data = await response.json()
+
+      // Check for access and refresh tokens
+      if (data.accessToken && data.refreshToken) {
+        setCookie('accessToken', data.accessToken)
+        setCookie('refreshToken', data.refreshToken)
         const redirectURL = searchParams.get('redirectTo') ?? '/'
 
         router.push(getLocalizedUrl(redirectURL, locale))
       } else {
-        console.log('you are not authenticated')
+        throw new Error('you are not authenticated')
       }
     } catch (err) {
       setSendAlert(err.message)

@@ -3,13 +3,12 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import debounce from 'lodash.debounce'
 import { Card, CardContent, Button, Typography, Grid, MenuItem, InputAdornment, IconButton } from '@mui/material'
 import CustomTextField from '@core/components/mui/TextField'
-import Cookies from 'js-cookie'
-import CryptoJS from 'crypto-js'
 import { useParams } from 'next/navigation'
 import { toast } from 'react-toastify'
+import fetchFormData from '@/utils/fetchFormData'
+import fetchData from '@/utils/fetchData'
 
 // STATES OF INDIA
 let states = [
@@ -51,23 +50,10 @@ let states = [
   'Puducherry'
 ]
 
-// Function to generate nonce
-const generateNonce = () => CryptoJS.lib.WordArray.random(16).toString()
-
-// Function to generate a timestamp
-const generateTimestamp = () => Date.now().toString()
-
-// Function to generate a signature
-const generateSignature = (payloaddata, secret, nonce, timestamp) => {
-  const payload = `${payloaddata}|${nonce}|${timestamp}`
-  return CryptoJS.HmacSHA256(payload, secret).toString(CryptoJS.enc.Hex)
-}
-
 const AccountDetails = ({ adminDetail, roleData, isAddAdmin }) => {
   const [imgSrc, setImgSrc] = useState('/images/avatars/1.png')
   const [selectedRole, setSelectedRole] = useState(adminDetail?.role?.role_name || '')
   const [isNewPasswordShown, setIsNewPasswordShown] = useState(false)
-  const [formData, setFormData] = useState(adminDetail || {})
 
   const validationSchema = yup.object().shape({
     firstname: yup.string().required('First name is required'),
@@ -97,7 +83,6 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin }) => {
   })
 
   const {
-    register,
     handleSubmit,
     formState: { errors },
     control,
@@ -128,21 +113,14 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin }) => {
     }
   }, [adminDetail, reset])
 
-  const handleFormChange = useCallback(
-    debounce((field, value) => {
-      setFormData(prevState => ({ ...prevState, [field]: value }))
-    }, 300),
-    []
-  )
-
-  const handleFileInputChange = event => {
+  const handleFileInputChange = useCallback(event => {
     const file = event.target.files[0]
     if (file) {
       const reader = new FileReader()
       reader.onload = e => setImgSrc(e.target.result)
       reader.readAsDataURL(file)
     }
-  }
+  }, [])
 
   const handleFileInputReset = () => {
     setImgSrc('/images/avatars/1.png')
@@ -150,67 +128,30 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin }) => {
 
   const handleRoleChange = e => {
     const newRole = e.target.value
-    setValue('role', newRole, { shouldValidate: true }) // Update the role value and trigger validation
-    setSelectedRole(newRole) // Update state for selected role
+    setValue('role', newRole, { shouldValidate: true })
+    setSelectedRole(newRole)
   }
   const { id } = useParams()
-  const handleFormSubmit = async formData => {
-    const secret = process.env.NEXT_PUBLIC_SECRET_KEY
-    const token = Cookies.get('accessToken')
 
-    if (!secret) {
-      // setError('Secret key is not defined')
-      console.log('Secret key is not defined')
-      // setLoading(false)
-      return
-    }
-
-    if (!token) {
-      console.log('Token is not defined')
-      // setLoading(false)
-      return
-    }
-
-    const nonce = generateNonce()
-    const timestamp = generateTimestamp()
-    const signature = generateSignature(JSON.stringify(formData), secret, nonce, timestamp)
-
+  const handleFormSubmit = async data => {
     const apiUrl = isAddAdmin
       ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/adminsignup`
       : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/updateadmin/${id}`
 
     try {
-      const response = await fetch(apiUrl, {
-        method: isAddAdmin ? 'POST' : 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'livein-key': 'livein-key',
-          Nonce: nonce,
-          Timestamp: timestamp,
-          Signature: signature,
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      })
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch data, status: ${response.status}`)
+      const response = await fetchFormData(apiUrl, isAddAdmin ? 'POST' : 'PUT', data)
+      console.log('responseseseseses', response)
+      if (!response.success) {
+        throw new Error(`Failed to fetch data, message: ${response.message}`)
       }
 
-      const responseData = await response.json()
-      // responseData.success(toast.success('success'))
-      if (responseData.success || responseData.status) {
+      if (response.success || response.status) {
         isAddAdmin ? toast.success('Admin added successfully!') : toast.success('Admin Updated successfully!')
       } else {
         isAddAdmin ? toast.error('Unsuccessful to add admin') : 'unsuccessful to update admin'
       }
-
-      console.log('Data submitted successfully:', responseData)
-
-      // Handle success scenario (e.g., show success message, redirect, etc.)
     } catch (error) {
-      toast.error('Error submitting data:', error.message)
-      // Handle error scenario (e.g., show error message to the user)
+      toast.error(`Error submitting data: ${error.message}`)
     }
   }
 
@@ -333,6 +274,7 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin }) => {
                     type='number'
                     label='Phone Number'
                     placeholder='Phone Number'
+                    inputmode='numeric'
                     error={Boolean(errors.phone)}
                     helperText={errors.phone?.message}
                   />
@@ -448,10 +390,6 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin }) => {
                     label='State'
                     error={Boolean(errors.state)}
                     helperText={errors.state?.message}
-                    onChange={e => {
-                      field.onChange(e)
-                      handleFormChange('state', e.target.value)
-                    }}
                   >
                     {states.map(state => (
                       <MenuItem value={state} key={state}>

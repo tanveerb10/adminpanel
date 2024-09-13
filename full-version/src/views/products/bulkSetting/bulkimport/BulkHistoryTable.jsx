@@ -12,7 +12,7 @@ import {
   Paper,
   Chip
 } from '@mui/material'
-import fetchData from '@/utils/fetchData'
+import fetchFormData from '@/utils/fetchFormData'
 
 const columns = [
   { id: 'csvId', label: 'Sr no.', minWidth: 170 },
@@ -43,7 +43,7 @@ const API_URLS = {
   productUpdateTab: '/admin/products/UpdateProductHistory',
   priceTab: '/admin/products/priceUploadHistory',
   categoryTab: '/admin/products/CategoryUploadHistory',
-  metasTab: '/admin/products/getProductMetHistory',
+  metasTab: '/admin/products/getProductMetaHistory',
   inventoryTab: '/admin/products/stockUploadHistory'
 }
 
@@ -82,7 +82,7 @@ export default function BulkHistoryTable({ callAgain, TabValue }) {
       const url = `${baseUrl}${urls}`
       try {
         // const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/getUploadHistory`
-        const responseData = await fetchData(url, 'GET')
+        const responseData = await fetchFormData(url, 'GET')
         setHistoryLogData(responseData)
       } catch (error) {
         setError(error)
@@ -105,7 +105,7 @@ export default function BulkHistoryTable({ callAgain, TabValue }) {
   function formatDate(dataData) {
     const dates = new Date(dataData)
     const date = ` ${dates.getDate()}/${dates.getMonth() + 1}/${dates.getFullYear()}`
-    const time = `${dates.getHours() % 12 || 12}-${dates.getMinutes()}-${dates.getSeconds()} ${dates.getHours() >= 12 ? 'PM' : 'AM'}`
+    const time = `${dates.getHours() % 12 || 12}:${dates.getMinutes()}:${dates.getSeconds()} ${dates.getHours() >= 12 ? 'PM' : 'AM'}`
     return (
       <div className='flex gap-2 flex-col justify-center items-center'>
         <Chip label={time} />

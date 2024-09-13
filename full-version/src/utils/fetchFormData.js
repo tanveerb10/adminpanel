@@ -1,4 +1,4 @@
-
+import axios from 'axios'
 import CryptoJS from 'crypto-js'
 import Cookies from 'js-cookie'
 import { convertFormdataInObject } from '@/utils/convertFormdataInObject'
@@ -10,7 +10,14 @@ const generateSignature = (payloaddata, secret, nonce, timestamp) => {
   return CryptoJS.HmacSHA256(payload, secret).toString(CryptoJS.enc.Hex)
 }
 
-const fetchFormData = async (url, method = 'POST', formData) => {
+const fetchFormData = async (
+  url,
+  method = 'GET',
+  data = null,
+  type = 'default',
+  onUploadProgress,
+  onDownloadProgress
+) => {
   const secret = process.env.NEXT_PUBLIC_SECRET_KEY || ''
   const token = Cookies.get('accessToken')
 
@@ -18,13 +25,20 @@ const fetchFormData = async (url, method = 'POST', formData) => {
     throw new Error('Secret key or token is not defined')
   }
 
-  const converted = convertFormdataInObject(formData)
-  const isFormData = formData instanceof FormData
+  const isFormData = data instanceof FormData
+  let signPayload
 
-  const payloaddata = converted
+  if (isFormData) {
+    signPayload = convertFormdataInObject(data, type)
+  } else {
+    signPayload = data
+  }
+
+  const payloaddata = data ? JSON.stringify(signPayload) : JSON.stringify({})
+
   const nonce = generateNonce()
   const timestamp = generateTimestamp()
-  const signature = generateSignature(JSON.stringify(payloaddata), secret, nonce, timestamp)
+  const signature = generateSignature(payloaddata, secret, nonce, timestamp)
 
   const headers = {
     'livein-key': 'livein-key',
@@ -34,21 +48,41 @@ const fetchFormData = async (url, method = 'POST', formData) => {
     Authorization: `Bearer ${token}`
   }
 
+  // Add Content-Type header if not FormData
+  if (!isFormData) {
+    headers['Content-Type'] = 'application/json'
+  }
+
   try {
-    const response = await fetch(url, {
+    const response = await axios({
+      url,
       method,
       headers,
-      body: formData
+      data: method !== 'GET' ? (isFormData ? data : payloaddata) : null,
+      onUploadProgress: progressEvent => {
+        if (onUploadProgress) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+          onUploadProgress(percentCompleted)
+        }
+      },
+      onDownloadProgress: progressEvent => {
+        if (onDownloadProgress) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+          onDownloadProgress(percentCompleted)
+        }
+      }
     })
 
-    return await response.json()
+    const contentType = response.headers['content-type']
 
-    // if (!response.ok) {
-    //   throw new Error(`HTTP error! Status: ${response.status} `)
-    // }
+    if (contentType && contentType.includes('application/json')) {
+      return response.data
+    } else {
+      return response
+    }
   } catch (error) {
-    console.error('Error uploading file:', error)
-    throw error
+    console.error('Error fetching data:', error)
+    throw error.response ? new Error(error.response.data.message) : new Error(error.message)
   }
 }
 

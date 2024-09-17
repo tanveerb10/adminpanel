@@ -10,28 +10,19 @@ import { toast } from 'react-toastify'
 import fetchData from '@/utils/fetchData'
 import { getLocalizedUrl } from '@/utils/i18n'
 
-const MetasDetailForm = ({ isAddMetas }) => {
-  const initialFormData = {
-    meta_title: '',
-    product_title: '',
-    meta_description: '',
-    key_words: []
-  }
-  // const [addMeta, setAddMeta] = useState(['one', 'two'])
-  const [formData, setFormData] = useState(initialFormData)
-  const [keyword, setKeyword] = useState('')
-  isAddMetas = true
+const MetasDetailForm = ({ isAddMetas, id, metaData }) => {
 
-  // const initialFormData = {
-  // meta_title: brandData?.brand?.brand_name || '',
-  // product_title: brandData?.brand?.products_count || '',
-  // meta_description: brandData?.brand?.brand_description || '',
-  // key_words: brandData?.brand?.brand_image_src || []
-  // }
+  console.log(metaData.meta_title, 'id from form ')
+  console.log(metaData, 'metaData from form ')
+
+  const [keyword, setKeyword] = useState('')
+  isAddMetas ? console.log('is Add meta') : console.log('is edit meta')
+
+  const { lang: locale } = useParams()
+  const router = useRouter()
 
   const validationSchema = yup.object().shape({
     meta_title: yup.string().required('Meta name is required'),
-    product_title: yup.string().required('Product title is required'),
     meta_description: yup.string().required('Meta description is required')
   })
 
@@ -39,26 +30,36 @@ const MetasDetailForm = ({ isAddMetas }) => {
     handleSubmit,
     control,
     formState: { errors },
-    reset
+    reset,
+    watch,
+    setValue
   } = useForm({
     resolver: yupResolver(validationSchema),
-    defaultValues: initialFormData
+    defaultValues: {
+      meta_title: '',
+      meta_description: '',
+      key_words: [],
+      product_id: id
+    }
   })
 
-  // useEffect(() => {
-  //   if (brandData) {
-  //     reset(initialFormData)
-  //   }
-  // }, [brandData, reset])
+  // Listen for changes in metaData and reset form fields
 
-  const { id, lang: locale } = useParams()
-  const router = useRouter()
+  useEffect(() => {
+    if (metaData) {
+      reset({
+        meta_title: metaData.meta_title || '',
+        meta_description: metaData.meta_description || '',
+        key_words: metaData.key_words || [],
+        product_id: id
+      })
+    }
+  }, [metaData, reset, id])
 
   const handleFormSubmit = async data => {
     console.log('tanveer', data)
-    // console.log('yessss', data[key_words])
     console.log('Form Submit called', data.key_words)
-    if (formData.key_words.length <= 0) {
+    if (data.key_words.length <= 0) {
       console.log(data.key_words.length <= 0)
       return toast.error('Meta keywords should not be empty')
     }
@@ -67,51 +68,42 @@ const MetasDetailForm = ({ isAddMetas }) => {
         ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/addProductMeta`
         : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/updateProductMeta/${id}`
 
-      const response = await fetchData(apiUrl, isAddMetas ? 'POST' : 'PUT', formData)
+      const response = await fetchData(apiUrl, isAddMetas ? 'POST' : 'PUT', data)
       console.log('API Response:', response)
 
-      if (!response.success) {
-        console.log('error response', response.message)
-        toast.error(response.message)
-      }
       if (response.success) {
-        setTimeout(() => router.push(getLocalizedUrl(`/products/metas`, locale)), 3000)
-        return toast.success(response.message)
+        toast.success(response.message)
+        router.push(getLocalizedUrl(`/products/metas`, locale))
+      } else {
+        toast.error(response.message)
+        console.error(response, 'else error')
       }
     } catch (error) {
-      console.error('API Error:', error)
+      console.error('API Error:', error.message, 'catch error')
       toast.error(error.message || 'An Error occurred')
     }
   }
 
   const handleDelete = item => {
     console.log(item)
-    console.log(formData)
-    console.log(formData.key_words.length)
-
-    setFormData(prev => ({
-      ...prev,
-      key_words: prev.key_words.filter(metu => item !== metu)
-    }))
-    // const filterMeta = initialFormData.key_words.filter(metu => item != metu)
-    // setAddMeta(filterMeta)
+    const currentKeywords = watch('key_words')
+    setValue(
+      'key_words',
+      currentKeywords.filter(metu => item !== metu)
+    )
   }
 
   const handleAddMeta = () => {
     console.log('am add meta')
     console.log(keyword)
-    // setAddMeta(prev => [...prev, keyword])
-    // if (keyword.trim()) {
-    setFormData(prev => ({
-      ...prev,
-      key_words: [...prev.key_words, keyword]
-    }))
-    setKeyword('')
-    console.log(formData)
+    const currentKeywords = watch('key_words')
 
-    // }
+    if (keyword.trim() && !currentKeywords.includes(keyword.trim())) {
+      const updatedKeywords = [...currentKeywords, keyword.trim()]
+      setValue('key_words', updatedKeywords)
+      setKeyword('')
+    }
   }
-  console.log(formData.key_words.length, 'length of meta')
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
@@ -131,23 +123,7 @@ const MetasDetailForm = ({ isAddMetas }) => {
                         placeholder='Meta Name'
                         error={Boolean(errors.meta_title)}
                         helperText={errors.meta_title?.message}
-                      />
-                    )}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <Controller
-                    name='product_title'
-                    control={control}
-                    render={({ field }) => (
-                      <CustomTextField
-                        {...field}
-                        fullWidth
-                        label='Product Title'
-                        placeholder='Product Title'
-                        error={Boolean(errors.product_title)}
-                        helperText={errors.product_title?.message}
+                        onChange={e => setValue('meta_title', e.target.value)}
                       />
                     )}
                   />
@@ -167,6 +143,7 @@ const MetasDetailForm = ({ isAddMetas }) => {
                         placeholder='Meta Description'
                         error={Boolean(errors.meta_description)}
                         helperText={errors.meta_description?.message}
+                        onChange={e => setValue('meta_description', e.target.value)}
                       />
                     )}
                   />
@@ -197,8 +174,8 @@ const MetasDetailForm = ({ isAddMetas }) => {
                   <Card>
                     <CardHeader title='All Metas' />
                     <CardContent>
-                      {formData.key_words.length ? (
-                        formData.key_words.map((item, index) => (
+                      {watch('key_words').length ? (
+                        watch('key_words').map((item, index) => (
                           <Chip key={item} label={item} className='m-1' onDelete={() => handleDelete(item)} />
                         ))
                       ) : (

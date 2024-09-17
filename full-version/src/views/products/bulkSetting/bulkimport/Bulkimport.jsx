@@ -5,7 +5,7 @@ import ProjectDropZone from '@/libs/components/ProjectDropZone'
 import Typography from '@mui/material/Typography'
 import { toast } from 'react-toastify'
 import BulkHistoryTable from '@views/products/bulkSetting/bulkimport/BulkHistoryTable'
-import fetchData from '@/utils/fetchData'
+import fetchFormData from '@/utils/fetchFormData'
 import BulkHeader from '@views/products/bulkSetting/bulkimport/BulkHeader'
 
 const API_URLS = {
@@ -32,6 +32,7 @@ const Bulkimport = ({ TabValue, HeaderValue }) => {
   const [isFailed, setIsFailed] = useState(false)
   const [responseMessage, setResponseMessage] = useState('')
   const [fileUrl, setFileUrl] = useState(null)
+  const [uploadProgress, setUploadProgress] = useState(0)
 
   const onDrop = useCallback(acceptedFiles => {
     if (acceptedFiles.length && acceptedFiles[0].type === 'text/csv') {
@@ -59,7 +60,7 @@ const Bulkimport = ({ TabValue, HeaderValue }) => {
     formData.append('file', bulkFile)
 
     setLoading(true)
-
+    setUploadProgress(0)
     try {
       const url = `${baseUrl}${API_URLS[TabValue]}`
       if (!url) {
@@ -68,8 +69,11 @@ const Bulkimport = ({ TabValue, HeaderValue }) => {
       }
       const methods = ['productUploadTab', 'metasTab'].includes(TabValue) ? 'POST' : 'PUT'
 
-      const response = await fetchData(url, methods, formData, 'file')
-
+      const response = await fetchFormData(url, methods, formData, 'file', progress => {
+        console.log(`upload Progress ${progress}%`)
+        setUploadProgress(progress)
+      })
+      console.log(response, 'responseseses')
       if (response.success) {
         console.log('Data submitted successfully:', response)
         toast.success('File uploaded successfully')
@@ -118,45 +122,15 @@ const Bulkimport = ({ TabValue, HeaderValue }) => {
         return
       }
 
-      // switch (TabValue) {
-      //   case 'productUploadTab': {
-      //     const response = await fetchData(exportProductUrl, 'GET')
-      //     break
-      //   }
-      //   // case 'productUpdateTab': {
-      //   //   const response = await fetchData(updateProductUrl, 'GET')
-      //   //   break
-      //   // }
-      //   case 'priceTab': {
-      //     const response = await fetchData(priceExportUrl, 'GET')
-      //     break
-      //   }
-      //   case 'categoryTab': {
-      //     const response = await fetchData(categoryExportUrl, 'GET')
-      //     break
-      //   }
-      //   // case 'metasTab': {
-      //   //   const response = await fetchData(metasUpdateUrl, 'GET')
-      //   //   break
-      //   // }
-      //   case 'inventoryTab': {
-      //     const response = await fetchData(inventoryExportUrl, 'GET')
-      //     break
-      //   }
-      //   default: {
-      //     toast.error("Api haven't called")
-      //   }
-      // }
-
-      const response = await fetchData(url, 'GET')
+      const response = await fetchFormData(url, 'GET')
       if (!response.success) {
         throw new Error('Got an error while exporting: ', response.message)
       }
       toast.success(response.message || 'Exported successfully')
-      console.log(response.filePath)
+      console.log(response.fileUrl)
 
-      if (response.filePath) {
-        const fileLink = `${baseUrl}${response.filePath}`
+      if (response.fileUrl) {
+        const fileLink = response.fileUrl
 
         const link = document.createElement('a')
         link.href = fileLink
@@ -174,6 +148,15 @@ const Bulkimport = ({ TabValue, HeaderValue }) => {
     <Grid container spacing={3}>
       <Grid item xs={12}>
         <BulkHeader HeaderValue={HeaderValue} handleExport={getExportFile} TabValue={TabValue} />
+        {/* Progress Bar */}
+        {/* {loading && ( */}
+        <div>
+          <progress value={uploadProgress} max='100'>
+            {uploadProgress}%
+          </progress>
+          <p>{uploadProgress}%</p>
+        </div>
+        {/* )} */}
       </Grid>
       <Grid item xs={12}>
         <Card>

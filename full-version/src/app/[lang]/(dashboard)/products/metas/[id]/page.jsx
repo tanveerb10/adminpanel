@@ -5,44 +5,45 @@ import fetchData from '@/utils/fetchData'
 import { toast } from 'react-toastify'
 import { useAuth } from '@/contexts/AuthContext'
 import { useParams, useRouter } from 'next/navigation'
-import Metas from '@/views/products/metas/Metas'
+// import Metas from '@/views/products/metas/Metas'
+import MetasDetailForm from '@/views/products/metas/MetasDetailForm'
 
 export default function Page() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-
+  const [metaData, setMetaData] = useState([])
   const { role } = useAuth()
   const { id } = useParams()
   const router = useRouter()
 
-  useEffect(() => {
-    if (role !== 'superadmin') {
-      const timer = setTimeout(() => {
-        router.push('/')
-      }, 3000)
-      return () => clearTimeout(timer)
-    }
-  }, [role, router])
+  // useEffect(() => {
+  //   if (role !== 'superadmin') {
+  //     router.push('/')
+  //     toast.warning('from role')
+  //   }
+  // }, [role])
 
   useEffect(() => {
-    if (id !== 'addnewmetas') {
-      const getSingleProduct = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/getproductmeta/${id}`
-      setLoading(true)
-      try {
-        fetchData(getSingleProduct, 'GET').then(response => {
+    // if (id !== 'addnewmetas') {
+    const metaUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/getproductmeta/${id}`
+    setLoading(true)
+    try {
+      fetchData(metaUrl, 'GET').then(response => {
+        console.log('Get meta data', response)
+        setMetaData(response.productMetas[0] || {})
+        setLoading(false)
+      })
+    } catch (error) {
+      console.log('error got', error)
+      setError('error got in meta', error)
 
-          console.log('Get single product data', response)
-          setLoading(false)
-        })
-      } catch (error) {
-        console.log('error got', error)
-        setError('error got in brand', error)
-        setLoading(false)
-      } finally {
-        setLoading(false)
-      }
+      setLoading(false)
+    } finally {
+      setLoading(false)
     }
+    // }
   }, [])
+  console.log(metaData, 'metaData')
   if (loading) {
     // need to check loading
     return <div>Loading...</div>
@@ -52,18 +53,12 @@ export default function Page() {
     return <div>No data available or {error}</div>
   }
 
-  if (id == 'addnewmetas') {
-    return (
-      <>
-
-        <Metas isAddMetas={true} />
-
-      </>
-    )
+  if (metaData.meta_title) {
+    return <MetasDetailForm id={id} metaData={metaData} />
   }
   return (
     <>
-      <Metas id={id} />
+      <MetasDetailForm id={id} isAddMetas={!metaData.meta_title} metaData={metaData} />
     </>
   )
 }

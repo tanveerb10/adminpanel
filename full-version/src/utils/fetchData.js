@@ -9,7 +9,7 @@ const generateSignature = (payloaddata, secret, nonce, timestamp) => {
   return CryptoJS.HmacSHA256(payload, secret).toString(CryptoJS.enc.Hex)
 }
 
-const fetchData = async (url, method = 'GET', data = null, type="default") => {
+const fetchData = async (url, method = 'GET', data = null, type = 'default') => {
   const secret = process.env.NEXT_PUBLIC_SECRET_KEY || ''
   const token = Cookies.get('accessToken')
 

@@ -162,7 +162,7 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
       }),
       columnHelper.accessor('city', {
         header: 'City',
-        cell: ({ row }) => <Typography>{row.original.city}</Typography>
+        cell: ({ row }) => <Typography className='capitalize'>{row.original.city}</Typography>
       }),
       columnHelper.accessor('status', {
         header: 'Status',

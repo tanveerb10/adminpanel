@@ -283,8 +283,8 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
                         error={Boolean(errors.coupon_eligibility)}
                         helperText={errors.coupon_eligibility?.message}
                       >
-                        <MenuItem value='all'>All</MenuItem>
-                        <MenuItem value='single'>Single</MenuItem>
+                        <MenuItem value='all'>All Users</MenuItem>
+                        <MenuItem value='single'>Single User</MenuItem>
                       </CustomTextField>
                     )}
                   />

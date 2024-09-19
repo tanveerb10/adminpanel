@@ -1,8 +1,45 @@
-import React from 'react'
+'use client'
+// React Imports
+import { useState } from 'react'
 
-const Style = () => {
+// MUI Imports
+import Grid from '@mui/material/Grid'
+import Tab from '@mui/material/Tab'
+import TabContext from '@mui/lab/TabContext'
+import TabPanel from '@mui/lab/TabPanel'
+import CustomTabList from '@core/components/mui/TabList'
+
+const Style = ({ tabContent }) => {
+  const tabs = [
+    { key: 'fontSettings', label: 'Font Settings' },
+    { key: 'themeSettings', label: 'Theme Settings' },
+    { key: 'metaSettings', label: 'Meta Settings' }
+  ].map(({ key, label }) => (
+    <Tab key={key} value={key} label={<div className='flex items-center gap-1.5'>{label}</div>} />
+  ))
+
+  const [activeTab, setActiveTab] = useState('fontSettings')
+
+  const handleChange = (event, newValue) => {
+    setActiveTab(newValue)
+  }
   return (
-    <div>style</div>
+    <>
+      <TabContext value={activeTab}>
+        <Grid container spacing={6}>
+          <Grid item xs={12} className='flex justify-center'>
+            <CustomTabList onChange={handleChange} variant='scrollable'>
+              {tabs}
+            </CustomTabList>
+          </Grid>
+          <Grid item xs={12}>
+            <TabPanel value={activeTab} className='p-0'>
+              {tabContent[activeTab] || <div>No Content Available</div>}
+            </TabPanel>
+          </Grid>
+        </Grid>
+      </TabContext>
+    </>
   )
 }
 

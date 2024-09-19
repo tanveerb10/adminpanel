@@ -31,7 +31,7 @@ const validationSchema = Yup.object().shape({
   published: Yup.string().required('Published is required')
 })
 
-export default function ProductFormWrapper({ initialData, brandData, isAddProduct, id }) {
+export default function ProductFormWrapper({ initialData, brandData, isAddProduct, id, categoryoption }) {
   const { productData } = useProduct()
   const [loading, setLoading] = useState(false)
   const methods = useForm({
@@ -186,8 +186,7 @@ export default function ProductFormWrapper({ initialData, brandData, isAddProduc
             <ProductVideos />
           </Grid>
           <Grid item xs={12}>
-            <ProductOrganize brandName={brandData} />
-            {/* <ProductOrganize brandName={brandData} categoryoption={categoryoption} /> */}
+            <ProductOrganize brandName={brandData} categoryoption={categoryoption} />
           </Grid>
           {!isAddProduct && (
             <Grid item xs={12}>

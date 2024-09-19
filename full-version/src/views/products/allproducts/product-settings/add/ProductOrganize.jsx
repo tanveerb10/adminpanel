@@ -11,7 +11,7 @@ import { TypeOfStandard } from '@/data/typeOfStandard/TypeOfStandard'
 import CustomAutocomplete from '@core/components/mui/Autocomplete'
 import { useFormContext, Controller } from 'react-hook-form'
 
-const ProductOrganize = ({ brandName }) => {
+const ProductOrganize = ({ brandName, categoryoption }) => {
   const { productData, updateProductParent } = useProduct()
   const {
     control,
@@ -60,9 +60,7 @@ const ProductOrganize = ({ brandName }) => {
                   label='Categories'
                   placeholder='Categories select'
                   fullWidth
-                  // initialOptions={categoryoption}
-                  initialOptions={productData.dataOption || []}
-                  // target='category_name'
+                  initialOptions={categoryoption}
                   onChange={(event, newValue) => {
                     field.onChange(newValue)
                     updateProductParent({ categories: newValue })
@@ -178,26 +176,6 @@ const ProductOrganize = ({ brandName }) => {
                 </CustomTextField>
               )}
             />
-          </Grid>
-          <Grid item xs={12}>
-            {/* 
-            <Controller
-              name='check'
-              control={control}
-              render={({ field }) => ( */}
-            <CustomCheckboxAutocomplete
-              // {...field}
-              fullWidth
-              label='Enter check'
-              placeholder='Check value '
-              initialOptions={productData.dataOption || []}
-              onChange={(event, newValue) => {
-                // field.onChange(newValue)
-                console.log('Selected values:', newValue)
-              }}
-            />
-            {/* )}
-            /> */}
           </Grid>
         </Grid>
       </CardContent>

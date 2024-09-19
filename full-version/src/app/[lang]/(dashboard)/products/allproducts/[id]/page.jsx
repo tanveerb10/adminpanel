@@ -52,7 +52,8 @@ export default function Page() {
       toast.error('Error fetching categories')
       setLoading(false)
     }
-  }, [updateDataOption])
+  }, [])
+  // }, [updateDataOption])
 
   useEffect(() => {
     fetchCategories()

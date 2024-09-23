@@ -168,6 +168,9 @@ const RoleDialog = ({ open, setOpen }) => {
       }
       console.log(response)
       toast.success(response.message)
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000)
       handleClose()
     } catch (error) {
       setError(error.message)

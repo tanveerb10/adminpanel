@@ -25,14 +25,14 @@ const Adminusers = ({ userData, roleData }) => {
   const cardData = userData.allAdmin.reduce((acc, curr) => {
     const roleName = curr.role.role_name
     const avatar = curr.profile_image
-
+    const fullName = `${curr.firstname} ${curr.lastname}`
     const role = acc.find(r => r.title === roleName)
 
     if (role) {
       role.totalUsers++
-      role.avatars.push(avatar)
+      role.avatars.push({ avatar, fullName })
     } else {
-      acc.push({ title: roleName, totalUsers: 1, avatars: [avatar] })
+      acc.push({ title: roleName, totalUsers: 1, avatars: [{ avatar, fullName }] })
     }
     return acc
   }, [])

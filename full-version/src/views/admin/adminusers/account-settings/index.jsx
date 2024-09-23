@@ -24,22 +24,22 @@ const AccountSettings = ({ tabContentList, isAddAdmin }) => {
   // console.log('tabContentList:', tabContentList)
   // console.log('activeTab:', activeTab)
 
-
   const tabs = [
-    <Tab 
+    <Tab
       key='account'
       label={
         <div className='flex items-center gap-1.5'>
           <i className='tabler-users text-lg' />
           Account
-      </div>
-    }
-      value='account' />
+        </div>
+      }
+      value='account'
+    />
   ]
-    if (!isAddAdmin) {
-      tabs.push(
-        <Tab
-        key="security"
+  if (!isAddAdmin) {
+    tabs.push(
+      <Tab
+        key='security'
         label={
           <div className='flex items-center gap-1.5'>
             <i className='tabler-lock text-lg' />
@@ -47,27 +47,26 @@ const AccountSettings = ({ tabContentList, isAddAdmin }) => {
           </div>
         }
         value='security'
-      />,
-      <Tab
-        key="notifications"
-        label={
-          <div className='flex items-center gap-1.5'>
-            <i className='tabler-bell text-lg' />
-            Notifications
-          </div>
-        }
-        value='notifications'
       />
-    
-      )
-    }
-  
+      // <Tab
+      //   key="notifications"
+      //   label={
+      //     <div className='flex items-center gap-1.5'>
+      //       <i className='tabler-bell text-lg' />
+      //       Notifications
+      //     </div>
+      //   }
+      //   value='notifications'
+      // />
+    )
+  }
+
   return (
     <TabContext value={activeTab}>
       <Grid container spacing={6}>
         <Grid item xs={12}>
           <CustomTabList onChange={handleChange} variant='scrollable' pill='true'>
-           {tabs}
+            {tabs}
           </CustomTabList>
         </Grid>
         <Grid item xs={12}>

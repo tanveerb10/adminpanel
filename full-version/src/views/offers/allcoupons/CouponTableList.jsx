@@ -144,57 +144,63 @@ const CouponTableList = ({ tableData, totalCoupons }) => {
           </div>
         )
       }),
-      columnHelper.accessor('name', {
-        header: 'Name',
-        cell: ({ row }) => (
-          <div className='flex flex-col'>
-            <Typography color='text.primary' className='font-medium'>
-              {row.original.name}
-            </Typography>
-          </div>
-        )
-      }),
 
-      columnHelper.accessor('description', {
-        header: 'Description',
+      columnHelper.accessor('name', {
+        header: 'Coupon',
         cell: ({ row }) => {
           const description = row.original.description
           const maxLength = 50
           const truncatedDescription = truncateText(description, maxLength)
           return (
-            <Typography
-              variant='body2'
-              color='text.primary'
-              style={{
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                display: '-webkit-box',
-                WebkitBoxOrient: 'vertical',
-                WebkitLineClamp: 2,
-                wordBreak: 'break-word',
-                whiteSpace: 'pre-wrap'
-              }}
-            >
-              {truncatedDescription}
-            </Typography>
+            <div className='flex items-center gap-4'>
+              {getAvatar({ avatar: row.original.imageSrc, fullName: row.original.name })}
+              <div className='flex flex-col'>
+                <Typography color='text.primary' className='font-bold'>
+                  {row.original.name}
+                </Typography>
+                <Typography
+                  variant='body2'
+                  color='text.primary'
+                  style={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 2,
+                    wordBreak: 'break-word',
+                    whiteSpace: 'pre-wrap'
+                  }}
+                >
+                  <p dangerouslySetInnerHTML={{ __html: truncatedDescription }} />
+                </Typography>
+              </div>
+            </div>
           )
         }
       }),
       columnHelper.accessor('code', {
         header: 'Code',
-        cell: ({ row }) => <Typography>{row.original.code}</Typography>
+        cell: ({ row }) => <Chip label={row.original.code} variant='tonal' className='font-bold' color='primary' />
       }),
       columnHelper.accessor('type', {
         header: 'Type',
-        cell: ({ row }) => <Typography>{row.original.type}</Typography>
+        cell: ({ row }) => <Typography className='capitalize'>{row.original.type}</Typography>
       }),
       columnHelper.accessor('mov', {
         header: 'mov',
         cell: ({ row }) => <Typography>{row.original.mov}</Typography>
       }),
+
       columnHelper.accessor('discountValue', {
         header: 'Discount Value',
-        cell: ({ row }) => <Typography>{row.original.discountValue}</Typography>
+        cell: ({ row }) => {
+          const { type, discountValue } = row.original
+          return (
+            <Typography className='text-center'>
+              {type === 'percent' ? `${discountValue} %` : `₹ ${discountValue}`}
+            </Typography>
+          )
+        }
       }),
       columnHelper.accessor('validity', {
         header: 'Validity ',
@@ -216,7 +222,7 @@ const CouponTableList = ({ tableData, totalCoupons }) => {
       columnHelper.accessor('couponCount', {
         header: 'Coupon count',
         cell: ({ row }) => (
-          <div className='flex items-center gap-3'>
+          <div className='flex items-center justify-center gap-3'>
             <Chip
               variant='tonal'
               className='capitalize'
@@ -233,28 +239,10 @@ const CouponTableList = ({ tableData, totalCoupons }) => {
         cell: ({ row }) => (
           <div className='flex items-center'>
             <IconButton>
-              <i className='tabler-trash text-[22px] text-textSecondary' />
-            </IconButton>
-            <IconButton>
               <Link href={getLocalizedUrl(`/offers/allcoupons/${row.original.id}`, locale)} className='flex'>
                 <i className='tabler-edit text-[22px] text-textSecondary' />
               </Link>
             </IconButton>
-            <OptionMenu
-              iconClassName='text-[22px] text-textSecondary'
-              options={[
-                {
-                  text: 'Download',
-                  icon: 'tabler-download text-[22px]',
-                  menuItemProps: { className: 'flex items-center gap-2 text-textSecondary' }
-                },
-                {
-                  text: 'Edit',
-                  icon: 'tabler-edit text-[22px]',
-                  menuItemProps: { className: 'flex items-center gap-2 text-textSecondary' }
-                }
-              ]}
-            />
           </div>
         ),
         enableSorting: false

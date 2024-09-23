@@ -12,6 +12,7 @@ import Checkbox from '@mui/material/Checkbox'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
+import useLocalizedRedirect from '@/utils/useLocalizedRedirect'
 
 // Third-party Imports
 import { useForm, Controller } from 'react-hook-form'
@@ -21,8 +22,8 @@ import fetchData from '@/utils/fetchData'
 
 const AccountDelete = () => {
   const { showFeedback } = useFeedback()
+  const redirect = useLocalizedRedirect()
   const { id } = useParams()
-  const router = useRouter()
   // States
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -49,7 +50,7 @@ const AccountDelete = () => {
       const response = await fetchData(apiUrl, 'DELETE', {})
       if (response.success) {
         showFeedback('Account deleted successfully.', 'success')
-        router.push('/admin/adminusers')
+        redirect('admin/adminusers')
       } else {
         throw new Error(response.message || 'Failed to delete admin.')
       }

@@ -18,7 +18,8 @@ import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import TablePagination from '@mui/material/TablePagination'
 import MenuItem from '@mui/material/MenuItem'
-
+import InputAdornment from '@mui/material/InputAdornment'
+import SearchIcon from '@mui/icons-material/Search'
 // Third-party Imports
 import classnames from 'classnames'
 import { rankItem } from '@tanstack/match-sorter-utils'
@@ -37,7 +38,6 @@ import {
 
 // Component Imports
 import TableFilters from './TableFilters'
-import OptionMenu from '@core/components/option-menu'
 import TablePaginationComponent from '@components/TablePaginationComponent'
 import CustomTextField from '@core/components/mui/TextField'
 import CustomAvatar from '@core/components/mui/Avatar'
@@ -65,7 +65,7 @@ const fuzzyFilter = (row, columnId, value, addMeta) => {
   return itemRank.passed
 }
 
-const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...props }) => {
+const DebouncedInput = ({ value: initialValue, onChange, onSearch, debounce = 500, ...props }) => {
   // States
   const [value, setValue] = useState(initialValue)
 
@@ -79,9 +79,28 @@ const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...prop
 
     return () => clearTimeout(timeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
+  }, [value, onChange, debounce])
 
-  return <CustomTextField {...props} value={value} onChange={e => setValue(e.target.value)} />
+  const handleSearch = () => {
+    onSearch(value) // Calls the search function when the button is clicked
+  }
+
+  return (
+    <CustomTextField
+      {...props}
+      value={value}
+      onChange={e => setValue(e.target.value)}
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position='end'>
+            <IconButton onClick={handleSearch} edge='end'>
+              <SearchIcon />
+            </IconButton>
+          </InputAdornment>
+        )
+      }}
+    />
+  )
 }
 
 const userStatusObj = {
@@ -134,7 +153,7 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
           <div className='flex items-center gap-4'>
             {getAvatar({ avatar: row.original.avatar, fullName: row.original.fullName })}
             <div className='flex flex-col'>
-              <Typography color='text.primary' className='font-medium'>
+              <Typography color='text.primary' className='font-medium capitalize'>
                 {row.original.fullName}
               </Typography>
               <Typography variant='body2'>{row.original.email}</Typography>
@@ -183,28 +202,10 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
         cell: ({ row }) => (
           <div className='flex items-center'>
             <IconButton>
-              <i className='tabler-trash text-[22px] text-textSecondary' />
-            </IconButton>
-            <IconButton>
               <Link href={getLocalizedUrl(`/admin/adminusers/${row.original.id}`, locale)} className='flex'>
-                <i className='tabler-eye text-[22px] text-textSecondary' />
+                <i className='tabler-edit text-[25px] text-textSecondary' />
               </Link>
             </IconButton>
-            <OptionMenu
-              iconClassName='text-[22px] text-textSecondary'
-              options={[
-                {
-                  text: 'Download',
-                  icon: 'tabler-download text-[22px]',
-                  menuItemProps: { className: 'flex items-center gap-2 text-textSecondary' }
-                },
-                {
-                  text: 'Edit',
-                  icon: 'tabler-edit text-[22px]',
-                  menuItemProps: { className: 'flex items-center gap-2 text-textSecondary' }
-                }
-              ]}
-            />
           </div>
         ),
         enableSorting: false
@@ -279,6 +280,11 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
             <DebouncedInput
               value={globalFilter ?? ''}
               onChange={value => setGlobalFilter(String(value))}
+              onSearch={searchValue => {
+                // Trigger the API call here using searchValue
+                // fetchUsers(searchValue) // Call the API function
+                console.log('search')
+              }}
               placeholder='Search User'
               className='is-full sm:is-auto'
             />

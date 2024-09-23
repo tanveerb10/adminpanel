@@ -1,30 +1,29 @@
 // React Imports
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 
 // MUI Imports
-import CardContent from '@mui/material/CardContent';
-import Grid from '@mui/material/Grid';
-import MenuItem from '@mui/material/MenuItem';
+import CardContent from '@mui/material/CardContent'
+import Grid from '@mui/material/Grid'
+import MenuItem from '@mui/material/MenuItem'
 
 // Component Imports
-import CustomTextField from '@core/components/mui/TextField';
-
-      
+import CustomTextField from '@core/components/mui/TextField'
+import { Button, Typography } from '@mui/material'
 
 const TableFilters = ({ setData, tableData, roleData }) => {
   // States
-  const [role, setRole] = useState('');
-  const [status, setStatus] = useState('');
+  const [role, setRole] = useState('')
+  const [status, setStatus] = useState('')
 
   useEffect(() => {
     const filteredData = tableData?.filter(user => {
-      if (role && user.role !== role) return false;
-      if (status && user.status !== status) return false;
-      return true;
-    });
+      if (role && user.role !== role) return false
+      if (status && user.status !== status) return false
+      return true
+    })
 
-    setData(filteredData);
-  }, [role, status, tableData, setData]);
+    setData(filteredData)
+  }, [role, status, tableData, setData])
 
   return (
     <CardContent>
@@ -41,7 +40,7 @@ const TableFilters = ({ setData, tableData, roleData }) => {
             <MenuItem value=''>Select Role</MenuItem>
             {roleData?.allRole?.map(role => (
               <MenuItem value={role.role_name} key={role._id}>
-                {role.role_name}
+                <Typography className='capitalize'>{role.role_name}</Typography>
               </MenuItem>
             ))}
           </CustomTextField>
@@ -61,9 +60,15 @@ const TableFilters = ({ setData, tableData, roleData }) => {
             <MenuItem value='inactive'>Inactive</MenuItem>
           </CustomTextField>
         </Grid>
+
+        <Grid item xs={12} sm={4}>
+          <Button variant='contained' color='error'>
+            Reset filter
+          </Button>
+        </Grid>
       </Grid>
     </CardContent>
-  );
-};
+  )
+}
 
-export default TableFilters;
+export default TableFilters

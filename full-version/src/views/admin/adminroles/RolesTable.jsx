@@ -18,8 +18,9 @@ import IconButton from '@mui/material/IconButton'
 import { Button } from '@mui/material'
 import TablePagination from '@mui/material/TablePagination'
 import { styled } from '@mui/material/styles'
-import Grid from '@mui/material'
 
+import InputAdornment from '@mui/material/InputAdornment'
+import SearchIcon from '@mui/icons-material/Search'
 // Component Imports
 import RoleDialog from '@components/dialogs/role-dialog/RoleDialog'
 import OpenDialogOnElementClick from '@components/dialogs/OpenDialogOnElementClick'
@@ -68,7 +69,7 @@ const fuzzyFilter = (row, columnId, value, addMeta) => {
   return itemRank.passed
 }
 
-const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...props }) => {
+const DebouncedInput = ({ value: initialValue, onChange, onSearch, debounce = 500, ...props }) => {
   // States
   const [value, setValue] = useState(initialValue)
 
@@ -82,9 +83,27 @@ const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...prop
 
     return () => clearTimeout(timeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
+  }, [value, debounce, onSearch])
+  const handleSearch = () => {
+    onSearch(value) // Calls the search function when the button is clicked
+  }
 
-  return <CustomTextField {...props} value={value} onChange={e => setValue(e.target.value)} />
+  return (
+    <CustomTextField
+      {...props}
+      value={value}
+      onChange={e => setValue(e.target.value)}
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position='end'>
+            <IconButton onClick={handleSearch} edge='end'>
+              <SearchIcon />
+            </IconButton>
+          </InputAdornment>
+        )
+      }}
+    />
+  )
 }
 
 const userStatusObj = {
@@ -99,7 +118,6 @@ const RolesTable = ({ tableData, totalRole, roleData }) => {
   // States
   const [role, setRole] = useState('')
   const [rowSelection, setRowSelection] = useState({})
-  const [openDialog, setOpenDialog] = useState(false)
 
   const [data, setData] = useState(...[tableData])
   const [globalFilter, setGlobalFilter] = useState('')
@@ -131,8 +149,18 @@ const RolesTable = ({ tableData, totalRole, roleData }) => {
           />
         )
       },
-      columnHelper.accessor('id', {
+      columnHelper.accessor('srno', {
         header: 'Sr.no',
+        cell: ({ row }) => (
+          <div className='flex items-center gap-4'>
+            <Typography className='font-medium' color='text.primary'>
+              {row.original.srno}
+            </Typography>
+          </div>
+        )
+      }),
+      columnHelper.accessor('id', {
+        header: 'Role Id',
         cell: ({ row }) => (
           <div className='flex items-center gap-4'>
             <Typography className='font-medium' color='text.primary'>
@@ -176,16 +204,11 @@ const RolesTable = ({ tableData, totalRole, roleData }) => {
       columnHelper.accessor('action', {
         header: 'Actions',
         cell: ({ row }) => (
-          <div className='flex items-center'>
-            <IconButton>
-              <i className='tabler-trash text-[22px] text-textSecondary' />
-            </IconButton>
-            <IconButton>
-              <Link href={getLocalizedUrl(`admin/adminroles/${row.original.roleId}`, locale)} className='flex'>
-                <i className='tabler-edit text-[25px] text-textSecondary' />
-              </Link>
-            </IconButton>
-          </div>
+          <IconButton>
+            <Link href={getLocalizedUrl(`admin/adminroles/${row.original.roleId}`, locale)} className='flex'>
+              <i className='tabler-edit text-[25px] text-textSecondary' />
+            </Link>
+          </IconButton>
         ),
         enableSorting: false
       })
@@ -280,8 +303,13 @@ const RolesTable = ({ tableData, totalRole, roleData }) => {
           <DebouncedInput
             value={globalFilter ?? ''}
             className='is-[250px]'
+            onSearch={searchValue => {
+              // Trigger the API call here using searchValue
+              // fetchUsers(searchValue) // Call the API function
+              console.log('search role')
+            }}
             onChange={value => setGlobalFilter(String(value))}
-            placeholder='Search User'
+            placeholder='Search Role'
           />
           <CustomTextField
             select

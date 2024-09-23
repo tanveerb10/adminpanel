@@ -2,15 +2,23 @@
 import Grid from '@mui/material/Grid'
 
 // Component Imports
-import AboutOverview from './AboutOverview'
-import ActivityTimeline from './ActivityTimeline'
-import ConnectionsTeams from './ConnectionsTeams'
-import ProjectsTable from './ProjectsTables'
-
+// import AboutOverview from './AboutOverview'
+// import ActivityTimeline from './ActivityTimeline'
+// import ConnectionsTeams from './ConnectionsTeams'
+// import ProjectsTable from './ProjectsTables'
+import dynamic from 'next/dynamic'
+const AccountTab = dynamic(() => import('@/views/admin/adminusers/account-settings/account'))
+const AccountSettings = dynamic(() => import('@views/admin/adminusers/account-settings'))
+const SecurityTab = dynamic(() => import('@/views/admin/adminusers/account-settings/security'))
 const ProfileTab = ({ data }) => {
+  const tabContentList = {
+    // account: <AccountTab adminDetail={existAdminDetail} roleData={roleData} />,
+    account: <AccountTab />,
+    security: <SecurityTab />
+  }
   return (
     <Grid container spacing={6}>
-      <Grid item lg={4} md={5} xs={12}>
+      {/* <Grid item lg={4} md={5} xs={12}>
         <AboutOverview data={data} />
       </Grid>
       <Grid item lg={8} md={7} xs={12}>
@@ -23,7 +31,8 @@ const ProfileTab = ({ data }) => {
             <ProjectsTable projectTable={data?.projectTable} />
           </Grid>
         </Grid>
-      </Grid>
+      </Grid> */}
+      <AccountSettings tabContentList={tabContentList} />
     </Grid>
   )
 }

@@ -24,6 +24,8 @@ import { getLocalizedUrl } from '@/utils/i18n'
 import useVerticalNav from '@menu/hooks/useVerticalNav'
 import { useSettings } from '@core/hooks/useSettings'
 
+import Image from 'next/image'
+
 const LogoText = styled.span`
   font-size: 1.375rem;
   line-height: 1.09091;
@@ -68,7 +70,14 @@ const Logo = () => {
   // return <Img src='/next.svg' width={100} height={25} alt='logo' /> // for example
   return (
     <Link href={getLocalizedUrl('/', locale)} className='flex items-center'>
-      <VuexyLogo className='text-2xl text-primary' />
+
+      {/* <VuexyLogo className='text-2xl text-primary' /> */}
+      <Image
+        src='/images/logos/Live-In-Logo.png'
+        alt='Logo'
+        width={80}
+        height={40}
+      />
       <LogoText
         ref={logoTextRef}
         isHovered={isHovered}

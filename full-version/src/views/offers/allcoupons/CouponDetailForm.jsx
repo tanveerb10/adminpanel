@@ -183,6 +183,27 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
 
                 <Grid item xs={12} sm={6}>
                   <Controller
+                    name='discount_type'
+                    control={control}
+                    defaultValue={couponData?.discount_type || ''}
+                    render={({ field }) => (
+                      <CustomTextField
+                        {...field}
+                        select
+                        fullWidth
+                        label='Discount Type'
+                        error={Boolean(errors.discount_type)}
+                        helperText={errors.discount_type?.message}
+                      >
+                        <MenuItem value='percent'>Percent</MenuItem>
+                        <MenuItem value='amount'>Amount</MenuItem>
+                      </CustomTextField>
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Controller
                     name='discount_value'
                     control={control}
                     render={({ field }) => (
@@ -351,27 +372,6 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
                       >
                         <MenuItem value='true'>True</MenuItem>
                         <MenuItem value='false'>False</MenuItem>
-                      </CustomTextField>
-                    )}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <Controller
-                    name='discount_type'
-                    control={control}
-                    defaultValue={couponData?.discount_type || ''}
-                    render={({ field }) => (
-                      <CustomTextField
-                        {...field}
-                        select
-                        fullWidth
-                        label='Discount Type'
-                        error={Boolean(errors.discount_type)}
-                        helperText={errors.discount_type?.message}
-                      >
-                        <MenuItem value='percent'>Percent</MenuItem>
-                        <MenuItem value='amount'>Amount</MenuItem>
                       </CustomTextField>
                     )}
                   />

@@ -9,7 +9,7 @@ import { useParams } from 'next/navigation'
 import { toast } from 'react-toastify'
 import fetchFormData from '@/utils/fetchFormData'
 import fetchData from '@/utils/fetchData'
-
+import useLocalizedRedirect from '@/utils/useLocalizedRedirect'
 // STATES OF INDIA
 let states = [
   'Andhra Pradesh',
@@ -54,11 +54,25 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin }) => {
   const [imgSrc, setImgSrc] = useState('/images/avatars/1.png')
   const [selectedRole, setSelectedRole] = useState(adminDetail?.role?.role_name || '')
   const [isNewPasswordShown, setIsNewPasswordShown] = useState(false)
+  const redirect = useLocalizedRedirect()
 
   const validationSchema = yup.object().shape({
-    firstname: yup.string().required('First name is required'),
-    lastname: yup.string().required('Last name is required'),
-    email: yup.string().email('Enter a valid email').required('Email is required'),
+    firstname: yup
+      .string()
+      .required('First name is required')
+      .matches(/^[a-zA-Z0-9]*$/, 'First name can only contain letters and numbers')
+      .notOneOf(['*'], 'First name cannot be *'),
+    lastname: yup
+      .string()
+      .required('Last name is required')
+      .matches(/^[a-zA-Z0-9]*$/, 'Last name can only contain letters and numbers')
+      .notOneOf(['*'], 'Last name cannot be *'),
+    email: yup
+      .string()
+      .email('Enter a valid email')
+      .matches(/^[^*]+$/, 'Email cannot contain *')
+      .matches(/.+\..+/, 'Email must contain a domain (e.g., .com)')
+      .required('Email is required'),
     phone: yup
       .string()
       .matches(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits')
@@ -131,7 +145,8 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin }) => {
     setValue('role', newRole, { shouldValidate: true })
     setSelectedRole(newRole)
   }
-  const { id } = useParams()
+  // const { id, lang: } = useParams()
+  const { lang: locale, id } = useParams()
 
   const handleFormSubmit = async data => {
     const apiUrl = isAddAdmin
@@ -146,7 +161,12 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin }) => {
       }
 
       if (response.success || response.status) {
-        isAddAdmin ? toast.success('Admin added successfully!') : toast.success('Admin Updated successfully!')
+        if (isAddAdmin) {
+          toast.success('Admin added successfully!')
+          redirect('admin/adminusers')
+        } else {
+          toast.success('Admin Updated successfully!')
+        }
       } else {
         isAddAdmin ? toast.error('Unsuccessful to add admin') : 'unsuccessful to update admin'
       }
@@ -157,29 +177,31 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin }) => {
 
   return (
     <Card>
-      <CardContent className='mbe-4'>
-        <div className='flex max-sm:flex-col items-center gap-6'>
-          <img height={100} width={100} className='rounded' src={imgSrc} alt='Profile' />
-          <div className='flex flex-grow flex-col gap-4'>
-            <div className='flex flex-col sm:flex-row gap-4'>
-              <Button component='label' variant='contained' htmlFor='account-settings-upload-image'>
-                Upload New Photo
-                <input
-                  hidden
-                  type='file'
-                  accept='image/png, image/jpeg'
-                  onChange={handleFileInputChange}
-                  id='account-settings-upload-image'
-                />
-              </Button>
-              <Button variant='tonal' color='secondary' onClick={handleFileInputReset}>
-                Reset
-              </Button>
+      {!isAddAdmin && (
+        <CardContent className='mbe-4'>
+          <div className='flex max-sm:flex-col items-center gap-6'>
+            <img height={100} width={100} className='rounded' src={imgSrc} alt='Profile' />
+            <div className='flex flex-grow flex-col gap-4'>
+              <div className='flex flex-col sm:flex-row gap-4'>
+                <Button component='label' variant='contained' htmlFor='account-settings-upload-image'>
+                  Upload New Photo
+                  <input
+                    hidden
+                    type='file'
+                    accept='image/png, image/jpeg'
+                    onChange={handleFileInputChange}
+                    id='account-settings-upload-image'
+                  />
+                </Button>
+                <Button variant='tonal' color='secondary' onClick={handleFileInputReset}>
+                  Reset
+                </Button>
+              </div>
+              <Typography>Allowed JPG, GIF or PNG. Max size of 800K</Typography>
             </div>
-            <Typography>Allowed JPG, GIF or PNG. Max size of 800K</Typography>
           </div>
-        </div>
-      </CardContent>
+        </CardContent>
+      )}
       <CardContent>
         <form onSubmit={handleSubmit(handleFormSubmit)}>
           <Grid container spacing={6}>
@@ -338,7 +360,7 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin }) => {
                   >
                     {roleData?.allRole?.map(role => (
                       <MenuItem value={role.role_name} key={role.role_id}>
-                        {role.role_name}
+                        <Typography className='capitalize'>{role.role_name}</Typography>
                       </MenuItem>
                     ))}
                   </CustomTextField>

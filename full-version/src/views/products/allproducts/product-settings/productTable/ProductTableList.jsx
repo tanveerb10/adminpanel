@@ -148,47 +148,70 @@ const ProductTableList = ({ tableData = [], totalProducts, fromMetas }) => {
       //     </div>
       //   )
       // }),
-      columnHelper.accessor('name', {
-        header: 'Name',
-        cell: ({ row }) => (
-          <div className='flex items-center gap-4'>
-            {getAvatar({ avatar: row.original.imageSrc, fullName: row.original.name })}
-            <div className='flex flex-col'>
-              <Typography color='text.primary' className='font-medium'>
-                {row.original.name}
-              </Typography>
-            </div>
-          </div>
-        )
-      }),
 
-      columnHelper.accessor('description', {
-        header: 'Description',
+      columnHelper.accessor('name', {
+        header: 'Product',
         cell: ({ row }) => {
           const description = row.original.description
           const maxLength = 50
           const truncatedDescription = truncateText(description, maxLength)
           return (
-            <Typography
-              variant='body2'
-              color='text.primary'
-              style={{
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                display: '-webkit-box',
-                WebkitBoxOrient: 'vertical',
-                WebkitLineClamp: 2,
-                wordBreak: 'break-word',
-                whiteSpace: 'pre-wrap'
-              }}
-            >
-              <p dangerouslySetInnerHTML={{ __html: truncatedDescription }} />
+            <div className='flex items-center gap-4'>
+              {getAvatar({ avatar: row.original.imageSrc, fullName: row.original.name })}
+              <div className='flex flex-col'>
+                <Typography color='text.primary' className='font-bold'>
+                  {row.original.name}
+                </Typography>
+                <Typography
+                  variant='body2'
+                  color='text.primary'
+                  style={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 2,
+                    wordBreak: 'break-word',
+                    whiteSpace: 'pre-wrap'
+                  }}
+                >
+                  <p dangerouslySetInnerHTML={{ __html: truncatedDescription }} />
 
-              {/* {truncatedDescription} */}
-            </Typography>
+                  {/* {truncatedDescription} */}
+                </Typography>
+              </div>
+            </div>
           )
         }
       }),
+
+      // columnHelper.accessor('description', {
+      //   header: 'Description',
+      //   cell: ({ row }) => {
+      //     const description = row.original.description
+      //     const maxLength = 50
+      //     const truncatedDescription = truncateText(description, maxLength)
+      //     return (
+      //       <Typography
+      //         variant='body2'
+      //         color='text.primary'
+      //         style={{
+      //           overflow: 'hidden',
+      //           textOverflow: 'ellipsis',
+      //           display: '-webkit-box',
+      //           WebkitBoxOrient: 'vertical',
+      //           WebkitLineClamp: 2,
+      //           wordBreak: 'break-word',
+      //           whiteSpace: 'pre-wrap'
+      //         }}
+      //       >
+      //         <p dangerouslySetInnerHTML={{ __html: truncatedDescription }} />
+
+      //         {/* {truncatedDescription} */}
+      //       </Typography>
+      //     )
+      //   }
+      // }),
       columnHelper.accessor('productBrand', {
         header: 'Brand',
         cell: ({ row }) => (
@@ -233,7 +256,7 @@ const ProductTableList = ({ tableData = [], totalProducts, fromMetas }) => {
         )
       }),
       columnHelper.accessor('productCount', {
-        header: 'Product count',
+        header: 'Count',
         cell: ({ row }) => (
           <div className='flex items-center gap-3'>
             <Chip

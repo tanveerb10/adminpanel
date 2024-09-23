@@ -7,12 +7,13 @@ import Typography from '@mui/material/Typography'
 import RolesTable from './RolesTable'
 
 const Adminroles = ({ roleData }) => {
-  const tableData = roleData.allRole.map(role => ({
+  const tableData = roleData.allRole.map((role, index) => ({
     id: role.role_id,
     name: role.role_name,
     status: role.status ? 'active' : 'inactive',
     roleId: role._id,
-    abilityCount: role.ability.length
+    abilityCount: role.ability.length,
+    srno: index + 1
   }))
   const totalRole = roleData.roleCount
 

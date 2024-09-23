@@ -7,8 +7,8 @@ const AllCoupons = ({ couponsData }) => {
     const date = ` ${dates.getDate()}/${dates.getMonth() + 1}/${dates.getFullYear()}`
     const time = `${dates.getHours() % 12 || 12}-${dates.getMinutes()}-${dates.getSeconds()} ${dates.getHours() >= 12 ? 'PM' : 'AM'}`
     return (
-      <div className='flex gap-2 flex-col justify-center items-center'>
-        <Chip label={time} />
+      <div className='flex gap-2 justify-center items-center'>
+        {/* <Chip label={time} /> */}
         <Chip label={date} />
       </div>
     )

@@ -13,7 +13,7 @@ import {
   Chip
 } from '@mui/material'
 import fetchFormData from '@/utils/fetchFormData'
-
+import Loader from '@/libs/components/Loader'
 const columns = [
   { id: 'csvId', label: 'Sr no.', minWidth: 170 },
   { id: 'username', label: 'Name', minWidth: 170 },
@@ -98,7 +98,12 @@ export default function BulkHistoryTable({ callAgain, TabValue }) {
     }
   }, [callAgain, TabValue])
 
-  if (loading) return <div>Loading...</div>
+  if (loading)
+    return (
+      <div className='flex items-center justify-center'>
+        <Loader />
+      </div>
+    )
   if (error) return <div>Error fetching data: {error.message}</div>
   console.log(historyLogData, 'history data log')
 

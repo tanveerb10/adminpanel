@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useParams, useRouter } from 'next/navigation'
 // import Metas from '@/views/products/metas/Metas'
 import MetasDetailForm from '@/views/products/metas/MetasDetailForm'
+import Loader from '@/libs/components/Loader'
 
 export default function Page() {
   const [loading, setLoading] = useState(false)
@@ -46,7 +47,11 @@ export default function Page() {
   console.log(metaData, 'metaData')
   if (loading) {
     // need to check loading
-    return <div>Loading...</div>
+    return (
+      <div className='flex items-center justify-center'>
+        <Loader />
+      </div>
+    )
   }
 
   if (error) {

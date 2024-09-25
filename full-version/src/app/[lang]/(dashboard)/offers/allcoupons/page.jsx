@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import AllCoupons from '@/views/offers/allcoupons/AllCoupons'
 import fetchData from '@/utils/fetchData'
-
+import Loader from '@libs/components/Loader'
 export default function page() {
   const [coupons, setcoupons] = useState([])
   const [loading, setLoading] = useState(true)
@@ -26,7 +26,11 @@ export default function page() {
   }, [])
 
   if (loading) {
-    return <div>Loading...</div>
+    return (
+      <div className='flex items-center justify-center'>
+        <Loader />
+      </div>
+    )
   }
 
   if (error) {

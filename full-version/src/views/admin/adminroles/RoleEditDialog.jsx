@@ -11,7 +11,7 @@ import CustomTextField from '@/@core/components/mui/TextField'
 import { toast } from 'react-toastify'
 import RoleDeleteDialog from '@views/admin/adminroles/RoleDeleteDialog'
 import { useFeedback } from '@/contexts/FeedbackContext'
-
+import Loader from '@/libs/components/Loader'
 const allAbility = [
   'dashboard',
   'summary',
@@ -236,7 +236,7 @@ const RoleEditDialog = ({ roleData, id }) => {
       </Grid>
       <Grid item>
         <Button color='primary' variant='contained' disabled={loading} onClick={updateRolehandle}>
-          {loading ? <CircularProgress size={24} /> : 'Save Changes'}
+          {loading ? <Loader /> : 'Save Changes'}
         </Button>
       </Grid>
     </Grid>

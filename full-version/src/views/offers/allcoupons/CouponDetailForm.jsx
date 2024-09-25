@@ -11,6 +11,7 @@ import fetchData from '@/utils/fetchData'
 import { getLocalizedUrl } from '@/utils/i18n'
 import CouponDelete from '@views/offers/allcoupons/CouponDelete'
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
+import Loader from '@/libs/components/Loader'
 
 const CouponDetailForm = ({ isAddCoupon, couponData }) => {
   const initialFormData = {
@@ -344,7 +345,7 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
                               ...params.InputProps,
                               endAdornment: (
                                 <>
-                                  {loading ? <CircularProgress color='inherit' size={20} /> : null}
+                                  {loading ? <Loader /> : null}
                                   {params.InputProps.endAdornment}
                                 </>
                               )

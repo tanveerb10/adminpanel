@@ -24,7 +24,7 @@ import StyledVerticalNavExpandIcon from '@menu/styles/vertical/StyledVerticalNav
 // Style Imports
 import menuItemStyles from '@core/styles/vertical/menuItemStyles'
 import menuSectionStyles from '@core/styles/vertical/menuSectionStyles'
-import {hasAbility} from "@/utils/hasAbility"
+import { hasAbility } from '@/utils/hasAbility'
 
 const RenderExpandIcon = ({ open, transitionDuration }) => (
   <StyledVerticalNavExpandIcon open={open} transitionDuration={transitionDuration}>
@@ -39,11 +39,10 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
   const { settings } = useSettings()
   const params = useParams()
   const { isBreakpointReached, transitionDuration } = verticalNavOptions
-  
 
   // Vars
   // const { transitionDuration } = verticalNavOptions
-  const { lang: locale} = params
+  const { lang: locale } = params
   const ScrollWrapper = isBreakpointReached ? 'div' : PerfectScrollbar
 
   return (
@@ -72,7 +71,7 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
         {hasAbility('dashboard') && (
           <SubMenu
             label={dictionary['navigation'].dashboards}
-            icon={<i className='tabler-smart-home' />}
+            icon={<i className='tabler-dashboard' />}
             suffix={<CustomChip label='3' size='small' color='error' round='true' />}
           >
             {hasAbility('summary') && (
@@ -88,14 +87,12 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
         )}
         {hasAbility('admin') && (
           <MenuSection label={dictionary['navigation'].adminsection}>
-            <SubMenu label={dictionary['navigation'].admin} icon={<i className='tabler-file-description' />}>
+            <SubMenu label={dictionary['navigation'].admin} icon={<i className='tabler-user-check' />}>
               {hasAbility('adminusers') && (
                 <MenuItem href={`/${locale}/admin/adminusers`}>{dictionary['navigation'].adminusers}</MenuItem>
               )}
               {hasAbility('adminroles') && (
-                <MenuItem href={`/${locale}/admin/adminroles`}>
-                  {dictionary['navigation'].adminroles}
-                </MenuItem>
+                <MenuItem href={`/${locale}/admin/adminroles`}>{dictionary['navigation'].adminroles}</MenuItem>
               )}
             </SubMenu>
           </MenuSection>
@@ -108,14 +105,16 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
                 <MenuItem href={`/${locale}/customers/allcustomers`}>{dictionary['navigation'].allcustomers}</MenuItem>
               )}
               {hasAbility('customersegment') && (
-                <MenuItem href={`/${locale}/customers/customersegment`}>{dictionary['navigation'].customersegment}</MenuItem>
+                <MenuItem href={`/${locale}/customers/customersegment`}>
+                  {dictionary['navigation'].customersegment}
+                </MenuItem>
               )}
             </SubMenu>
           </MenuSection>
         )}
         {hasAbility('products') && (
           <MenuSection label={dictionary['navigation'].productsection}>
-            <SubMenu label={dictionary['navigation'].products} icon={<i className='tabler-lock' />}>
+            <SubMenu label={dictionary['navigation'].products} icon={<i className='tabler-box' />}>
               {hasAbility('allproducts') && (
                 <MenuItem href={`/${locale}/products/allproducts`}>{dictionary['navigation'].allproducts}</MenuItem>
               )}
@@ -143,11 +142,9 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
         )}
         {hasAbility('offers') && (
           <MenuSection label={dictionary['navigation'].offersection}>
-            <SubMenu label={dictionary['navigation'].offers}>
+            <SubMenu label={dictionary['navigation'].offers} icon={<i className='tabler-gift' />}>
               {hasAbility('allcoupons') && (
-                <MenuItem href={`/${locale}/offers/allcoupons`}>
-                  {dictionary['navigation'].allcoupons}
-                </MenuItem>
+                <MenuItem href={`/${locale}/offers/allcoupons`}>{dictionary['navigation'].allcoupons}</MenuItem>
               )}
               {hasAbility('customercoupons') && (
                 <MenuItem href={`/${locale}/offers/customercoupons`}>
@@ -159,26 +156,18 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
         )}
         {hasAbility('orders') && (
           <MenuSection label={dictionary['navigation'].ordersection}>
-            <SubMenu label={dictionary['navigation'].orders}>
+            <SubMenu label={dictionary['navigation'].orders} icon={<i className='tabler-package' />}>
               {hasAbility('allorders') && (
-                <MenuItem href={`/${locale}/orders/allorders`}>
-                  {dictionary['navigation'].allorders}
-                </MenuItem>
+                <MenuItem href={`/${locale}/orders/allorders`}>{dictionary['navigation'].allorders}</MenuItem>
               )}
               {hasAbility('bulkprocessing') && (
-                <MenuItem href={`/${locale}/orders/bulkprocessing`}>
-                  {dictionary['navigation'].bulkprocessing}
-                </MenuItem>
+                <MenuItem href={`/${locale}/orders/bulkprocessing`}>{dictionary['navigation'].bulkprocessing}</MenuItem>
               )}
               {hasAbility('transactions') && (
-                <MenuItem href={`/${locale}/orders/transactions`}>
-                  {dictionary['navigation'].transactions}
-                </MenuItem>
+                <MenuItem href={`/${locale}/orders/transactions`}>{dictionary['navigation'].transactions}</MenuItem>
               )}
               {hasAbility('archivedorders') && (
-                <MenuItem href={`/${locale}/orders/archivedorders`}>
-                  {dictionary['navigation'].archivedorders}
-                </MenuItem>
+                <MenuItem href={`/${locale}/orders/archivedorders`}>{dictionary['navigation'].archivedorders}</MenuItem>
               )}
             </SubMenu>
           </MenuSection>
@@ -187,63 +176,41 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           <MenuSection label={dictionary['navigation'].cmssection}>
             <SubMenu label={dictionary['navigation'].cms} icon={<i className='tabler-shield-lock' />}>
               {hasAbility('storesetup') && (
-                <MenuItem href={`/${locale}/cms/storesetup`}>
-                  {dictionary['navigation'].storesetup}
-                </MenuItem>
+                <MenuItem href={`/${locale}/cms/storesetup`}>{dictionary['navigation'].storesetup}</MenuItem>
               )}
               {hasAbility('style') && (
-                <MenuItem href={`/${locale}/cms/style`}>
-                  {dictionary['navigation'].style}
-                </MenuItem>
+                <MenuItem href={`/${locale}/cms/style`}>{dictionary['navigation'].style}</MenuItem>
               )}
               {hasAbility('banners') && (
-                <MenuItem href={`/${locale}/cms/banners`}>
-                  {dictionary['navigation'].banners}
-                </MenuItem>
+                <MenuItem href={`/${locale}/cms/banners`}>{dictionary['navigation'].banners}</MenuItem>
               )}
               {hasAbility('stories') && (
-                <MenuItem href={`/${locale}/cms/stories`}>
-                  {dictionary['navigation'].stories}
-                </MenuItem>
+                <MenuItem href={`/${locale}/cms/stories`}>{dictionary['navigation'].stories}</MenuItem>
               )}
-              {hasAbility('seo') && (
-                <MenuItem href={`/${locale}/cms/seo`}>
-                  {dictionary['navigation'].seo}
-                </MenuItem>
-              )}
+              {hasAbility('seo') && <MenuItem href={`/${locale}/cms/seo`}>{dictionary['navigation'].seo}</MenuItem>}
               {hasAbility('pages') && (
-                <MenuItem href={`/${locale}/cms/pages`}>
-                  {dictionary['navigation'].pages}
-                </MenuItem>
+                <MenuItem href={`/${locale}/cms/pages`}>{dictionary['navigation'].pages}</MenuItem>
               )}
               {hasAbility('media') && (
-                <MenuItem href={`/${locale}/cms/media`}>
-                  {dictionary['navigation'].media}
-                </MenuItem>
+                <MenuItem href={`/${locale}/cms/media`}>{dictionary['navigation'].media}</MenuItem>
               )}
 
               {hasAbility('google') && (
-                <MenuItem href={`/${locale}/cms/google`} >
-                  {dictionary['navigation'].google}
-                </MenuItem>
+                <MenuItem href={`/${locale}/cms/google`}>{dictionary['navigation'].google}</MenuItem>
               )}
               {hasAbility('facebook') && (
-                <MenuItem href={`/${locale}/cms/facebook`}>
-                  {dictionary['navigation'].facebook}
-                </MenuItem>
+                <MenuItem href={`/${locale}/cms/facebook`}>{dictionary['navigation'].facebook}</MenuItem>
               )}
 
               {hasAbility('socialprofiles') && (
-                <MenuItem href={`/${locale}/cms/socialprofiles`}>
-                  {dictionary['navigation'].socialprofiles}
-                </MenuItem>
+                <MenuItem href={`/${locale}/cms/socialprofiles`}>{dictionary['navigation'].socialprofiles}</MenuItem>
               )}
             </SubMenu>
           </MenuSection>
         )}
         {hasAbility('payments') && (
           <MenuSection label={dictionary['navigation'].paymentsection}>
-            <SubMenu label={dictionary['navigation'].payments} icon={<i className='tabler-dots' />}>
+            <SubMenu label={dictionary['navigation'].payments} icon={<i className='tabler-credit-card' />}>
               {hasAbility('cashondelivery') && (
                 <MenuItem href={`/${locale}/payments/cashondelivery`}>
                   {dictionary['navigation'].cashondelivery}
@@ -251,25 +218,19 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
               )}
 
               {hasAbility('razorpay') && (
-                <MenuItem href={`/${locale}/payments/razorpay`}>
-                  {dictionary['navigation'].razorpay}
-                </MenuItem>
+                <MenuItem href={`/${locale}/payments/razorpay`}>{dictionary['navigation'].razorpay}</MenuItem>
               )}
               {hasAbility('phonepe') && (
-                <MenuItem href={`/${locale}/payments/phonepe`}>
-                  {dictionary['navigation'].phonepe}
-                </MenuItem>
+                <MenuItem href={`/${locale}/payments/phonepe`}>{dictionary['navigation'].phonepe}</MenuItem>
               )}
             </SubMenu>
           </MenuSection>
         )}
         {hasAbility('shipping') && (
           <MenuSection label={dictionary['navigation'].shippingsection}>
-            <SubMenu label={dictionary['navigation'].shipping} icon={<i className='tabler-chart-bar' />}>
+            <SubMenu label={dictionary['navigation'].shipping} icon={<i className='tabler-truck' />}>
               {hasAbility('shippingzones') && (
-                <MenuItem href={`/${locale}/shipping/shippingzones`}>
-                  {dictionary['navigation'].shippingzones}
-                </MenuItem>
+                <MenuItem href={`/${locale}/shipping/shippingzones`}>{dictionary['navigation'].shippingzones}</MenuItem>
               )}
               {hasAbility('shippingcharges') && (
                 <MenuItem href={`/${locale}/shipping/shippingcharges`} icon={<i className='tabler-square' />}>
@@ -284,37 +245,27 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
         )}
         {hasAbility('taxes') && (
           <MenuSection label={dictionary['navigation'].taxsection}>
-            <SubMenu label={dictionary['navigation'].taxes} icon={<i className='tabler-chart-donut-2' />}>
+            <SubMenu label={dictionary['navigation'].taxes} icon={<i className='tabler-calculator' />}>
               {hasAbility('taxrate') && (
-                <MenuItem href={`/${locale}/taxes/taxrate`}>
-                  {dictionary['navigation'].taxrate}
-                </MenuItem>
+                <MenuItem href={`/${locale}/taxes/taxrate`}>{dictionary['navigation'].taxrate}</MenuItem>
               )}
               {hasAbility('taxgroup') && (
-                <MenuItem href={`/${locale}/taxes/taxgroup`}>
-                  {dictionary['navigation'].taxgroup}
-                </MenuItem>
+                <MenuItem href={`/${locale}/taxes/taxgroup`}>{dictionary['navigation'].taxgroup}</MenuItem>
               )}
             </SubMenu>
           </MenuSection>
         )}
         {hasAbility('email') && (
           <MenuSection label={dictionary['navigation'].emailsection}>
-            <SubMenu label={dictionary['navigation'].email}>
+            <SubMenu label={dictionary['navigation'].email} icon={<i className='tabler-mail' />}>
               {hasAbility('smtp') && (
-                <MenuItem href={`/${locale}/email/smtpsettings`}>
-                  {dictionary['navigation'].smtpsettings}
-                </MenuItem>
+                <MenuItem href={`/${locale}/email/smtpsettings`}>{dictionary['navigation'].smtpsettings}</MenuItem>
               )}
               {hasAbility('templates') && (
-                <MenuItem href={`/${locale}/email/templates`}>
-                  {dictionary['navigation'].templates}
-                </MenuItem>
+                <MenuItem href={`/${locale}/email/templates`}>{dictionary['navigation'].templates}</MenuItem>
               )}
               {hasAbility('sendemails') && (
-                <MenuItem href={`/${locale}/email/sendemails`} icon={<i className='tabler-layout' />}>
-                  {dictionary['navigation'].sendemails}
-                </MenuItem>
+                <MenuItem href={`/${locale}/email/sendemails`}>{dictionary['navigation'].sendemails}</MenuItem>
               )}
             </SubMenu>
           </MenuSection>
@@ -322,7 +273,7 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
 
         {hasAbility('notifications') && (
           <MenuSection label={dictionary['navigation'].notificationsection}>
-            <SubMenu label={dictionary['navigation'].notifications} icon={<i className='tabler-box' />}>
+            <SubMenu label={dictionary['navigation'].notifications} icon={<i className='tabler-bell' />}>
               {hasAbility('firebasesetup') && (
                 <MenuItem href={`/${locale}/notifications/firebasesetup`} icon={<i className='tabler-git-merge' />}>
                   {dictionary['navigation'].firebasesetup}
@@ -334,11 +285,7 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
                 </MenuItem>
               )}
               {hasAbility('sendnotification') && (
-                <MenuItem
-                  icon={<i className='tabler-checkbox' />}
-                  href={`/${locale}/notifications/sendnotifications`}
-              
-                >
+                <MenuItem icon={<i className='tabler-checkbox' />} href={`/${locale}/notifications/sendnotifications`}>
                   {dictionary['navigation'].sendnotifications}
                 </MenuItem>
               )}
@@ -347,7 +294,7 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
         )}
         {hasAbility('sms') && (
           <MenuSection label={dictionary['navigation'].smssection}>
-            <SubMenu label={dictionary['navigation'].sms}>
+            <SubMenu label={dictionary['navigation'].sms} icon={<i className='tabler-message-circle' />}>
               {hasAbility('smssetup') && (
                 <MenuItem href={`/${locale}/sms/smssetup`}>{dictionary['navigation'].smssetup}</MenuItem>
               )}
@@ -359,40 +306,24 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
         )}
         {hasAbility('shippers') && (
           <MenuSection label={dictionary['navigation'].shippersection}>
-            <SubMenu label={dictionary['navigation'].shippers} icon={<i className='tabler-book-2' />}>
+            <SubMenu label={dictionary['navigation'].shippers} icon={<i className='tabler-package' />}>
               {hasAbility('delhivery') && (
-                <MenuItem
-                  icon={<i className='tabler-checkbox' />}
-                  href={`/${locale}/shippers/delhiverysetup`}
-           
-                >
+                <MenuItem icon={<i className='tabler-checkbox' />} href={`/${locale}/shippers/delhiverysetup`}>
                   {dictionary['navigation'].delhiverysetup}
                 </MenuItem>
               )}
               {hasAbility('bluedart') && (
-                <MenuItem
-                  icon={<i className='tabler-checkbox' />}
-                  href={`/${locale}/shippers/bluedartsetup`}
-             
-                >
+                <MenuItem icon={<i className='tabler-checkbox' />} href={`/${locale}/shippers/bluedartsetup`}>
                   {dictionary['navigation'].bluedartsetup}
                 </MenuItem>
               )}
               {hasAbility('shiprocket') && (
-                <MenuItem
-                  icon={<i className='tabler-checkbox' />}
-                  href={`/${locale}/shippers/shiprocketsetup`}
-             
-                >
+                <MenuItem icon={<i className='tabler-checkbox' />} href={`/${locale}/shippers/shiprocketsetup`}>
                   {dictionary['navigation'].shiprocketsetup}
                 </MenuItem>
               )}
               {hasAbility('shipdelight') && (
-                <MenuItem
-                  icon={<i className='tabler-checkbox' />}
-                  href={`/${locale}/shippers/shipdelightsetup`}
-                  
-                >
+                <MenuItem icon={<i className='tabler-checkbox' />} href={`/${locale}/shippers/shipdelightsetup`}>
                   {dictionary['navigation'].shipdelightsetup}
                 </MenuItem>
               )}

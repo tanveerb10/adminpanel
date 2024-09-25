@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import Adminroles from '@/views/admin/adminroles/Adminroles'
 import fetchData from '@/utils/fetchData'
-
+import Loader from '@/libs/components/Loader'
 const getData = async (setError, setRoleData, setLoading) => {
   try {
     const roleApi = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles`
@@ -31,7 +31,11 @@ const Page = () => {
   }, [])
 
   if (loading) {
-    return <div>Loading...</div>
+    return (
+      <div className='flex items-center justify-center'>
+        <Loader />
+      </div>
+    )
   }
 
   if (error) {

@@ -70,22 +70,16 @@ const Logo = () => {
   // return <Img src='/next.svg' width={100} height={25} alt='logo' /> // for example
   return (
     <Link href={getLocalizedUrl('/', locale)} className='flex items-center'>
-
       {/* <VuexyLogo className='text-2xl text-primary' /> */}
-      <Image
-        src='/images/logos/Live-In-Logo.png'
-        alt='Logo'
-        width={80}
-        height={40}
-      />
-      <LogoText
+      <Image src='/images/logos/Live-In-Logo.png' alt='Logo' width={120} height={50} />
+      {/* <LogoText
         ref={logoTextRef}
         isHovered={isHovered}
         isCollapsed={layout === 'collapsed'}
         transitionDuration={transitionDuration}
       >
         {themeConfig.templateName}
-      </LogoText>
+      </LogoText> */}
     </Link>
   )
 }

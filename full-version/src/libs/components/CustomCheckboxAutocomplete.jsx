@@ -15,8 +15,10 @@ const CustomCheckboxAutocomplete = forwardRef(
   ({ initialOptions = [], label, placeholder, onChange, optionKey, error, helperText, target, ...props }, ref) => {
     const [dataList, setDataList] = useState([])
     useEffect(() => {
+      // if (initialOptions.length > 0) {
       const data = target ? initialOptions?.map(item => item[target]) : initialOptions
       setDataList(data)
+      // }
     }, [initialOptions, target])
 
     console.log(dataList, 'datalist from custom')

@@ -77,10 +77,8 @@ const UserDropdown = () => {
 
       console.log('API Response:', responseData)
       if (responseData.success === true) {
-        // setCookie('accessToken', '')
         deleteCookie('accessToken')
         deleteCookie('refreshToken')
-        // setCookie('refreshToken', '')
         router.push(getLocalizedUrl('/login', locale))
         return toast.success(responseData.message)
       }
@@ -99,13 +97,7 @@ const UserDropdown = () => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         className='mis-2'
       >
-        <Avatar
-          ref={anchorRef}
-          // alt={session?.user?.name || ''}
-          // src={session?.user?.image || ''}
-          onClick={handleDropdownOpen}
-          className='cursor-pointer bs-[38px] is-[38px]'
-        />
+        <Avatar ref={anchorRef} onClick={handleDropdownOpen} className='cursor-pointer bs-[38px] is-[38px]' />
       </Badge>
       <Popper
         open={open}
@@ -135,7 +127,7 @@ const UserDropdown = () => {
                     </div>
                   </div>
                   <Divider className='mlb-1' />
-                  <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/user-profile')}>
+                  <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e, '/pages/profile')}>
                     <i className='tabler-user text-[22px]' />
                     <Typography color='text.primary'>My Profile</Typography>
                   </MenuItem>

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import fetchData from '@/utils/fetchData'
 import Pages from '@views/cms/pages/Pages'
+import Loader from '@/libs/components/Loader'
 export default function page() {
   const [loading, setLoading] = useState(false)
   const [staticData, setStaticData] = useState([])
@@ -27,7 +28,11 @@ export default function page() {
   }, [])
 
   if (loading) {
-    return <div>Loading...</div>
+    return (
+      <div className='flex items-center justify-center'>
+        <Loader />
+      </div>
+    )
   }
   if (error) {
     return <div>Error : {error}</div>

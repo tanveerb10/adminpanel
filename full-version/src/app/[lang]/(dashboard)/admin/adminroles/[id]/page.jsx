@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import fetchData from '@/utils/fetchData'
 import RoleEditDialog from '@views/admin/adminroles/RoleEditDialog'
 import { useParams, useRouter } from 'next/navigation'
-
+import Loader from '@/libs/components/Loader'
 export default function page() {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -38,7 +38,11 @@ export default function page() {
   }, [id])
 
   if (loading) {
-    return <div>Loading...</div>
+    return (
+      <div className='flex items-center justify-center'>
+        <Loader />
+      </div>
+    )
   } else if (role !== 'superadmin') {
     router.push('/')
     return <div>Wait you are going to redirect because you are not super admin...</div>

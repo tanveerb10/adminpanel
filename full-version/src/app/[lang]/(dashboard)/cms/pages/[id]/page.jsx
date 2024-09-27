@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import fetchData from '@/utils/fetchData'
 import { useParams, useRouter } from 'next/navigation'
 import PagesDetailForm from '@/views/cms/pages/PagesDetailForm'
-
+import Loader from '@/libs/components/Loader'
 export default function page() {
   const [getStaticData, setGetStaticData] = useState({})
   const [loading, setLoading] = useState(true)
@@ -34,7 +34,11 @@ export default function page() {
   }, [id])
 
   if (loading) {
-    return <div>Loading...</div>
+    return (
+      <div className='flex items-center justify-center'>
+        <Loader />
+      </div>
+    )
   }
 
   if (role !== 'superadmin') {

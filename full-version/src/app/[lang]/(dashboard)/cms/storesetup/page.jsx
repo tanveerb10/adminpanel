@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import Storesetup from '@/views/cms/storesetup/Storesetup'
-import { fetchInitialData } from "@/utils/api.js"
-
+import { fetchInitialData } from '@/utils/api.js'
+import Loader from '@libs/components/Loader'
 const StoreSetupPage = () => {
   const [initialData, setInitialData] = useState(null)
 
@@ -18,7 +18,13 @@ const StoreSetupPage = () => {
   // Render loading state or the component with initial data
   return (
     <div>
-      {initialData ? <Storesetup initialData={initialData} /> : <p>Loading...</p>}
+      {initialData ? (
+        <Storesetup initialData={initialData} />
+      ) : (
+        <div className='flex items-center justify-center'>
+          <Loader />
+        </div>
+      )}
     </div>
   )
 }

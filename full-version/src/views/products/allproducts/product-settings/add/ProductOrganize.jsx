@@ -11,13 +11,14 @@ import { TypeOfStandard } from '@/data/typeOfStandard/TypeOfStandard'
 import CustomAutocomplete from '@core/components/mui/Autocomplete'
 import { useFormContext, Controller } from 'react-hook-form'
 
-const ProductOrganize = ({ brandName, categoryoption }) => {
+const ProductOrganize = ({ brandName, categoryoption, tagoption }) => {
   const { productData, updateProductParent } = useProduct()
   const {
     control,
     formState: { errors }
   } = useFormContext()
 
+  console.log(categoryoption)
   return (
     <Card>
       <CardHeader title='Organize' />
@@ -50,6 +51,7 @@ const ProductOrganize = ({ brandName, categoryoption }) => {
             />
           </Grid>
 
+          {/* {categoryoption && categoryoption.length !== 0 && ( */}
           <Grid item xs={12}>
             <Controller
               name='categories'
@@ -71,6 +73,7 @@ const ProductOrganize = ({ brandName, categoryoption }) => {
               )}
             />
           </Grid>
+          {/* )} */}
 
           <Grid item xs={12}>
             {productData.parent.categories?.length > 0 ? (
@@ -118,7 +121,7 @@ const ProductOrganize = ({ brandName, categoryoption }) => {
                     field.onChange(newValue)
                     updateProductParent({ tags: newValue })
                   }}
-                  initialOptions={productData.parent.tags || []}
+                  initialOptions={tagoption}
                   error={!!errors.tags}
                   helperText={errors.tags ? errors.tags.message : ''}
                 />

@@ -6,10 +6,11 @@ import { toast } from 'react-toastify'
 import { useAuth } from '@/contexts/AuthContext'
 import { useParams, useRouter } from 'next/navigation'
 import ProductFormWrapper from '@views/products/allproducts/product-settings/add/ProductFormWrapper'
-
+import Loader from '@/libs/components/Loader'
 export default function Page() {
-  const { productData, setProductData, updateDataOption } = useProduct()
+  const { productData, setProductData } = useProduct()
   const [brandData, setBrandData] = useState([])
+  const [tagData, setTagData] = useState([])
   const [categoryData, setCategoryData] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -39,25 +40,42 @@ export default function Page() {
       })
   }, [])
 
-  const fetchCategories = useCallback(async () => {
+  const fetchCategories = async () => {
     try {
       const categoryUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/categories`
       const response = await fetchData(categoryUrl, 'GET')
 
       // setCategoryData(response.allCategory.map(option => option.category_name) || [])
       const categories = response.allCategory.map(option => option.category_name)
+      console.log('ander vala category', categories)
       setCategoryData(categories)
-      updateDataOption(categories)
+      // updateDataOption(categories)
     } catch (error) {
       toast.error('Error fetching categories')
       setLoading(false)
     }
-  }, [])
+  }
+  const fetchTags = async () => {
+    try {
+      const tagUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/tags`
+      const response = await fetchData(tagUrl, 'GET')
+      const tags = response.allTag.map(option => option.tag_name)
+      console.log('ander vala tag', tags)
+      setTagData(tags)
+      // updateDataOption(categories)
+    } catch (error) {
+      toast.error('Error fetching tags')
+      setLoading(false)
+    }
+  }
   // }, [updateDataOption])
 
   useEffect(() => {
     fetchCategories()
-  }, [fetchCategories])
+  }, [])
+  useEffect(() => {
+    fetchTags()
+  }, [])
 
   console.log('categoy', categoryData)
 
@@ -147,7 +165,11 @@ export default function Page() {
 
   if (loading || !productData) {
     // need to check loading
-    return <div>Loading...</div>
+    return (
+      <div className='flex items-center justify-center'>
+        <Loader />
+      </div>
+    )
   }
 
   if (error) {
@@ -157,7 +179,12 @@ export default function Page() {
   if (id == 'addnewproduct') {
     return (
       <>
-        <ProductFormWrapper brandData={brandData} isAddProduct={true} />
+        <ProductFormWrapper
+          brandData={brandData}
+          isAddProduct={true}
+          categoryoption={categoryData}
+          tagoption={tagData}
+        />
       </>
     )
   }
@@ -168,6 +195,7 @@ export default function Page() {
         initialData={productData.parent}
         id={id}
         categoryoption={categoryData}
+        tagoption={tagData}
       />
     </>
   )

@@ -43,16 +43,13 @@ export const ProductProvider = ({ children }) => {
     }
   ]
 
-  const dataOption = []
-
   const [productData, setProductData] = useState({
     parent: productParent,
     child: productChild,
     meta: metafield,
     images: productImages,
     videos: productVideos,
-    isEdit: false,
-    dataOption: dataOption
+    isEdit: false
   })
 
   const updateProductParent = updateData => {
@@ -144,8 +141,7 @@ export const ProductProvider = ({ children }) => {
 
   const updateDataOption = initialData => {
     setProductData(prev => ({
-      ...prev,
-      dataOption: initialData
+      ...prev
     }))
   }
 
@@ -163,8 +159,7 @@ export const ProductProvider = ({ children }) => {
         deleteProductImages,
         addProductMeta,
         deleteProductMeta,
-        updateProductParent,
-        updateDataOption
+        updateProductParent
       }}
     >
       {children}

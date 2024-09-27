@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import Adminusers from '@/views/admin/adminusers/Adminusers'
 import fetchFormData from '@/utils/fetchFormData'
-
+import Loader from '@/libs/components/Loader'
 const getData = async (setUserData, setRoleData, setError, setLoading) => {
   try {
     const [userResponse, roleResponse] = await Promise.all([
@@ -22,8 +22,6 @@ const getData = async (setUserData, setRoleData, setError, setLoading) => {
     // Update state with fetched data
     setUserData(userResponse)
     setRoleData(roleResponse)
-    console.log(userResponse)
-    console.log(roleResponse)
   } catch (error) {
     setError(error.message)
   } finally {
@@ -43,7 +41,11 @@ const Page = () => {
   }, [])
 
   if (loading) {
-    return <div>Loading...</div>
+    return (
+      <div className='flex items-center justify-center'>
+        <Loader />
+      </div>
+    )
   }
 
   if (error) {

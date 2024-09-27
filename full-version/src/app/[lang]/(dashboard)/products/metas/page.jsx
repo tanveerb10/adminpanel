@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import Allproducts from '@/views/products/allproducts/Allproducts'
 import fetchData from '@/utils/fetchData'
-import { Typography } from '@mui/material'
+import Loader from '@/libs/components/Loader'
 
 export default function page() {
   const [productData, setProductData] = useState([])
@@ -25,7 +25,11 @@ export default function page() {
   }, [])
 
   if (loading) {
-    return <Typography>Wait am loading right now</Typography>
+    return (
+      <div className='flex items-center justify-center'>
+        <Loader />
+      </div>
+    )
   }
   console.log(productData, 'prodddsdfgdfgfdsfghfdghfdg')
   return (

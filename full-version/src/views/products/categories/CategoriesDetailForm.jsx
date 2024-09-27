@@ -8,13 +8,12 @@ import CustomTextField from '@core/components/mui/TextField'
 import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
 import { getLocalizedUrl } from '@/utils/i18n'
-import fetchData from '@/utils/fetchData'
+import fetchFormData from '@/utils/fetchFormData'
 
 const CategoriesDetailForm = ({ isAddCategories, categoryData }) => {
-  console.log(categoryData, 'mein cat form me se bol raha hu')
   const initialFormData = {
     category_name: categoryData?.category?.category_name || '',
-    category_image_src: categoryData?.category?.category_image_src || '',
+    category_image_src: categoryData?.category?.category_image_src || '/images/icons/default-image.jpg',
     product_count: categoryData?.category?.products_count || 0,
     category_description: categoryData?.category?.category_description || '',
     status: categoryData?.category?.is_deleted || false,
@@ -113,7 +112,7 @@ const CategoriesDetailForm = ({ isAddCategories, categoryData }) => {
         formData.append('category_image_src', data.category_image_src)
       }
 
-      const response = await fetchData(apiUrl, isAddCategories ? 'POST' : 'PUT', formData,'image')
+      const response = await fetchFormData(apiUrl, isAddCategories ? 'POST' : 'PUT', formData, 'image')
 
       console.log('API Response:', response)
 
@@ -168,7 +167,7 @@ const CategoriesDetailForm = ({ isAddCategories, categoryData }) => {
                   <CustomTextField
                     {...field}
                     fullWidth
-                    label='category Name'
+                    label='Category Name'
                     placeholder='category Name'
                     error={Boolean(errors.category_name)}
                     helperText={errors.category_name?.message}
@@ -184,7 +183,7 @@ const CategoriesDetailForm = ({ isAddCategories, categoryData }) => {
                   <CustomTextField
                     {...field}
                     fullWidth
-                    label='category Description'
+                    label='Category Description'
                     placeholder='category Description'
                     error={Boolean(errors.category_description)}
                     helperText={errors.category_description?.message}
@@ -271,12 +270,16 @@ const CategoriesDetailForm = ({ isAddCategories, categoryData }) => {
                     {...field}
                     select
                     fullWidth
-                    label='Sort Order'
+                    label='Sorting Order'
                     error={Boolean(errors.category_sort)}
                     helperText={errors.category_sort?.message}
                   >
-                    <MenuItem value='yes'>Yes</MenuItem>
-                    <MenuItem value='no'>No</MenuItem>
+                    <MenuItem value='featured'>Featured</MenuItem>
+                    <MenuItem value='bestselling'>Best Selling</MenuItem>
+                    <MenuItem value='pricelowtohigh'>Price low to high</MenuItem>
+                    <MenuItem value='pricehightolow'>Price high to low</MenuItem>
+                    <MenuItem value='dateoldtonew'> Date old to new</MenuItem>
+                    <MenuItem value='datenewtoold'> Date new to old</MenuItem>
                   </CustomTextField>
                 )}
               />

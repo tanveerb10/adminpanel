@@ -13,7 +13,7 @@ import fetchFormData from '@/utils/fetchFormData'
 const CategoriesDetailForm = ({ isAddCategories, categoryData }) => {
   const initialFormData = {
     category_name: categoryData?.category?.category_name || '',
-    category_image_src: categoryData?.category?.category_image_src || '/images/icons/default-image.jpg',
+    category_image_src: categoryData?.category?.imageUrl || '/images/icons/default-image.jpg',
     product_count: categoryData?.category?.products_count || 0,
     category_description: categoryData?.category?.category_description || '',
     status: categoryData?.category?.is_deleted || false,

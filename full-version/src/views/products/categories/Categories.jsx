@@ -6,7 +6,7 @@ export default function Categories({ CategoriesData }) {
     categoryId: category.category_id,
     name: category.category_name,
     description: category.category_description,
-    imageSrc: category.category_image_src,
+    imageSrc: category.imageUrl,
     imageAlt: category.category_image_alt,
     productCount: category.product_count,
     // sortOrder: category.sort_order,

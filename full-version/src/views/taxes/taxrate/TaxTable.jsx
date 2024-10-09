@@ -18,7 +18,6 @@ import {
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 // Component Imports
-import TaxDialog from '@/views/taxes/taxrate/TaxDialog'
 import TaxOverrideDialog from '@/views/taxes/taxrate/TaxOverrideDialog'
 import OpenDialogOnElementClick from '@components/dialogs/OpenDialogOnElementClick'
 
@@ -38,8 +37,7 @@ import {
   getSortedRowModel
 } from '@tanstack/react-table'
 
-// Component Imports
-import CustomAvatar from '@core/components/mui/Avatar'
+// Component Imports\
 import CustomTextField from '@core/components/mui/TextField'
 import DefaultTablePaginationComponent from '@components/DefaultTablePaginationComponent'
 
@@ -102,7 +100,7 @@ const DebouncedInput = ({ value: initialValue, onChange, onSearch, debounce = 50
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const TaxTable = ({ tableData, setTaxFlag, setTaxOverrideFlag, taxApi, taxOverrideApi }) => {
+const TaxTable = ({ tableData, setTaxOverrideFlag, taxApi, taxOverrideApi }) => {
   // States
   const [rowSelection, setRowSelection] = useState({})
 
@@ -288,20 +286,19 @@ const TaxTable = ({ tableData, setTaxFlag, setTaxOverrideFlag, taxApi, taxOverri
           />
         </div>
         <div>
-          {setTaxFlag && (
-            <OpenDialogOnElementClick
-              element={Card}
-              elementProps={SetTaxRate}
-              dialog={TaxDialog}
-              dialogProps={{ taxApi: taxApi }}
-            />
-          )}
-          {setTaxOverrideFlag && (
+          {setTaxOverrideFlag ? (
             <OpenDialogOnElementClick
               element={Card}
               elementProps={SetTaxOveride}
               dialog={TaxOverrideDialog}
-              dialogProps={{ taxOverrideApi: taxOverrideApi }}
+              dialogProps={{ taxOverrideApi: taxOverrideApi, setTaxOverrideFlag: setTaxOverrideFlag }}
+            />
+          ) : (
+            <OpenDialogOnElementClick
+              element={Card}
+              elementProps={SetTaxRate}
+              dialog={TaxOverrideDialog}
+              dialogProps={{ taxApi: taxApi }}
             />
           )}
         </div>

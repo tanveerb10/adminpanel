@@ -57,13 +57,11 @@ let states = [
   'Puducherry'
 ]
 
-const validationSchema = yup.object().shape({
-  taxRate: yup.number().required('Tax Rate is required').positive('Tax Rate must be positive'),
-  selectedState: yup.string().required('State is required'),
-  categoryName: yup.string().required('Category is required')
-})
-
-const TaxOverrideDialog = ({ open, setOpen, taxOverrideApi }) => {
+const TaxOverrideDialog = ({ open, setOpen, taxOverrideApi, setTaxOverrideFlag, taxApi }) => {
+  const validationSchema = yup.object().shape({
+    taxRate: yup.number().required('Tax Rate is required').positive('Tax Rate must be positive'),
+    selectedState: yup.string().required('State is required')
+  })
   const {
     handleSubmit,
     control,
@@ -78,80 +76,68 @@ const TaxOverrideDialog = ({ open, setOpen, taxOverrideApi }) => {
     }
   })
   const [categoryData, setCategoryData] = useState([])
-
-  //   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [loadingData, setLoadingData] = useState(false)
 
   const handleClose = () => {
     setOpen(false)
-    reset({
-      taxRate: '',
-      selectedState: '',
-      categoryName: ''
-    })
+    reset()
   }
 
-  const fetchCategories = async () => {
-    setLoadingData(true)
-    try {
-      const categoryUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/categories`
-      const response = await fetchData(categoryUrl, 'GET')
-
-      const categories = response.allCategory.map(option => option.category_name)
-
-      setCategoryData(categories)
-    } catch (error) {
-      toast.error('Error fetching categories')
-    } finally {
-      setLoadingData(false)
-    }
-  }
   useEffect(() => {
-    if (open) {
+    if (open && setTaxOverrideFlag) {
+      const fetchCategories = async () => {
+        setLoadingData(true)
+        try {
+          const categoryUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/categories`
+          const response = await fetchData(categoryUrl, 'GET')
+
+          const categories = response.allCategory.map(option => option.category_name)
+
+          setCategoryData(categories)
+        } catch (error) {
+          toast.error('Error fetching categories')
+        } finally {
+          setLoadingData(false)
+        }
+      }
       fetchCategories()
     }
-  }, [open])
+  }, [open, setTaxOverrideFlag])
   const onSubmit = async data => {
-    // e.preventDefault()
     setLoading(true)
 
-    // if (!taxRate || taxRate <= 0) {
-    //   setError('Tax Rate must be a positive value')
-    //   setLoading(false)
-    //   return
-    // }
-    // if (!selectedState) {
-    //   setError('State is required')
-    //   setLoading(false)
-    //   return
-    // }
-    // if (!categoryName) {
-    //   setError('Category is required')
-    //   setLoading(false)
-    //   return
-    // }
+    if (setTaxOverrideFlag && !data.categoryName) {
+      toast.error('Category is required')
+      setLoading(false)
+      return
+    }
 
     const payloadData = {
       rate: data.taxRate,
       state: data.selectedState,
-      category: data.categoryName
+      // category: setTaxOverrideFlag ? data.categoryName : null
+      ...(setTaxOverrideFlag && { category: data.categoryName })
     }
     console.log(payloadData, 'payload data')
 
-    const setRateURL = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/tax_override`
-
+    const setRateOverrideURL = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/tax_override`
+    const setRateURL = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/tax_rate`
+    const url = setTaxOverrideFlag ? setRateOverrideURL : setRateURL
     try {
-      const responseData = await fetchData(setRateURL, 'POST', payloadData)
+      const responseData = await fetchData(url, 'POST', payloadData)
       if (responseData.success) {
         toast.success('Tax added successfully')
-        // window.location.reload()
-        taxOverrideApi()
-      } else {
-        toast.error('Something went wrong')
+
+        setTaxOverrideFlag ? taxOverrideApi() : taxApi()
+      }
+      if (!responseData.success) {
+        console.log(responseData.message, 'fail response')
+        throw new Error('Something went wrong' || responseData.message)
       }
     } catch (err) {
       toast.error(err)
+      console.log(err)
     } finally {
       setLoading(false)
       handleClose()
@@ -174,7 +160,7 @@ const TaxOverrideDialog = ({ open, setOpen, taxOverrideApi }) => {
       </DialogCloseButton>
 
       <DialogTitle variant='h4' className='flex flex-col gap-2 text-center p-6 sm:pbs-16 sm:pbe-6 sm:pli-16'>
-        Set Tax Override
+        {setTaxOverrideFlag ? 'Set Tax Override Rate' : 'Set Tax Rate'}
       </DialogTitle>
 
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -222,29 +208,29 @@ const TaxOverrideDialog = ({ open, setOpen, taxOverrideApi }) => {
           />
 
           {/* Category Selection */}
-          <Controller
-            name='categoryName'
-            control={control}
-            render={({ field }) => (
-              <CustomTextField
-                {...field}
-                label='Category'
-                variant='outlined'
-                select
-                fullWidth
-                placeholder='Select Category'
-                margin='normal'
-                error={!!errors.categoryName}
-                helperText={errors.categoryName?.message}
-              >
-                {categoryData.map(name => (
-                  <MenuItem key={name} value={name}>
-                    {name}
-                  </MenuItem>
-                ))}
-              </CustomTextField>
-            )}
-          />
+          {setTaxOverrideFlag && (
+            <Controller
+              name='categoryName'
+              control={control}
+              render={({ field }) => (
+                <CustomTextField
+                  {...field}
+                  label='Category'
+                  variant='outlined'
+                  select
+                  fullWidth
+                  placeholder='Select Category'
+                  margin='normal'
+                >
+                  {categoryData.map(name => (
+                    <MenuItem key={name} value={name}>
+                      {name}
+                    </MenuItem>
+                  ))}
+                </CustomTextField>
+              )}
+            />
+          )}
         </DialogContent>
 
         <DialogActions className='justify-center pbs-0 sm:pbe-16 sm:pli-16'>

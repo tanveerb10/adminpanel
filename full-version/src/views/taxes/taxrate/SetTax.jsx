@@ -16,7 +16,7 @@ export default function SetTax({ taxData, setTaxFlag, taxApi }) {
   )
   return (
     <>
-      <TaxTable tableData={tableData} setTaxFlag={setTaxFlag} taxApi={taxApi} />
+      <TaxTable tableData={tableData} taxApi={taxApi} />
     </>
   )
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Storesetup from '@/views/cms/storesetup/Storesetup'
 import { fetchInitialData } from '@/utils/api.js'
-import Loader from '@libs/components/Loader'
+import Loader from '@/libs/components/Loader'
 const StoreSetupPage = () => {
   const [initialData, setInitialData] = useState(null)
 

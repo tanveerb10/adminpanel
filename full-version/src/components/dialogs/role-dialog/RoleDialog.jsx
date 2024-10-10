@@ -19,7 +19,7 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import fetchData from '@/utils/fetchData'
 
 // Component Imports
-import DialogCloseButton from '../DialogCloseButton'
+import DialogCloseButton from '@/components/dialogs/DialogCloseButton'
 import CustomTextField from '@core/components/mui/TextField'
 import { toast } from 'react-toastify'
 // Data

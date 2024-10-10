@@ -114,12 +114,21 @@ const userStatusObj = {
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const RolesTable = ({ tableData, totalRole, roleData }) => {
+const RolesTable = ({
+  tableData,
+  roleData,
+  limit,
+  totalPages,
+  handlePageChange,
+  handleLimitChange,
+  currentPage,
+  totalRoles
+}) => {
   // States
   const [role, setRole] = useState('')
   const [rowSelection, setRowSelection] = useState({})
 
-  const [data, setData] = useState(...[tableData])
+  const [data, setData] = useState(tableData)
   const [globalFilter, setGlobalFilter] = useState('')
   // Hooks
   const { lang: locale } = useParams()
@@ -195,7 +204,8 @@ const RolesTable = ({ tableData, totalRole, roleData }) => {
               variant='tonal'
               className='capitalize'
               label={row.original.status}
-              color={userStatusObj[row.original.status]}
+              // color={userStatusObj[row.original.status]}
+              color={row.original.status ? 'success' : 'error'}
               size='small'
             />
           </div>
@@ -286,18 +296,22 @@ const RolesTable = ({ tableData, totalRole, roleData }) => {
           <Typography>Show</Typography>
           <CustomTextField
             select
-            value={table.getState().pagination.pageSize}
-            onChange={e => table.setPageSize(Number(e.target.value))}
+            // value={table.getState().pagination.pageSize}
+            // onChange={e => table.setPageSize(Number(e.target.value))}
+            value={limit}
+            onChange={e => handleLimitChange(Number(e.target.value))}
             className='is-[70px]'
           >
-            <MenuItem value='10'>10</MenuItem>
-            <MenuItem value='25'>25</MenuItem>
-            <MenuItem value='50'>50</MenuItem>
+            {[2, 3, 4].map(size => (
+              <MenuItem key={size} value={size}>
+                {size}
+              </MenuItem>
+            ))}
           </CustomTextField>
         </div>
         <div className='flex flex-row items-center'>
           <Typography variant='h6'>Total Roles:</Typography>
-          <Chip variant='outlined' label={totalRole} color='primary' size='medium' className='ml-2' />
+          <Chip variant='outlined' label={totalRoles} color='primary' size='medium' className='ml-2' />
         </div>
         <div className='flex gap-4 flex-col !items-start is-full sm:flex-row sm:is-auto sm:items-center'>
           <DebouncedInput
@@ -387,12 +401,25 @@ const RolesTable = ({ tableData, totalRole, roleData }) => {
         </table>
       </div>
       <TablePagination
-        component={() => <TablePaginationComponent table={table} />}
-        count={table.getFilteredRowModel().rows.length}
-        rowsPerPage={table.getState().pagination.pageSize}
-        page={table.getState().pagination.pageIndex}
+        component={() => (
+          <TablePaginationComponent
+            total={totalRoles}
+            currentPage={currentPage}
+            limit={limit}
+            handlePageChange={handlePageChange}
+          />
+        )}
+        // count={table.getFilteredRowModel().rows.length}
+        // rowsPerPage={table.getState().pagination.pageSize}
+        // page={table.getState().pagination.pageIndex}
+        // onPageChange={(_, page) => {
+        //   table.setPageIndex(page)
+        // }}
+        count={totalRoles}
+        rowsPerPage={limit}
+        page={currentPage - 1}
         onPageChange={(_, page) => {
-          table.setPageIndex(page)
+          handlePageChange(page + 1)
         }}
       />
     </Card>

@@ -17,7 +17,7 @@ import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material'
 import TablePagination from '@mui/material/TablePagination'
 import MenuItem from '@mui/material/MenuItem'
-
+import DefaultTablePaginationComponent from '@/components/DefaultTablePaginationComponent'
 // Third-party Imports
 import classnames from 'classnames'
 import { rankItem } from '@tanstack/match-sorter-utils'
@@ -326,7 +326,7 @@ const PagesTable = ({ tableData, totalStaticPage }) => {
           </table>
         </div>
         <TablePagination
-          component={() => <TablePaginationComponent table={table} />}
+          component={() => <DefaultTablePaginationComponent table={table} />}
           count={table.getFilteredRowModel().rows.length}
           rowsPerPage={table.getState().pagination.pageSize}
           page={table.getState().pagination.pageIndex}

@@ -3,16 +3,33 @@ import { useState, useEffect } from 'react'
 import Adminroles from '@/views/admin/adminroles/Adminroles'
 import fetchData from '@/utils/fetchData'
 import Loader from '@/libs/components/Loader'
-const getData = async (setError, setRoleData, setLoading) => {
+
+const getData = async (
+  setError,
+  setRoleData,
+  setLoading,
+  setTotalPages,
+  setCurrentPage,
+  setTotalRoles,
+  page = 1,
+  limit = 3
+) => {
+  setLoading(true)
+  setError(null)
   try {
-    const roleApi = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles`
+    const roleApi = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles/allroles?page=${page}&limit=${limit}`
     const roleResponse = await fetchData(roleApi, 'GET')
 
     if (!roleResponse.success) {
       throw new Error(`Failed to fetch userData, status: ${roleResponse.status}`)
     }
 
-    setRoleData(roleResponse)
+    if (roleResponse.success) {
+      setRoleData(roleResponse.roles)
+      setTotalPages(roleResponse.totalPages)
+      setCurrentPage(roleResponse.currentPage)
+      setTotalRoles(roleResponse.rolesCount)
+    }
   } catch (error) {
     console.error('Error fetching data:', error)
     setError(error.message)
@@ -22,26 +39,47 @@ const getData = async (setError, setRoleData, setLoading) => {
 }
 
 const Page = () => {
-  const [roleData, setRoleData] = useState(null)
+  const [roleData, setRoleData] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [limit, setLimit] = useState(3)
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalRoles, setTotalRoles] = useState(0)
 
   useEffect(() => {
-    getData(setError, setRoleData, setLoading)
-  }, [])
+    getData(setError, setRoleData, setLoading, setTotalPages, setCurrentPage, setTotalRoles, currentPage, limit)
+  }, [currentPage, limit])
+
+  const handlePageChange = newPage => {
+    console.log('handle page change', newPage)
+    setCurrentPage(newPage)
+  }
+  const handleLimitChange = newLimit => {
+    console.log('handle limit change', newLimit)
+    setLimit(newLimit)
+    setCurrentPage(1)
+  }
 
   if (loading) {
-    return (
-      <div className='flex items-center justify-center'>
-        <Loader />
-      </div>
-    )
+    return <Loader />
   }
 
   if (error) {
-    return <div>Error: {error}</div>
+    return <div>Errors: {error}</div>
   }
-  return <Adminroles roleData={roleData} />
+
+  const rolesProps = {
+    roleData,
+    limit,
+    totalPages,
+    handlePageChange,
+    handleLimitChange,
+    currentPage,
+    totalRoles
+  }
+
+  return <>{roleData.length > 0 ? <Adminroles {...rolesProps} /> : <Loader />}</>
 }
 
 export default Page

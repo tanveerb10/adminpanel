@@ -1,7 +1,7 @@
 import React from 'react'
 import CouponTableList from '@/views/offers/allcoupons/CouponTableList'
 import { Chip } from '@mui/material'
-const AllCoupons = ({ couponsData }) => {
+const AllCoupons = ({ coupons, limit, totalPages, handlePageChange, handleLimitChange, currentPage, totalCoupons }) => {
   function formatDate(RawTime) {
     const dates = new Date(RawTime)
     const date = ` ${dates.getDate()}/${dates.getMonth() + 1}/${dates.getFullYear()}`
@@ -13,7 +13,7 @@ const AllCoupons = ({ couponsData }) => {
       </div>
     )
   }
-  const tableData = couponsData.Coupon.map((coupon, index) => ({
+  const tableData = coupons?.map((coupon, index) => ({
     name: coupon.coupon_name,
     description: coupon.coupon_description,
     couponCount: coupon.coupon_count,
@@ -29,11 +29,17 @@ const AllCoupons = ({ couponsData }) => {
 
   console.log(tableData)
 
-  const totalCoupons = couponsData.couponCount
-
   return (
     <div>
-      <CouponTableList tableData={tableData} totalCoupons={totalCoupons} />
+      <CouponTableList
+        tableData={tableData}
+        limit={limit}
+        totalPages={totalPages}
+        handlePageChange={handlePageChange}
+        handleLimitChange={handleLimitChange}
+        currentPage={currentPage}
+        totalCoupons={totalCoupons}
+      />
     </div>
   )
 }

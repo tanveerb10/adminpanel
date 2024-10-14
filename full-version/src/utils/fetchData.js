@@ -54,19 +54,17 @@ const fetchData = async (url, method = 'GET', data = null, type = 'default') => 
     const response = await fetch(url, requestOptions)
 
     if (!response.ok) {
-      const errorMessage = await response.text()
-      throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorMessage}`)
+      const errorText = await response.text()
+      const errorData = JSON.parse(errorText) || {}
+      const errorMessage = errorData.message || 'Unknown error occurred.'
+      throw new Error(errorMessage)
     }
     // Check Content-Type and parse response accordingly
     const contentType = response.headers.get('Content-Type')
-    if (contentType && contentType.includes('application/json')) {
-      return await response.json()
-    } else {
-      return await response.text() // Handle non-JSON responses
-    }
+    return contentType && contentType.includes('application/json') ? await response.json() : await response.text() // Handle non-JSON responses
   } catch (error) {
     console.error('Error fetching data:', error)
-    throw error
+    throw new Error(error.message)
   }
 }
 

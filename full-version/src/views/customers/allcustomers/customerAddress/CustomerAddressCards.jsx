@@ -1,6 +1,5 @@
-import { useState } from 'react'
-import { Card, Grid, CardContent, Typography, Radio, Checkbox, IconButton, Button } from '@mui/material'
-import CustomInputHorizontal from '@core/components/custom-inputs/Horizontal'
+import { useEffect, useState } from 'react'
+import { Card, Grid, CardContent, Typography, Radio, IconButton, Button } from '@mui/material'
 
 import { styled } from '@mui/material/styles'
 
@@ -138,18 +137,72 @@ const addressData = {
   ]
 }
 export default function CustomerAddressCards() {
-  //   const initialSelected = data.filter(item => item.isSelected)[data.filter(item => item.isSelected).length - 1].value
-  const defaultAddressId = addressData.default_address[0].default_address._id
+  const [addresses, setAddresses] = useState([])
+  const [selected, setSelected] = useState(null)
 
-  const [selected, setSelected] = useState(defaultAddressId)
+  useEffect(() => {
+    if (addressData) {
+      const defaultAddressId = addressData?.default_address[0]?.default_address?._id
+      const processedAddress = addressData.customer_address.map(address => ({
+        // id: address._id,
+        // address_name: address.address_name,
+        // customer_id: address.customer_id,
+        // firstName: address.firstname,
+        // lastName: address.lastname,
+        // address1: address.address1,
+        // address2: address.address2,
+        // city: address.city,
+        // state: address.state,
+        // pin: address.pin,
+        // country: address.country,
+        // phone: address.phone,
+        ...address,
+        selected: address._id === defaultAddressId
+      }))
+      setAddresses(processedAddress)
+      setSelected(defaultAddressId)
+    }
+  }, [addressData])
+
+  const fieldMap = {
+    firstname: 'First Name',
+    lastname: 'Last Name',
+    address1: 'Address 1',
+    address2: 'Address 2',
+    city: 'City',
+    state: 'State',
+    pin: 'Postal Code',
+    country: 'Country',
+    phone: 'Phone Number'
+  }
+  //   const defaultAddressId = addressData?.default_address[0]?.default_address._id || null
+  // if (checkDefault) {
+  //   console.log(checkDefault, 'yes exist')
+  //   const newAddress = addressData.customer_address.filter(id => id._id !== checkDefault)
+  //   console.log(newAddress)
+  // } else {
+  //   console.log('not exist')
+  // }
+  //   const defaultAddressId = addressData.customer_address.filter(id => id._id === checkDefault)
+
+  const fieldsToHide = [
+    'createdAt',
+    '_id',
+    'customer_address_id',
+    'selected',
+    'address_name',
+    'updatedAt',
+    '__v',
+    'customer_id'
+  ]
 
   const handleChange = event => {
     setSelected(event.target.value)
   }
-  let color = 'primary'
+
   return (
     <Grid container spacing={6}>
-      {addressData.customer_address.map(singleAddress => (
+      {addresses.map(singleAddress => (
         <Grid item xs={12} sm={6} key={singleAddress._id}>
           <Root className={classnames({ active: selected === singleAddress._id })} onChange={handleChange}>
             <Card>
@@ -172,24 +225,44 @@ export default function CustomerAddressCards() {
                     </IconButton>
                   </div>
                 </div>
-                <div className='flex'>
-                  <div>
-                    {Object.keys(singleAddress).map(key => (
-                      <Title>{key} :</Title>
+                {/* <div className='flex'> */}
+                <div>
+                  {Object.entries(singleAddress)
+                    .filter(([key]) => !fieldsToHide.includes(key))
+                    .map(([key, value]) => (
+                      <div className='flex' key={key}>
+                        <Title>{fieldMap[key] || key} : </Title>
+                        <Content>{value}</Content>
+                      </div>
                     ))}
-                  </div>
-                  <div>
-                    {Object.values(singleAddress).map(value => (
-                      <Content>{value}</Content>
-                    ))}
-                  </div>
                 </div>
+                {/* <div>
+                    {Object.entries(singleAddress)
+                      .filter([key] => !fieldsToHide.includes(key)).map([key,value] => (
+                        <Content key={key}>{value}</Content>
+                      ))}
+                  </div> */}
+                {/* </div> */}
+                {/* <div>
+                    {Object.keys(singleAddress)
+                      .filter((key) => !fieldsToHide.includes(key))
+                      .map((key) => (
+                        <Typography key={key}>{fieldMap[key] || key}:</Typography>
+                      ))}
+                  </div>
+                  <div>
+                    {Object.entries(singleAddress)
+                      .filter(([key]) => !fieldsToHide.includes(key))
+                      .map(([key, value]) => (
+                        <Typography key={key}>{value}</Typography>
+                      ))}
+                  </div> */}
               </CardContent>
             </Card>
           </Root>
         </Grid>
       ))}
-      <Grid item xs={12} sm={6}>
+      {/* <Grid item xs={12} sm={6}>
         <Root className={classnames({ active: selected === defaultAddressId })}>
           <Card>
             <CardContent>
@@ -227,88 +300,10 @@ export default function CustomerAddressCards() {
             </CardContent>
           </Card>
         </Root>
-      </Grid>
-      {/* <Grid item xs={12}>
-        all address
-        <Grid container spacing={4}>
-          {data.map((item, index) => (
-            <CustomInputHorizontal
-              type='radio'
-              key={index}
-              data={item}
-              selected={selected}
-              name='custom-radios-basic'
-              handleChange={handleChange}
-              gridProps={{ sm: 6, xs: 12 }}
-            />
-          ))}
-        </Grid>
       </Grid> */}
-
       <Grid item xs={12}>
         <Button variant='contained'>Set Default Address</Button>
       </Grid>
     </Grid>
   )
-}
-
-// <div>
-// <Title>Address1 :</Title>
-// <Content>address 1</Content>
-// </div>
-// <div>
-// <Title>Address2 :</Title>
-// <Content>address 2</Content>
-// </div>
-// <div>
-// <Title>First name :</Title>
-// <Content>Tanveer</Content>
-// </div>
-// <div>
-// <Title>Last name :</Title>
-// <Content>Shaikh</Content>
-// </div>
-// <div>
-// <Title>Phone:</Title>
-// <Content>1234567890</Content>
-// </div>
-// <div>
-// <Title>City:</Title>
-// <Content>Mumbai</Content>
-// </div>
-// <div>
-// <Title>Pin:</Title>
-// <Content>400095</Content>
-// </div>
-// <div>
-// <Title>State:</Title>
-// <Content>Maharashtra</Content>
-// </div>
-// <div>
-// <Title>Country:</Title>
-// <Content>India</Content>
-// </div>
-
-{
-  /* <CardContent>
-<div className='flex justify-between items-center'>
-  <div item xs={12}>
-    <RadioInput
-      //   name={name}
-      color={color}
-      //   value={value}
-      //   onChange={handleChange}
-      //   checked={selected === value}
-    />
-  </div>
-  <div item xs={12}>
-    <Typography>Address name : Home</Typography>
-  </div>
-  <div item xs={12}>
-    <IconButton>
-      <i className='tabler-edit text-[22px] text-textSecondary' />
-    </IconButton>
-  </div>
-</div>
-</CardContent> */
 }

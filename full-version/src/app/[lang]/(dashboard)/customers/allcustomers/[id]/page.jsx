@@ -1,13 +1,21 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import CustomerDetailForm from '@/views/customers/allcustomers/CustomerDetailForm'
+// import CustomerDetailForm from '@/views/customers/allcustomers/customerDetails/CustomerDetailForm'
 import { useAuth } from '@/contexts/AuthContext'
 import fetchData from '@/utils/fetchData'
 import { useParams, useRouter } from 'next/navigation'
 import Loader from '@/libs/components/Loader'
+import CustomerSetting from '@/views/customers/allcustomers/index'
+import dynamic from 'next/dynamic'
+
+const CustomerAddressToggleParent = dynamic(
+  () => import('@/views/customers/allcustomers/customerAddress/CustomerAddressToggleParent')
+)
+const CustomerDetailForm = dynamic(() => import('@/views/customers/allcustomers/customerDetails/CustomerDetailForm'))
+
 export default function page() {
   const [getIndividualData, setGetIndividualData] = useState({})
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const { role } = useAuth()
   const { id } = useParams()
@@ -49,9 +57,20 @@ export default function page() {
     return <div>No data available</div>
   }
 
+  const tabContent = {
+    AllCustomer: (
+      <CustomerDetailForm customerData={getIndividualData} id={id} individualCustomer={individualCustomer} />
+    ),
+    AllCustomerAddress: <CustomerAddressToggleParent />
+  }
+
   if (id === 'addnewcustomer') {
     return <CustomerDetailForm isAddCustomer={true} />
   }
 
-  return <CustomerDetailForm customerData={getIndividualData} id={id} individualCustomer={individualCustomer} />
+  return (
+    <>
+      <CustomerSetting tabContent={tabContent} />
+    </>
+  )
 }

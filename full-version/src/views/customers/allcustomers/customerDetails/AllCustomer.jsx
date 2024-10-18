@@ -1,6 +1,6 @@
 import React from 'react'
-import CustomerTableList from '@/views/customers/allCustomers/CustomerTableList'
-export default function Allcustomer({
+import CustomerTableList from '@/views/customers/allcustomers/customerDetails/CustomerTableList'
+export default function AllCustomer({
   customerData,
   limit,
   totalPages,
@@ -10,7 +10,7 @@ export default function Allcustomer({
   totalCustomer
 }) {
   console.log('api se aaya hua data', customerData)
-  const tableData = customerData.map(customer => ({
+  const tableData = customerData?.map(customer => ({
     customerId: customer.customer_id,
     fullName: `${customer.firstname} ${customer.lastname}`,
     email: customer.email,

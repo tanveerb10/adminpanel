@@ -50,10 +50,6 @@ export default function page() {
       setLoading(false)
     }
   }
-
-  // useEffect(() => {
-  //   taxOverrideApi()
-  // }, [])
   useEffect(() => {
     taxApi()
     taxOverrideApi()

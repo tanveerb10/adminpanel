@@ -39,14 +39,20 @@ const Title = styled(Typography, {
   slot: 'title'
 })(({ theme }) => ({
   fontWeight: theme.typography.fontWeightBold,
-  color: 'var(--mui-palette-text-primary) !important'
+  color: 'var(--mui-palette-text-primary) !important',
+  // width: '150px', // Fixed width to align labels properly
+  // textAlign: 'left', // Align text to the right
+  marginRight: theme.spacing(2)
 }))
 
 const Content = styled(Typography, {
   name: 'MuiCustomInputHorizontal',
   slot: 'content'
 })(({ theme }) => ({
-  ...theme.typography.body1
+  ...theme.typography.body1,
+  // width: ,
+  // textAlign: 'right',
+  color: theme.palette.text.secondary
 }))
 
 const RadioInput = styled(Radio, {
@@ -64,7 +70,7 @@ export default function CustomerAddressCards({ handleToggle, addressData }) {
   useEffect(() => {
     if (addressData) {
       const defaultAddressId = addressData?.default_address[0]?.default_address?._id
-      const processedAddress = addressData.customer_address.map(address => ({
+      const processedAddress = addressData?.customer_address.map(address => ({
         ...address,
         selected: address._id === defaultAddressId
       }))
@@ -99,7 +105,7 @@ export default function CustomerAddressCards({ handleToggle, addressData }) {
     setSelected(event.target.value)
   }
 
-  if (addressData.customer_address === null) {
+  if (addressData?.customer_address === null || addressData?.customer_address.length === 0) {
     return <Typography>There's no address available</Typography>
   }
 
@@ -108,7 +114,7 @@ export default function CustomerAddressCards({ handleToggle, addressData }) {
       {addresses.map(singleAddress => (
         <Grid item xs={12} sm={6} key={singleAddress._id}>
           <Root className={classnames({ active: selected === singleAddress._id })} onChange={handleChange}>
-            <Card>
+            <Card className='w-full'>
               <CardContent>
                 <div className='flex justify-between items-center'>
                   <div item xs={12}>
@@ -127,10 +133,10 @@ export default function CustomerAddressCards({ handleToggle, addressData }) {
                   {Object.entries(singleAddress)
                     .filter(([key]) => !fieldsToHide.includes(key))
                     .map(([key, value]) => (
-                      <div className='flex' key={key}>
-                        <Title>{fieldMap[key] || key} : </Title>
+                      <Grid item xs={12} key={key} container alignItems='center'>
+                        <Title>{fieldMap[key] || key} :</Title>
                         <Content>{value}</Content>
-                      </div>
+                      </Grid>
                     ))}
                 </div>
               </CardContent>

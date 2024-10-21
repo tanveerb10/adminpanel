@@ -13,16 +13,11 @@ import TabPanel from '@mui/lab/TabPanel'
 import CustomTabList from '@core/components/mui/TabList'
 
 const AccountSettings = ({ tabContentList, isAddAdmin }) => {
-  // States
   const [activeTab, setActiveTab] = useState('account')
 
   const handleChange = (event, value) => {
-    // console.log('Tab change:', value)
     setActiveTab(value)
   }
-
-  // console.log('tabContentList:', tabContentList)
-  // console.log('activeTab:', activeTab)
 
   const tabs = [
     <Tab
@@ -48,16 +43,6 @@ const AccountSettings = ({ tabContentList, isAddAdmin }) => {
         }
         value='security'
       />
-      // <Tab
-      //   key="notifications"
-      //   label={
-      //     <div className='flex items-center gap-1.5'>
-      //       <i className='tabler-bell text-lg' />
-      //       Notifications
-      //     </div>
-      //   }
-      //   value='notifications'
-      // />
     )
   }
 

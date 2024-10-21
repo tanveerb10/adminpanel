@@ -8,11 +8,11 @@ import ChangePasswordCard from './ChangePasswordCard'
 // import ApiKeyList from './ApiKeyList'
 // import RecentDevicesTable from './RecentDevicesTable'
 
-const Security = () => {
+const Security = ({ adminId, isSuperAdmin }) => {
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
-        <ChangePasswordCard />
+        <ChangePasswordCard adminId={adminId} isSuperAdmin={isSuperAdmin} />
       </Grid>
       {/* <Grid item xs={12}>
         <TwoFactorAuthenticationCard />

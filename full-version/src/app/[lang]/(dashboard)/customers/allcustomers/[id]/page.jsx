@@ -49,10 +49,10 @@ export default function page() {
     )
   }
 
-  if (role !== 'superadmin') {
-    setTimeout(() => router.push('/'), 3000)
-    return <div>wait you are going to redirect because you are not super admin...</div>
-  }
+  // if (role !== 'superadmin') {
+  //   setTimeout(() => router.push('/'), 3000)
+  //   return <div>wait you are going to redirect because you are not super admin...</div>
+  // }
   if (error) {
     return <div>No data available</div>
   }
@@ -61,7 +61,7 @@ export default function page() {
     AllCustomer: (
       <CustomerDetailForm customerData={getIndividualData} id={id} individualCustomer={individualCustomer} />
     ),
-    AllCustomerAddress: <CustomerAddressToggleParent />
+    AllCustomerAddress: <CustomerAddressToggleParent id={id} />
   }
 
   if (id === 'addnewcustomer') {

@@ -1,35 +1,31 @@
 // React Imports
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 
 // MUI Imports
-import CardContent from '@mui/material/CardContent';
-import Grid from '@mui/material/Grid';
-import MenuItem from '@mui/material/MenuItem';
+import CardContent from '@mui/material/CardContent'
+import Grid from '@mui/material/Grid'
+import MenuItem from '@mui/material/MenuItem'
 
 // Component Imports
-import CustomTextField from '@core/components/mui/TextField';
-
-      
+import CustomTextField from '@core/components/mui/TextField'
 
 const CategoriesTableFilters = ({ setData, tableData }) => {
   // States
-  
-  const [status, setStatus] = useState('');
+
+  const [status, setStatus] = useState('')
 
   useEffect(() => {
     const filteredData = tableData?.filter(user => {
-      if (status && user.status !== status) return false;
-      return true;
-    });
+      if (status && user.status !== status) return false
+      return true
+    })
 
-    setData(filteredData);
-  }, [ status, tableData, setData]);
+    setData(filteredData)
+  }, [status, tableData, setData])
 
   return (
     <CardContent>
       <Grid container spacing={6}>
-        
-
         <Grid item xs={12} sm={4}>
           <CustomTextField
             select
@@ -46,7 +42,7 @@ const CategoriesTableFilters = ({ setData, tableData }) => {
         </Grid>
       </Grid>
     </CardContent>
-  );
-};
+  )
+}
 
-export default CategoriesTableFilters;
+export default CategoriesTableFilters

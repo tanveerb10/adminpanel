@@ -8,7 +8,7 @@ import CustomTextField from '@core/components/mui/TextField'
 import { toast } from 'react-toastify'
 import fetchData from '@/utils/fetchData'
 
-const CustomerAddressForm = ({ isAddAddress, id, handleToggle, selectAddress, fetchIndividualAddress }) => {
+const CustomerAddressForm = ({ isAddAddress, handleToggle, selectAddress, id, fetchIndividualAddress }) => {
   const [loading, setLoading] = useState(false)
   const [deleteValue, setDeleteValue] = useState('no')
   console.log('select address', selectAddress)
@@ -46,7 +46,7 @@ const CustomerAddressForm = ({ isAddAddress, id, handleToggle, selectAddress, fe
       pin: selectAddress?.pin || '',
       country: selectAddress?.country || '',
       phone: selectAddress?.phone || '',
-      customer_id: selectAddress?.customer_id || ''
+      customer_id: id
     }
   })
 
@@ -82,11 +82,13 @@ const CustomerAddressForm = ({ isAddAddress, id, handleToggle, selectAddress, fe
     if (deleteValue === 'yes') {
       try {
         setLoading(true)
-        const deleteAddressUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/customers/deletecustomeraddress/${id}`
+        const deleteAddressUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/customers/deletecustomeraddress/${selectAddress._id}`
         const responseData = await fetchData(deleteAddressUrl, 'DELETE')
         if (responseData.success) {
           toast.success('Address deleted successfully')
           // Handle UI update after deletion
+          fetchIndividualAddress()
+          handleToggle()
         } else {
           throw new Error(responseData.message || 'Something went wrong')
         }

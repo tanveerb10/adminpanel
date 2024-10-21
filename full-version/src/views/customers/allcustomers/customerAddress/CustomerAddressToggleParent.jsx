@@ -7,14 +7,14 @@ import Loader from '@/libs/components/Loader'
 import CustomerAddressCards from '@/views/customers/allcustomers/customerAddress/CustomerAddressCards'
 import { Button, Grid } from '@mui/material'
 import AddHeader from '@/libs/components/AddHeader'
-export default function CustomerAddressToggleParent() {
+export default function CustomerAddressToggleParent({ id }) {
   const [customerAddressData, setCustomerAddressData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [isFormVisible, setIsFormVisible] = useState(false)
   const [selectAddress, setSelectAddress] = useState(null)
   const [isAddAddressFlag, setIsAddAddressFlag] = useState(false)
-  const { id } = useParams()
+  //   const { id } = useParams()
   const fetchIndividualAddress = async () => {
     try {
       setLoading(true)
@@ -39,9 +39,7 @@ export default function CustomerAddressToggleParent() {
   }
 
   useEffect(() => {
-    if (id !== 'addnewcustomeraddress') {
-      fetchIndividualAddress()
-    }
+    fetchIndividualAddress()
   }, [id])
 
   if (loading) {
@@ -63,9 +61,11 @@ export default function CustomerAddressToggleParent() {
     <>
       {!isFormVisible ? (
         <>
-          <Grid>
+          <Grid className='flex justify-between'>
             <AddHeader title='All Customer Address' />
-            <Button onClick={handleAddCustomerAddressToggle}>Add Customer</Button>
+            <Button onClick={handleAddCustomerAddressToggle} variant='tonal'>
+              Add Address
+            </Button>
           </Grid>
           <CustomerAddressCards handleToggle={handleToggle} addressData={customerAddressData} />
         </>
@@ -75,6 +75,7 @@ export default function CustomerAddressToggleParent() {
           handleToggle={handleToggle}
           fetchIndividualAddress={fetchIndividualAddress}
           isAddAddress={isAddAddressFlag ? true : null}
+          id={id}
         />
       )}
     </>

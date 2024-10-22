@@ -16,11 +16,8 @@ const getData = async (
 ) => {
   try {
     const [userResponse, roleResponse] = await Promise.all([
-      fetchFormData(
-        `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/alladmin?page=${currentPage}&limit=${limit}`,
-        'GET'
-      ),
-      fetchFormData(`${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles/allroles`, 'GET')
+      fetchFormData(`/admin/admins/alladmin?page=${currentPage}&limit=${limit}`, 'GET'),
+      fetchFormData(`/admin/roles/allroles`, 'GET')
     ])
 
     if (!userResponse.success) {

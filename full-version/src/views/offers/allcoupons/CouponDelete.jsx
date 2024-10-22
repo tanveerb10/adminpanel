@@ -42,9 +42,7 @@ const CouponDelete = ({ id, status }) => {
 
     setLoading(true)
     try {
-      const apiUrl = status
-        ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/coupons/deactivatecoupon/${id}`
-        : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/coupons/activatecoupon/${id}`
+      const apiUrl = status ? `/admin/coupons/deactivatecoupon/${id}` : `/admin/coupons/activatecoupon/${id}`
       const response = await fetchData(apiUrl, 'POST', {})
       if (response.success) {
         showFeedback(`Coupon ${status ? 'deactivated' : 'activated'} successfully.`, 'success')

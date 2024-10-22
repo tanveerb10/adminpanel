@@ -55,7 +55,7 @@ export default function MetaSettingsForm({ getMetaData }) {
       }
     }
     console.log(formatData)
-    const metaUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/cms/updateTagSettings`
+    const metaUrl = `/admin/cms/updateTagSettings`
     console.log(metaUrl)
     try {
       setLoading(true)

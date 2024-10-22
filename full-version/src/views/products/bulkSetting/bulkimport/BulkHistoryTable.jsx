@@ -81,7 +81,7 @@ export default function BulkHistoryTable({ callAgain, TabValue }) {
       const urls = API_URLS[TabValue]
       const url = `${baseUrl}${urls}`
       try {
-        // const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/getUploadHistory`
+        // const apiUrl = `/admin/products/getUploadHistory`
         const responseData = await fetchFormData(url, 'GET')
         setHistoryLogData(responseData)
       } catch (error) {

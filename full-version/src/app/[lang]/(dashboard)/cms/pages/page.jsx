@@ -11,7 +11,7 @@ export default function page() {
     const fetchStaticData = async () => {
       try {
         setLoading(true)
-        const url = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/cms/allStaticPages`
+        const url = `/admin/cms/allStaticPages`
         const responseData = await fetchData(url, 'GET')
         if (responseData.success) {
           setStaticData(responseData)

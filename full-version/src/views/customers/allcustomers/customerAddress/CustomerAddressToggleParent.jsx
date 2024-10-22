@@ -18,7 +18,7 @@ export default function CustomerAddressToggleParent({ id }) {
   const fetchIndividualAddress = async () => {
     try {
       setLoading(true)
-      const url = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/customers/getcustomeraddresses/${id}`
+      const url = `/admin/customers/getcustomeraddresses/${id}`
       const responseData = await fetchData(url, 'GET')
       if (responseData.success) {
         setCustomerAddressData(responseData)

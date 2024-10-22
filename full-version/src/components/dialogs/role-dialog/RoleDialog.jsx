@@ -158,7 +158,7 @@ const RoleDialog = ({ open, setOpen }) => {
   }
 
   const handleUpdateRole = async payload => {
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles/createRole`
+    const apiUrl = `/admin/roles/createRole`
     try {
       setLoading(true)
       setError(null)

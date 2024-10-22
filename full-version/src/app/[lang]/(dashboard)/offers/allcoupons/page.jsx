@@ -14,7 +14,7 @@ export default function page() {
 
   const fetchcoupons = async (limit, page) => {
     try {
-      const couponUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/coupons/allcoupon?page=${page}&limit=${limit}`
+      const couponUrl = `/admin/coupons/allcoupon?page=${page}&limit=${limit}`
       const responseData = await fetchData(couponUrl, 'GET')
       if (responseData.success) {
         setcoupons(responseData.Coupon)

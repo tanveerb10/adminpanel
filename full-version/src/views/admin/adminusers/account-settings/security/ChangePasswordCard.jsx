@@ -68,9 +68,7 @@ const ChangePasswordCard = ({ adminId, isSuperAdmin }) => {
       password: newPassword
     }
 
-    const apiUrl = isSuperAdmin
-      ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/changepasswordbysuperadmin`
-      : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/changepasswordbySelf`
+    const apiUrl = isSuperAdmin ? `/admin/admins/changepasswordbysuperadmin` : `/admin/admins/changepasswordbySelf`
 
     try {
       setLoading(true)

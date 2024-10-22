@@ -92,9 +92,7 @@ const CategoriesDetailForm = ({ isAddCategories, categoryData }) => {
         return
       }
 
-      const apiUrl = isAddCategories
-        ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/Categories/createCategory`
-        : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/Categories/updateCategory/${id}`
+      const apiUrl = isAddCategories ? `/admin/Categories/createCategory` : `/admin/Categories/updateCategory/${id}`
 
       const formData = new FormData()
       formData.append('category_name', data.category_name)

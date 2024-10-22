@@ -89,7 +89,7 @@ const TaxOverrideDialog = ({ open, setOpen, taxOverrideApi, setTaxOverrideFlag, 
       const fetchCategories = async () => {
         setLoadingData(true)
         try {
-          const categoryUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/categories`
+          const categoryUrl = `/admin/categories`
           const response = await fetchData(categoryUrl, 'GET')
 
           const categories = response.allCategory.map(option => option.category_name)
@@ -121,8 +121,8 @@ const TaxOverrideDialog = ({ open, setOpen, taxOverrideApi, setTaxOverrideFlag, 
     }
     console.log(payloadData, 'payload data')
 
-    const setRateOverrideURL = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/tax_override`
-    const setRateURL = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/tax_rate`
+    const setRateOverrideURL = `/admin/products/tax_override`
+    const setRateURL = `/admin/products/tax_rate`
     const url = setTaxOverrideFlag ? setRateOverrideURL : setRateURL
     try {
       const responseData = await fetchData(url, 'POST', payloadData)

@@ -16,7 +16,7 @@ export default function Page() {
     setLoading(true)
     setError(null)
     try {
-      const categoriesUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/categories?page=${page}&limit=${limit}`
+      const categoriesUrl = `/admin/categories?page=${page}&limit=${limit}`
 
       const responseData = await fetchData(categoriesUrl, 'GET')
       if (responseData.success) {

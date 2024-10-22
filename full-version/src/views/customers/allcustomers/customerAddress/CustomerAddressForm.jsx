@@ -56,8 +56,8 @@ const CustomerAddressForm = ({ isAddAddress, handleToggle, selectAddress, id, fe
 
   const handleFormSubmit = async data => {
     const apiUrl = isAddAddress
-      ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/customers/createcustomeraddress`
-      : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/customers/updatecustomeraddress/${selectAddress._id}`
+      ? `/admin/customers/createcustomeraddress`
+      : `/admin/customers/updatecustomeraddress/${selectAddress._id}`
 
     try {
       setLoading(true)
@@ -82,7 +82,7 @@ const CustomerAddressForm = ({ isAddAddress, handleToggle, selectAddress, id, fe
     if (deleteValue === 'yes') {
       try {
         setLoading(true)
-        const deleteAddressUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/customers/deletecustomeraddress/${selectAddress._id}`
+        const deleteAddressUrl = `/admin/customers/deletecustomeraddress/${selectAddress._id}`
         const responseData = await fetchData(deleteAddressUrl, 'DELETE')
         if (responseData.success) {
           toast.success('Address deleted successfully')

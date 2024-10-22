@@ -19,7 +19,7 @@ export default function Page() {
     setLoading(true)
     setError(null)
     try {
-      const customerUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/customers/allcustomers?page=${page}&limit=${limit}`
+      const customerUrl = `/admin/customers/allcustomers?page=${page}&limit=${limit}`
 
       const responseData = await fetchData(customerUrl, 'GET')
       if (responseData.success) {

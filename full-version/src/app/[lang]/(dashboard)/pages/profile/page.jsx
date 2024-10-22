@@ -12,10 +12,7 @@ const AccountSettings = dynamic(() => import('@views/admin/adminusers/account-se
 
 const viewData = async (setUserData, setError, setLoading) => {
   try {
-    const userResponse = await fetchFormData(
-      `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/Getselfdetails`,
-      'GET'
-    )
+    const userResponse = await fetchFormData(`/admin/admins/Getselfdetails`, 'GET')
 
     setUserData(userResponse)
   } catch (error) {

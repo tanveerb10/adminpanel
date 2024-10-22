@@ -115,9 +115,7 @@ const TaxTable = ({ tableData, setTaxOverrideFlag, taxApi, taxOverrideApi }) => 
   const handleDelete = async () => {
     setLoading(true)
     try {
-      const apiUrl = setTaxOverrideFlag
-        ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/delete_tax_override`
-        : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/delete_tax_rate`
+      const apiUrl = setTaxOverrideFlag ? `/admin/products/delete_tax_override` : `/admin/products/delete_tax_rate`
 
       const response = await fetchData(apiUrl, 'DELETE')
       if (response.success) {

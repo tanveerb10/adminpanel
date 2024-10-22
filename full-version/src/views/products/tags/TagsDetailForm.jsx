@@ -60,7 +60,7 @@ const TagsDetailForm = ({ open, setOpen, isEdit, tagId, fetchTags }) => {
       const fetchTagData = async () => {
         setLoadingData(true)
         try {
-          const getTagUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/tags/${tagId}`
+          const getTagUrl = `/admin/tags/${tagId}`
           const response = await fetchData(getTagUrl, 'GET')
 
           setTagData(response.tag)
@@ -79,8 +79,8 @@ const TagsDetailForm = ({ open, setOpen, isEdit, tagId, fetchTags }) => {
 
     console.log(data, 'payload data')
 
-    const createTagUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/tags/createTag`
-    const updateTagUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/tags/updateTag/${tagId}`
+    const createTagUrl = `/admin/tags/createTag`
+    const updateTagUrl = `/admin/tags/updateTag/${tagId}`
 
     const url = isEdit ? updateTagUrl : createTagUrl
     const method = isEdit ? 'PUT' : 'POST'
@@ -115,7 +115,7 @@ const TagsDetailForm = ({ open, setOpen, isEdit, tagId, fetchTags }) => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const deleteTagUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/tags/deleteTag/${tagId}`
+      const deleteTagUrl = `/admin/tags/deleteTag/${tagId}`
       const responseData = await fetchData(deleteTagUrl, 'DELETE')
       if (responseData.success) {
         toast.success(`Tag delete successfully`)

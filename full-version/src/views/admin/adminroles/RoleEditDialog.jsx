@@ -93,7 +93,7 @@ const RoleEditDialog = ({ roleData, id }) => {
   const { showFeedback } = useFeedback()
   const updateRolehandle = async () => {
     if (error) setError(null)
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles/updaterole/${id}`
+    const apiUrl = `/admin/roles/updaterole/${id}`
     if (error) {
       toast.error(`Clear this error : ${error}`)
       return

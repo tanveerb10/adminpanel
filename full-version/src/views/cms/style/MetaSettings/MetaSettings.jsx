@@ -13,7 +13,7 @@ export default function MetaSetting() {
   const metaApi = async () => {
     try {
       setLoading(true)
-      const metaSettingURL = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/cms/getMetaSettings`
+      const metaSettingURL = `/admin/cms/getMetaSettings`
 
       const responseData = await fetchData(metaSettingURL, 'GET')
       if (responseData.success) {

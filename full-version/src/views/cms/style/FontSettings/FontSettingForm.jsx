@@ -115,7 +115,7 @@ export default function FontSettingForm({ getFontData, fontApi }) {
         product_description: data.fontSizeProductDescription || ''
       }
     }
-    const fontUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/cms/updateColorSettings`
+    const fontUrl = `/admin/cms/updateColorSettings`
     try {
       setLoading(true)
       const responseData = await fetchData(fontUrl, 'PUT', formatData)

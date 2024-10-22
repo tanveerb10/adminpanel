@@ -171,8 +171,8 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin, isProfile, onlyView
       formData.append('profile_image_src', selectedFile)
       formData.append('adminId', adminDetail._id)
     }
-    const uploadprofilebyself = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/uploadprofilebyself`
-    const uploadprofilebysuperadmin = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/uploadprofilebysuperadmin`
+    const uploadprofilebyself = `/admin/admins/uploadprofilebyself`
+    const uploadprofilebysuperadmin = `/admin/admins/uploadprofilebysuperadmin`
     try {
       const response = await fetchFormData(
         isProfile ? uploadprofilebyself : uploadprofilebysuperadmin,
@@ -190,9 +190,7 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin, isProfile, onlyView
     }
   }
   const handleFormSubmit = async data => {
-    const apiUrl = isAddAdmin
-      ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/adminsignup`
-      : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/updateadmin/${id}`
+    const apiUrl = isAddAdmin ? `/admin/admins/adminsignup` : `/admin/admins/updateadmin/${id}`
 
     try {
       const response = await fetchFormData(apiUrl, isAddAdmin ? 'POST' : 'PUT', data)

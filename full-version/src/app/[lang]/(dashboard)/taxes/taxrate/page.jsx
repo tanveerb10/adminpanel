@@ -18,8 +18,8 @@ export default function page() {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
 
-  const taxURL = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/get_tax_rate`
-  const taxOverrideURL = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/get_tax_override`
+  const taxURL = `/admin/products/get_tax_rate`
+  const taxOverrideURL = `/admin/products/get_tax_override`
 
   const taxApi = async () => {
     try {

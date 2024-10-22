@@ -17,7 +17,7 @@ export default function page() {
     if (!id) return
 
     setLoading(true)
-    const singleRoleApi = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles/${id}`
+    const singleRoleApi = `/admin/roles/${id}`
     const callRoleApi = async () => {
       try {
         const response = await fetchData(singleRoleApi, 'GET')

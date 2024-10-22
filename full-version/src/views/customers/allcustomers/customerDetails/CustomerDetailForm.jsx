@@ -74,9 +74,7 @@ const CustomerDetailForm = ({ customerData, isAddCustomer, id, individualCustome
   })
 
   const handleFormSubmit = async data => {
-    const apiUrl = isAddCustomer
-      ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/customers/createcustomer`
-      : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/customers/updatecustomer/${id}`
+    const apiUrl = isAddCustomer ? `/admin/customers/createcustomer` : `/admin/customers/updatecustomer/${id}`
 
     try {
       const response = await fetchData(apiUrl, isAddCustomer ? 'POST' : 'PUT', data)
@@ -104,9 +102,7 @@ const CustomerDetailForm = ({ customerData, isAddCustomer, id, individualCustome
   const handleStatusSubmit = async () => {
     console.log(currentStatus)
     console.log(!isActivated)
-    const apiUrl = isActivated
-      ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/customers/deactivateCustomer/${id}`
-      : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/customers/activateCustomer/${id}`
+    const apiUrl = isActivated ? `/admin/customers/deactivateCustomer/${id}` : `/admin/customers/activateCustomer/${id}`
 
     try {
       const response = await fetchData(apiUrl, 'POST', {})

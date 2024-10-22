@@ -15,7 +15,7 @@ export default function FontSettings() {
   const fontApi = async () => {
     try {
       setLoading(true)
-      const fontSettingURL = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/cms/getColorSettings`
+      const fontSettingURL = `/admin/cms/getColorSettings`
 
       const responseData = await fetchData(fontSettingURL, 'GET')
       if (responseData.success) {

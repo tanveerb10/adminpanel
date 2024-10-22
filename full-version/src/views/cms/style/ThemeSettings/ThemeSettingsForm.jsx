@@ -61,7 +61,7 @@ export default function ThemeSettingsForm({ getThemeData }) {
     console.log('i am click')
     console.log('themeData', themeData)
 
-    const themeUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/cms/updateThemeSettings`
+    const themeUrl = `/admin/cms/updateThemeSettings`
     try {
       setLoading(true)
       const responseData = await fetchData(themeUrl, 'PUT', themeData)

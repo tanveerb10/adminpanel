@@ -51,7 +51,7 @@ const fetchData = async (url, method = 'GET', data = null, type = 'default') => 
     body: method !== 'GET' ? (isFormData ? data : payloaddata) : null
   }
   try {
-    const response = await fetch(url, requestOptions)
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL_LIVE}${url}`, requestOptions)
 
     if (!response.ok) {
       const errorText = await response.text()

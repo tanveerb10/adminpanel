@@ -17,7 +17,7 @@ export default function page() {
     setLoading(true)
     setError(null)
     try {
-      const brandUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands?page=${page}&limit=${limit}`
+      const brandUrl = `/admin/brands?page=${page}&limit=${limit}`
       const responseData = await fetchData(brandUrl, 'GET')
       if (responseData.success) {
         setBrands(responseData.allBrand)

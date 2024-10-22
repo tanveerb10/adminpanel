@@ -17,7 +17,7 @@ const getData = async (
   setLoading(true)
   setError(null)
   try {
-    const roleApi = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles/allroles?page=${page}&limit=${limit}`
+    const roleApi = `/admin/roles/allroles?page=${page}&limit=${limit}`
     const roleResponse = await fetchData(roleApi, 'GET')
 
     if (!roleResponse.success) {

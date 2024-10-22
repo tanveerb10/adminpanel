@@ -16,7 +16,7 @@ export default function Page() {
     setLoading(true)
     setError(null)
     try {
-      const tagsUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/tags?page=${page}&limit=${limit}`
+      const tagsUrl = `/admin/tags?page=${page}&limit=${limit}`
 
       const responseData = await fetchData(tagsUrl, 'GET')
       if (responseData.success) {

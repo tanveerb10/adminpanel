@@ -12,7 +12,7 @@ export default function ThemeSettings() {
   const themeApi = async () => {
     try {
       setLoading(true)
-      const themeSettingURL = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/cms/getThemeSettings`
+      const themeSettingURL = `/admin/cms/getThemeSettings`
 
       const responseData = await fetchData(themeSettingURL, 'GET')
       if (responseData.success) {

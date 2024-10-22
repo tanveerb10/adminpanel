@@ -15,7 +15,7 @@ export default function page() {
 
   useEffect(() => {
     const fetchProducts = async (page, limit) => {
-      const productUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/allproduct?page=${page}&limit=${limit}`
+      const productUrl = `/admin/products/allproduct?page=${page}&limit=${limit}`
       try {
         setLoading(true)
         const responseData = await fetchData(productUrl, 'GET')

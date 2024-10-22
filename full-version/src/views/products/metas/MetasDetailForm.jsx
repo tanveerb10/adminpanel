@@ -61,7 +61,7 @@ const MetasDetailForm = ({ isAddMetas, id, metaData }) => {
       return toast.error('Meta keywords should not be empty')
     }
     try {
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/addProductMeta`
+      const apiUrl = `/admin/products/addProductMeta`
 
       const response = await fetchData(apiUrl, 'POST', data)
       console.log('API Response:', response)

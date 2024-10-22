@@ -25,7 +25,7 @@ export default function page() {
   const individualCustomer = async () => {
     try {
       setLoading(true)
-      const getIndividualCustomer = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/customers/getcustomer/${id}`
+      const getIndividualCustomer = `/admin/customers/getcustomer/${id}`
       const responseData = await fetchData(getIndividualCustomer, 'GET')
       setGetIndividualData(responseData)
     } catch (error) {

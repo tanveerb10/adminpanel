@@ -16,13 +16,10 @@ const AccountSettings = dynamic(() => import('@views/admin/adminusers/account-se
 const viewData = async (setUserData, setRoleData, setError, setLoading, id) => {
   try {
     setLoading(true)
-    const roleResponse = await fetchFormData(`${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles/allroles`, 'GET')
+    const roleResponse = await fetchFormData(`/admin/roles/allroles`, 'GET')
     setRoleData(roleResponse)
     if (id !== 'addadminuser') {
-      const userResponse = await fetchFormData(
-        `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/getadmin/${id}`,
-        'GET'
-      )
+      const userResponse = await fetchFormData(`/admin/admins/getadmin/${id}`, 'GET')
       if (!userResponse || !userResponse.admin) {
         throw new Error('User not found or invalid ID')
       }

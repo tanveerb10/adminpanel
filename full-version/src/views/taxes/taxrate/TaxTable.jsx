@@ -43,6 +43,8 @@ import DefaultTablePaginationComponent from '@components/DefaultTablePaginationC
 
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
+import { toast } from 'react-toastify'
+import fetchData from '@/utils/fetchData'
 
 // Styled Components
 const Icon = styled('i')({})
@@ -101,6 +103,7 @@ const DebouncedInput = ({ value: initialValue, onChange, onSearch, debounce = 50
 const columnHelper = createColumnHelper()
 
 const TaxTable = ({ tableData, setTaxOverrideFlag, taxApi, taxOverrideApi }) => {
+  const [loading, setLoading] = useState(false)
   // States
   const [rowSelection, setRowSelection] = useState({})
 
@@ -108,7 +111,28 @@ const TaxTable = ({ tableData, setTaxOverrideFlag, taxApi, taxOverrideApi }) => 
   const [globalFilter, setGlobalFilter] = useState('')
   // Hooks
   const passId = data.map(id => ({ id: id.id, name: id.name }))
-  console.log(passId)
+
+  const handleDelete = async () => {
+    setLoading(true)
+    try {
+      const apiUrl = setTaxOverrideFlag
+        ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/delete_tax_override`
+        : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/delete_tax_rate`
+
+      const response = await fetchData(apiUrl, 'DELETE')
+      if (response.success) {
+        toast.success(setTaxOverrideFlag ? 'Tax override deleted successfully' : 'Tax deleted successfully.')
+      } else {
+        throw new Error(
+          response.message || setTaxOverrideFlag ? 'Failed to delete tax override' : 'Failed to delete tax.'
+        )
+      }
+    } catch (error) {
+      toast.error(error.message || 'An error occurred.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const columns = useMemo(
     () => [
@@ -284,6 +308,11 @@ const TaxTable = ({ tableData, setTaxOverrideFlag, taxApi, taxOverrideApi }) => 
             onChange={value => setGlobalFilter(String(value))}
             placeholder='Search State'
           />
+        </div>
+        <div>
+          <Button variant='tonal' color='error' onClick={handleDelete}>
+            {setTaxOverrideFlag ? 'Delete Tax Override' : 'Delete Tax'}
+          </Button>
         </div>
         <div>
           {setTaxOverrideFlag ? (

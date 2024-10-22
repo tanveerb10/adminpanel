@@ -3,11 +3,24 @@ import { useState, useEffect } from 'react'
 import Adminusers from '@/views/admin/adminusers/Adminusers'
 import fetchFormData from '@/utils/fetchFormData'
 import Loader from '@/libs/components/Loader'
-const getData = async (setUserData, setRoleData, setError, setLoading) => {
+const getData = async (
+  setUserData,
+  setRoleData,
+  setError,
+  setLoading,
+  setTotalPages,
+  setCurrentPage,
+  setTotalAdmin,
+  currentPage = 1,
+  limit = 3
+) => {
   try {
     const [userResponse, roleResponse] = await Promise.all([
-      fetchFormData(`${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins`, 'GET'),
-      fetchFormData(`${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles`, 'GET')
+      fetchFormData(
+        `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/alladmin?page=${currentPage}&limit=${limit}`,
+        'GET'
+      ),
+      fetchFormData(`${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles/allroles`, 'GET')
     ])
 
     if (!userResponse.success) {
@@ -20,7 +33,10 @@ const getData = async (setUserData, setRoleData, setError, setLoading) => {
     }
 
     // Update state with fetched data
-    setUserData(userResponse)
+    setUserData(userResponse.allAdmin)
+    setTotalPages(userResponse.totalPages)
+    setCurrentPage(userResponse.currentPage)
+    setTotalAdmin(userResponse.adminsCount)
     setRoleData(roleResponse)
   } catch (error) {
     setError(error.message)
@@ -35,10 +51,34 @@ const Page = () => {
   const [roleData, setRoleData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [limit, setLimit] = useState(3)
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalAdmin, setTotalAdmin] = useState(0)
 
   useEffect(() => {
-    getData(setUserData, setRoleData, setError, setLoading)
-  }, [])
+    getData(
+      setUserData,
+      setRoleData,
+      setError,
+      setLoading,
+      setTotalPages,
+      setCurrentPage,
+      setTotalAdmin,
+      currentPage,
+      limit
+    )
+  }, [currentPage, limit])
+
+  const handlePageChange = newPage => {
+    console.log('handle page change', newPage)
+    setCurrentPage(newPage)
+  }
+  const handleLimitChange = newLimit => {
+    console.log('handle limit change', newLimit)
+    setLimit(newLimit)
+    setCurrentPage(1)
+  }
 
   if (loading) {
     return (
@@ -52,7 +92,17 @@ const Page = () => {
     return <div>Error: {error || 'An unexpected error occurred'}</div>
   }
 
-  return <Adminusers userData={userData} roleData={roleData} />
+  return (
+    <Adminusers
+      userData={userData}
+      limit={limit}
+      currentPage={currentPage}
+      totalAdmin={totalAdmin}
+      totalPages={totalPages}
+      roleData={roleData}
+      handlePageChange={handlePageChange}
+      handleLimitChange={handleLimitChange}
+    />
+  )
 }
-
 export default Page

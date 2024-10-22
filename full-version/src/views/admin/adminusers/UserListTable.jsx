@@ -103,15 +103,19 @@ const DebouncedInput = ({ value: initialValue, onChange, onSearch, debounce = 50
   )
 }
 
-const userStatusObj = {
-  active: 'success',
-  inactive: 'secondary'
-}
-
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const UserListTable = ({ tableData, totalAdmin, roleData }) => {
+const UserListTable = ({
+  tableData,
+  totalAdmin,
+  roleData,
+  handleLimitChange,
+  handlePageChange,
+  totalPages,
+  limit,
+  currentPage
+}) => {
   // States
   const [rowSelection, setRowSelection] = useState({})
 
@@ -191,7 +195,7 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
               variant='tonal'
               className='capitalize'
               label={row.original.status}
-              color={userStatusObj[row.original.status]}
+              color={row.original.status ? 'success' : 'error'}
               size='small'
             />
           </div>
@@ -262,13 +266,15 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select
-            value={table.getState().pagination.pageSize}
-            onChange={e => table.setPageSize(Number(e.target.value))}
+            value={limit}
+            onChange={e => handleLimitChange(Number(e.target.value))}
             className='is-[70px]'
           >
-            <MenuItem value='10'>10</MenuItem>
-            <MenuItem value='25'>25</MenuItem>
-            <MenuItem value='50'>50</MenuItem>
+            {[2, 3, 4].map(size => (
+              <MenuItem key={size} value={size}>
+                {size}
+              </MenuItem>
+            ))}
           </CustomTextField>
 
           <div>
@@ -364,12 +370,19 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
           </table>
         </div>
         <TablePagination
-          component={() => <TablePaginationComponent table={table} />}
-          count={table.getFilteredRowModel().rows.length}
-          rowsPerPage={table.getState().pagination.pageSize}
-          page={table.getState().pagination.pageIndex}
+          component={() => (
+            <TablePaginationComponent
+              total={totalAdmin}
+              currentPage={currentPage}
+              limit={limit}
+              handlePageChange={handlePageChange}
+            />
+          )}
+          count={totalAdmin}
+          rowsPerPage={limit}
+          page={currentPage - 1}
           onPageChange={(_, page) => {
-            table.setPageIndex(page)
+            handlePageChange(page + 1)
           }}
         />
       </Card>

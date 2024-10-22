@@ -5,28 +5,36 @@ import dynamic from 'next/dynamic'
 import fetchFormData from '@/utils/fetchFormData'
 
 // // Component Imports
-// import AccountSettings from '@views/pages/account-settings'
 import { useAuth } from '@/contexts/AuthContext'
+import Loader from '@/libs/components/Loader'
 
-const AccountTab = dynamic(() => import('@/views/admin/adminusers/account-settings/account'))
-const SecurityTab = dynamic(() => import('@/views/admin/adminusers/account-settings/security'))
-const NotificationsTab = dynamic(() => import('@/views/admin/adminusers/account-settings/notifications'))
-const AccountSettings = dynamic(() => import('@views/admin/adminusers/account-settings'))
+const AccountTab = dynamic(() => import('@/views/admin/adminusers/account-settings/account'), { ssr: false })
+const SecurityTab = dynamic(() => import('@/views/admin/adminusers/account-settings/security'), { ssr: false })
+const AccountSettings = dynamic(() => import('@views/admin/adminusers/account-settings'), { ssr: false })
 
 // Function to get data using Fetch API
-const viewData = async (setUserData, setRoleData, setError, setLoading) => {
+const viewData = async (setUserData, setRoleData, setError, setLoading, id) => {
   try {
-    const [userResponse, roleResponse] = await Promise.all([
-      fetchFormData(`${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins`, 'GET'),
-      fetchFormData(`${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles`, 'GET')
-    ])
-
-    // const [userData, roleData] = await Promise.all([userResponse.json(), roleResponse.json()])
-    setUserData(userResponse)
+    setLoading(true)
+    const roleResponse = await fetchFormData(`${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles/allroles`, 'GET')
     setRoleData(roleResponse)
+    if (id !== 'addadminuser') {
+      const userResponse = await fetchFormData(
+        `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/getadmin/${id}`,
+        'GET'
+      )
+      if (!userResponse || !userResponse.admin) {
+        throw new Error('User not found or invalid ID')
+      }
+      setUserData(userResponse)
+    }
   } catch (error) {
     console.error('Error fetching data:', error)
-    setError(error.message)
+    if (error.message.includes('User not found')) {
+      setError('The user ID is invalid or the user does not exist.')
+    } else {
+      setError('Failed to load data. Please try again.')
+    }
   } finally {
     setLoading(false)
   }
@@ -38,58 +46,43 @@ const page = () => {
   const [roleData, setRoleData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const router = useRouter()
   const { role } = useAuth()
 
   useEffect(() => {
-    viewData(setUserData, setRoleData, setError, setLoading)
-  }, [viewData])
+    viewData(setUserData, setRoleData, setError, setLoading, id)
+  }, [id])
 
-  if (loading) {
-    return <div>Loading...</div>
-  }
-  const roles = {
-    SUPERADMIN: 'superadmin'
-  }
-  if (role !== roles.SUPERADMIN) {
-    return <div>You are not a super admin</div>
+  if (loading) return <Loader />
+
+  if (role !== 'superadmin') return <div>You are not a super admin</div>
+
+  if (error) return <div>Error: {error}</div>
+
+  const isAddAdmin = id === 'addadminuser'
+  if (!userData && !isAddAdmin) {
+    return <div>No user data available</div>
   }
 
-  if (error) {
-    return <div>Error: {error}</div>
+  const tabContentList = {
+    account: <AccountTab adminDetail={userData?.admin} roleData={roleData} isAddAdmin={isAddAdmin} />,
+    // ...(isAddAdmin ? {} : { security: <SecurityTab adminId={userData?.admin?._id} isSuperAdmin={true} /> })
+    security: <SecurityTab adminId={userData?.admin?._id} isSuperAdmin={true} />
   }
-  if (!userData || !userData.allAdmin) {
-    return <div>No data available</div>
-  }
-  if (id === 'addadminuser') {
-    const tabContentList = {
-      account: <AccountTab isAddAdmin={true} roleData={roleData} />
-    }
 
-    return (
-      <>
-        <AccountSettings tabContentList={tabContentList} isAddAdmin={true} />
-      </>
-    )
-  } else {
-    const existAdminDetail = userData.allAdmin.find(admin => admin._id === id)
-    if (!existAdminDetail) {
-      router.replace('/')
-      return <div>Redirecting...</div>
-    }
+  return (
+    <>
+      <AccountSettings tabContentList={tabContentList} isAddAdmin={isAddAdmin} />
+    </>
+  )
 
-    const tabContentList = {
-      account: <AccountTab adminDetail={existAdminDetail} roleData={roleData} />,
-      security: <SecurityTab />,
-      notifications: <NotificationsTab />
-    }
+  // } else {
+  // const existAdminDetail = userData.admin
 
-    return (
-      <>
-        <AccountSettings tabContentList={tabContentList} />
-      </>
-    )
-  }
+  // if (!existAdminDetail) {
+  //   router.replace('/')
+  //   return <div>Redirecting...</div>
+  // }
 }
+// }
 
 export default page

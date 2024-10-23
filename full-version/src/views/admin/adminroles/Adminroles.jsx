@@ -6,7 +6,19 @@ import Typography from '@mui/material/Typography'
 // Component Imports
 import RolesTable from './RolesTable'
 
-const Adminroles = ({ roleData, limit, totalPages, handlePageChange, handleLimitChange, currentPage, totalRoles }) => {
+const Adminroles = ({
+  roleData,
+  limit,
+  totalPages,
+  handlePageChange,
+  handleLimitChange,
+  currentPage,
+  totalRoles,
+  handleSearch,
+  value,
+  setValue,
+  resetFilter
+}) => {
   const tableData = roleData?.map((role, index) => ({
     id: role.role_id,
     name: role.role_name,
@@ -37,6 +49,10 @@ const Adminroles = ({ roleData, limit, totalPages, handlePageChange, handleLimit
           handleLimitChange={handleLimitChange}
           currentPage={currentPage}
           totalRoles={totalRoles}
+          handleSearch={handleSearch}
+          value={value}
+          setValue={setValue}
+          resetFilter={resetFilter}
         />
       </Grid>
     </Grid>

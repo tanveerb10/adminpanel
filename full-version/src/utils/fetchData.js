@@ -26,8 +26,6 @@ const fetchData = async (url, method = 'GET', data = null, type = 'default') => 
   } else {
     signPayload = data
   }
-  console.log(signPayload, 'signpayloaddddddd')
-  console.log(data, 'normallll datataatatata')
   const payloaddata = data ? JSON.stringify(signPayload) : JSON.stringify({})
 
   const nonce = generateNonce()

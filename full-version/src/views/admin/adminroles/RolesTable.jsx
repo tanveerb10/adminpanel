@@ -69,48 +69,6 @@ const fuzzyFilter = (row, columnId, value, addMeta) => {
   return itemRank.passed
 }
 
-const DebouncedInput = ({ value: initialValue, onChange, onSearch, debounce = 500, ...props }) => {
-  // States
-  const [value, setValue] = useState(initialValue)
-
-  useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value)
-    }, debounce)
-
-    return () => clearTimeout(timeout)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value, debounce, onSearch])
-  const handleSearch = () => {
-    onSearch(value) // Calls the search function when the button is clicked
-  }
-
-  return (
-    <CustomTextField
-      {...props}
-      value={value}
-      onChange={e => setValue(e.target.value)}
-      InputProps={{
-        endAdornment: (
-          <InputAdornment position='end'>
-            <IconButton onClick={handleSearch} edge='end'>
-              <SearchIcon />
-            </IconButton>
-          </InputAdornment>
-        )
-      }}
-    />
-  )
-}
-
-const userStatusObj = {
-  active: 'success',
-  inactive: 'secondary'
-}
-
 // Column Definitions
 const columnHelper = createColumnHelper()
 
@@ -122,7 +80,11 @@ const RolesTable = ({
   handlePageChange,
   handleLimitChange,
   currentPage,
-  totalRoles
+  totalRoles,
+  handleSearch,
+  value,
+  setValue,
+  resetFilter
 }) => {
   // States
   const [role, setRole] = useState('')
@@ -256,20 +218,6 @@ const RolesTable = ({
     getFacetedMinMaxValues: getFacetedMinMaxValues()
   })
 
-  const getAvatar = params => {
-    const { avatar, fullName } = params
-
-    if (avatar) {
-      return <CustomAvatar src={avatar} skin='light' size={34} />
-    } else {
-      return (
-        <CustomAvatar skin='light' size={34}>
-          {getInitials(fullName)}
-        </CustomAvatar>
-      )
-    }
-  }
-
   useEffect(() => {
     const filteredData = tableData?.filter(user => {
       if (role && user.role !== role) return false
@@ -314,16 +262,20 @@ const RolesTable = ({
           <Chip variant='outlined' label={totalRoles} color='primary' size='medium' className='ml-2' />
         </div>
         <div className='flex gap-4 flex-col !items-start is-full sm:flex-row sm:is-auto sm:items-center'>
-          <DebouncedInput
-            value={globalFilter ?? ''}
-            className='is-[250px]'
-            onSearch={searchValue => {
-              // Trigger the API call here using searchValue
-              // fetchUsers(searchValue) // Call the API function
-              console.log('search role')
-            }}
-            onChange={value => setGlobalFilter(String(value))}
+          <CustomTextField
+            value={value}
+            onChange={e => setValue(e.target.value)}
             placeholder='Search Role'
+            className='is-full sm:is-auto'
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position='end'>
+                  <IconButton onClick={() => handleSearch(value)} edge='end'>
+                    <SearchIcon />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
           <CustomTextField
             select
@@ -340,6 +292,15 @@ const RolesTable = ({
               </MenuItem>
             ))}
           </CustomTextField>
+          <Button
+            color='error'
+            variant='tonal'
+            startIcon={<i className='tabler-upload' />}
+            className='is-full sm:is-auto'
+            onClick={resetFilter}
+          >
+            Reset
+          </Button>
         </div>
         <div>
           <OpenDialogOnElementClick element={Card} elementProps={CardProps} dialog={RoleDialog} />

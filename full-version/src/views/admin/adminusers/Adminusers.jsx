@@ -15,9 +15,13 @@ const Adminusers = ({
   totalPages,
   totalAdmin,
   limit,
-  currentPage
+  currentPage,
+  handleSearch,
+  value,
+  setValue,
+  resetFilter
 }) => {
-  const tableData = userData.map(admin => ({
+  const tableData = userData?.map(admin => ({
     fullName: `${admin.firstname} ${admin.lastname}`,
     email: admin.email,
     role: admin.role.role_name,
@@ -29,7 +33,7 @@ const Adminusers = ({
     id: admin._id
   }))
 
-  const cardData = userData.reduce((acc, curr) => {
+  const cardData = userData?.reduce((acc, curr) => {
     const roleName = curr.role.role_name
     const avatar = curr.profile_image
     const fullName = `${curr.firstname} ${curr.lastname}`
@@ -59,6 +63,10 @@ const Adminusers = ({
           totalPages={totalPages}
           handlePageChange={handlePageChange}
           handleLimitChange={handleLimitChange}
+          handleSearch={handleSearch}
+          value={value}
+          setValue={setValue}
+          resetFilter={resetFilter}
         />
       </Grid>
     </Grid>

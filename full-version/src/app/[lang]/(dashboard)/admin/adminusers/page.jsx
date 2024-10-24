@@ -1,83 +1,84 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Adminusers from '@/views/admin/adminusers/Adminusers'
-import fetchFormData from '@/utils/fetchFormData'
+import fetchData from '@/utils/fetchData'
 import Loader from '@/libs/components/Loader'
-const getData = async (
-  setUserData,
-  setRoleData,
-  setError,
-  setLoading,
-  setTotalPages,
-  setCurrentPage,
-  setTotalAdmin,
-  currentPage = 1,
-  limit = 3
-) => {
-  try {
-    const [userResponse, roleResponse] = await Promise.all([
-      fetchFormData(`/admin/admins/alladmin?page=${currentPage}&limit=${limit}`, 'GET'),
-      fetchFormData(`/admin/roles/allroles`, 'GET')
-    ])
-
-    if (!userResponse.success) {
-      throw new Error(`Failed to fetch user data, status: ${userResponse.status}`)
-    }
-
-    // Check role data response
-    if (!roleResponse.success) {
-      throw new Error(`Failed to fetch role data, status: ${roleResponse.status}`)
-    }
-
-    // Update state with fetched data
-    setUserData(userResponse.allAdmin)
-    setTotalPages(userResponse.totalPages)
-    setCurrentPage(userResponse.currentPage)
-    setTotalAdmin(userResponse.adminsCount)
-    setRoleData(roleResponse)
-  } catch (error) {
-    setError(error.message)
-  } finally {
-    // Ensure loading is false after both requests finish
-    setLoading(false)
-  }
-}
 
 const Page = () => {
-  const [userData, setUserData] = useState(null)
+  const [userData, setUserData] = useState([])
   const [roleData, setRoleData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [adminLoading, setAdminLoading] = useState(true)
+  const [roleLoading, setRoleLoading] = useState(true)
+  const [adminError, setAdminError] = useState(null)
+  const [roleError, setRoleError] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [limit, setLimit] = useState(3)
   const [totalPages, setTotalPages] = useState(0)
   const [totalAdmin, setTotalAdmin] = useState(0)
+  const [searchValue, setSearchValue] = useState('')
+  const [value, setValue] = useState('')
+
+  const fetchAdmins = async (page = 1, limit = 3, searchValue = '') => {
+    const adminUrl =
+      searchValue.length > 0
+        ? `/admin/admins/searchadmins?q=${searchValue}&page=${page}&limit=${limit}`
+        : `/admin/admins/alladmin?page=${page}&limit=${limit}`
+
+    try {
+      setAdminLoading(true)
+      setAdminError(null)
+      const userResponse = await fetchData(adminUrl, 'GET')
+      if (!userResponse.success) throw new Error(`Failed to fetch user data`)
+      setUserData(userResponse.allAdmin)
+      setTotalPages(userResponse.totalPages)
+      setTotalAdmin(userResponse.adminsCount)
+    } catch (err) {
+      setAdminError(err.message || 'An unknown error occurred')
+    } finally {
+      setAdminLoading(false)
+    }
+  }
+
+  const fetchRoles = async () => {
+    const roleUrl = '/admin/roles/allroles'
+    try {
+      setRoleLoading(true)
+      setRoleError(null)
+      const responseData = await fetchData(roleUrl, 'GET')
+      setRoleData(responseData)
+    } catch (err) {
+      setRoleError(err.message || 'An unknown error occurred')
+    } finally {
+      setRoleLoading(false)
+    }
+  }
 
   useEffect(() => {
-    getData(
-      setUserData,
-      setRoleData,
-      setError,
-      setLoading,
-      setTotalPages,
-      setCurrentPage,
-      setTotalAdmin,
-      currentPage,
-      limit
-    )
-  }, [currentPage, limit])
+    fetchAdmins(currentPage, limit, searchValue)
+  }, [currentPage, limit, searchValue])
 
-  const handlePageChange = newPage => {
-    console.log('handle page change', newPage)
-    setCurrentPage(newPage)
-  }
+  useEffect(() => {
+    fetchRoles()
+  }, [])
+
+  const handlePageChange = newPage => setCurrentPage(newPage)
   const handleLimitChange = newLimit => {
-    console.log('handle limit change', newLimit)
     setLimit(newLimit)
     setCurrentPage(1)
   }
+  const handleSearch = search => {
+    setSearchValue(search)
+    setCurrentPage(1)
+  }
+  const resetFilter = () => {
+    setCurrentPage(1)
+    setLimit(3)
+    setSearchValue('')
+    setValue('')
+    fetchAdmins(1, 3)
+  }
 
-  if (loading) {
+  if (adminLoading || roleLoading) {
     return (
       <div className='flex items-center justify-center'>
         <Loader />
@@ -85,21 +86,26 @@ const Page = () => {
     )
   }
 
-  if (error) {
-    return <div>Error: {error || 'An unexpected error occurred'}</div>
+  if (adminError || roleError) {
+    return <div>Error: {adminError || roleError || 'An unexpected error occurred'}</div>
   }
 
-  return (
-    <Adminusers
-      userData={userData}
-      limit={limit}
-      currentPage={currentPage}
-      totalAdmin={totalAdmin}
-      totalPages={totalPages}
-      roleData={roleData}
-      handlePageChange={handlePageChange}
-      handleLimitChange={handleLimitChange}
-    />
-  )
+  const adminProps = {
+    userData,
+    limit,
+    currentPage,
+    totalAdmin,
+    totalPages,
+    roleData,
+    handlePageChange,
+    handleLimitChange,
+    handleSearch,
+    value,
+    setValue,
+    resetFilter
+  }
+
+  return <Adminusers {...adminProps} />
 }
+
 export default Page

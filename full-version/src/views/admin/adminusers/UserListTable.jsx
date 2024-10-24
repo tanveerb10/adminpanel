@@ -65,56 +65,22 @@ const fuzzyFilter = (row, columnId, value, addMeta) => {
   return itemRank.passed
 }
 
-const DebouncedInput = ({ value: initialValue, onChange, onSearch, debounce = 500, ...props }) => {
-  // States
-  const [value, setValue] = useState(initialValue)
-
-  useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value)
-    }, debounce)
-
-    return () => clearTimeout(timeout)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value, onChange, debounce])
-
-  const handleSearch = () => {
-    onSearch(value) // Calls the search function when the button is clicked
-  }
-
-  return (
-    <CustomTextField
-      {...props}
-      value={value}
-      onChange={e => setValue(e.target.value)}
-      InputProps={{
-        endAdornment: (
-          <InputAdornment position='end'>
-            <IconButton onClick={handleSearch} edge='end'>
-              <SearchIcon />
-            </IconButton>
-          </InputAdornment>
-        )
-      }}
-    />
-  )
-}
-
 // Column Definitions
 const columnHelper = createColumnHelper()
 
 const UserListTable = ({
-  tableData,
+  tableData = [],
   totalAdmin,
   roleData,
   handleLimitChange,
   handlePageChange,
   totalPages,
   limit,
-  currentPage
+  currentPage,
+  handleSearch,
+  value,
+  setValue,
+  resetFilter
 }) => {
   // States
   const [rowSelection, setRowSelection] = useState({})
@@ -283,16 +249,20 @@ const UserListTable = ({
           </div>
 
           <div className='flex flex-col sm:flex-row is-full sm:is-auto items-start sm:items-center gap-4'>
-            <DebouncedInput
-              value={globalFilter ?? ''}
-              onChange={value => setGlobalFilter(String(value))}
-              onSearch={searchValue => {
-                // Trigger the API call here using searchValue
-                // fetchUsers(searchValue) // Call the API function
-                console.log('search')
-              }}
-              placeholder='Search User'
+            <CustomTextField
+              value={value}
+              onChange={e => setValue(e.target.value)}
+              placeholder='Search Admin'
               className='is-full sm:is-auto'
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton onClick={() => handleSearch(value)} edge='end'>
+                      <SearchIcon />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
             <Button
               color='secondary'
@@ -302,6 +272,17 @@ const UserListTable = ({
             >
               Export
             </Button>
+
+            <Button
+              color='error'
+              variant='tonal'
+              startIcon={<i className='tabler-upload' />}
+              className='is-full sm:is-auto'
+              onClick={resetFilter}
+            >
+              Reset
+            </Button>
+
             <Button
               variant='contained'
               startIcon={<i className='tabler-plus' />}
@@ -310,7 +291,7 @@ const UserListTable = ({
               onClick={() => router.push(getLocalizedUrl(`/admin/adminusers/addadminuser`, locale))}
               className='is-full sm:is-auto'
             >
-              Add New User
+              Add Admin
             </Button>
           </div>
         </div>

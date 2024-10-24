@@ -1,7 +1,19 @@
 import React from 'react'
 import CouponTableList from '@/views/offers/allcoupons/CouponTableList'
 import { Chip } from '@mui/material'
-const AllCoupons = ({ coupons, limit, totalPages, handlePageChange, handleLimitChange, currentPage, totalCoupons }) => {
+const AllCoupons = ({
+  coupons,
+  limit,
+  totalPages,
+  handlePageChange,
+  handleLimitChange,
+  currentPage,
+  totalCoupons,
+  handleSearch,
+  value,
+  setValue,
+  resetFilter
+}) => {
   function formatDate(RawTime) {
     const dates = new Date(RawTime)
     const date = ` ${dates.getDate()}/${dates.getMonth() + 1}/${dates.getFullYear()}`
@@ -39,6 +51,10 @@ const AllCoupons = ({ coupons, limit, totalPages, handlePageChange, handleLimitC
         handleLimitChange={handleLimitChange}
         currentPage={currentPage}
         totalCoupons={totalCoupons}
+        handleSearch={handleSearch}
+        value={value}
+        setValue={setValue}
+        resetFilter={resetFilter}
       />
     </div>
   )

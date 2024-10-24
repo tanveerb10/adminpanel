@@ -11,27 +11,35 @@ export default function page() {
   const [limit, setLimit] = useState(3)
   const [totalPages, setTotalPages] = useState(0)
   const [totalCoupons, setTotalCoupons] = useState(0)
+  const [searchValue, setSearchValue] = useState('')
+  const [value, setValue] = useState('')
 
-  const fetchcoupons = async (limit, page) => {
+  const fetchcoupons = async (page, limit, searchValue = '') => {
+    const couponUrl =
+      searchValue.length > 0
+        ? `/admin/coupons/searchcoupon?q=${searchValue}&page=${page}&limit=${limit}`
+        : `/admin/coupons/allcoupon?page=${page}&limit=${limit}`
+
     try {
-      const couponUrl = `/admin/coupons/allcoupon?page=${page}&limit=${limit}`
+      setLoading(true)
       const responseData = await fetchData(couponUrl, 'GET')
       if (responseData.success) {
         setcoupons(responseData.Coupon)
         setCurrentPage(responseData.currentPage)
         setTotalPages(responseData.totalPages)
         setTotalCoupons(responseData.couponCount)
+        setError(null)
       }
     } catch (err) {
-      console.log('Error received:', err)
-      setError(err)
+      const errorMessage = error || 'An unknown error occurred'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
   }
   useEffect(() => {
-    fetchcoupons(limit, currentPage)
-  }, [limit, currentPage])
+    fetchcoupons(currentPage, limit, searchValue)
+  }, [currentPage, limit, searchValue])
 
   const handlePageChange = newPage => {
     console.log('handle page change', newPage)
@@ -42,6 +50,13 @@ export default function page() {
     setLimit(newLimit)
     setCurrentPage(1)
   }
+
+  const handleSearch = search => {
+    console.log('hello', search)
+    setSearchValue(search)
+    setCurrentPage(1)
+  }
+
   if (loading) {
     return <Loader />
   }
@@ -52,6 +67,13 @@ export default function page() {
 
   console.log(coupons, 'coupons all')
 
+  const resetFilter = () => {
+    setCurrentPage(1)
+    setLimit(3)
+    setSearchValue('')
+    setValue('')
+    fetchcoupons(1, 3)
+  }
   const couponsProps = {
     coupons,
     limit,
@@ -59,8 +81,16 @@ export default function page() {
     handlePageChange,
     handleLimitChange,
     currentPage,
-    totalCoupons
+    totalCoupons,
+    value,
+    handleSearch,
+    setValue,
+    resetFilter
   }
 
-  return <>{coupons.length > 0 ? <AllCoupons {...couponsProps} /> : <Loader />}</>
+  return (
+    <>
+      <AllCoupons {...couponsProps} />
+    </>
+  )
 }

@@ -68,7 +68,7 @@ export default function page() {
     )
   }
   if (error) {
-    return <div>{error.message}</div>
+    return <div>{error.message || 'An unknown error occurred.'}</div>
   }
   const resetFilter = () => {
     setCurrentPage(1)

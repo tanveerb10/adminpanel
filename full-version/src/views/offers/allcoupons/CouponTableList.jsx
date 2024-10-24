@@ -1,24 +1,29 @@
 'use client'
 
 // React Imports
-import { useEffect, useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 
 // Next Imports
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 
 // MUI Imports
-import Card from '@mui/material/Card'
-import CardHeader from '@mui/material/CardHeader'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import Chip from '@mui/material/Chip'
-import Checkbox from '@mui/material/Checkbox'
-import IconButton from '@mui/material/IconButton'
-import { styled } from '@mui/material'
-import TablePagination from '@mui/material/TablePagination'
-import MenuItem from '@mui/material/MenuItem'
 
+import {
+  styled,
+  TablePagination,
+  CardHeader,
+  Card,
+  MenuItem,
+  InputAdornment,
+  Button,
+  IconButton,
+  Checkbox,
+  Chip,
+  Typography
+} from '@mui/material'
+
+import SearchIcon from '@mui/icons-material/Search'
 // Third-party Imports
 import classnames from 'classnames'
 import { rankItem } from '@tanstack/match-sorter-utils'
@@ -37,7 +42,6 @@ import {
 
 // Component Imports
 import CouponTableFilter from '@views/offers/allcoupons/CouponTableFilter'
-import OptionMenu from '@core/components/option-menu'
 import TablePaginationComponent from '@components/TablePaginationComponent'
 import CustomTextField from '@core/components/mui/TextField'
 import CustomAvatar from '@core/components/mui/Avatar'
@@ -65,30 +69,6 @@ const fuzzyFilter = (row, columnId, value, addMeta) => {
   return itemRank.passed
 }
 
-const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...props }) => {
-  // States
-  const [value, setValue] = useState(initialValue)
-
-  useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value)
-    }, debounce)
-
-    return () => clearTimeout(timeout)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
-
-  return <CustomTextField {...props} value={value} onChange={e => setValue(e.target.value)} />
-}
-
-const userStatusObj = {
-  Active: 'error',
-  Inactive: 'error'
-}
-
 const truncateText = (text, maxLength) => {
   if (text.length > maxLength) {
     return text.substring(0, maxLength) + '...'
@@ -106,7 +86,11 @@ const CouponTableList = ({
   totalPages,
   handlePageChange,
   handleLimitChange,
-  currentPage
+  currentPage,
+  handleSearch,
+  value,
+  setValue,
+  resetFilter
 }) => {
   // States
   const [rowSelection, setRowSelection] = useState({})
@@ -308,9 +292,6 @@ const CouponTableList = ({
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select
-            // value={table.getState().pagination.pageSize}
-            // onChange={e => table.setPageSize(Number(e.target.value))}
-
             value={limit}
             onChange={e => handleLimitChange(Number(e.target.value))}
             className='is-[70px]'
@@ -323,16 +304,24 @@ const CouponTableList = ({
           </CustomTextField>
           <div>
             Total Coupons:
-            {/* <Chip variant='outlined' label={totalAdmin} color='warning' size='small' className='ml-2' /> */}
             <Chip variant='outlined' label={totalCoupons} color='warning' size='small' className='ml-2' />
           </div>
 
           <div className='flex flex-col sm:flex-row is-full sm:is-auto items-start sm:items-center gap-4'>
-            <DebouncedInput
-              value={globalFilter ?? ''}
-              onChange={value => setGlobalFilter(String(value))}
-              placeholder='Search User'
+            <CustomTextField
+              value={value}
+              onChange={e => setValue(e.target.value)}
+              placeholder='Search Coupon'
               className='is-full sm:is-auto'
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton onClick={() => handleSearch(value)} edge='end'>
+                      <SearchIcon />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
             <Button
               color='secondary'
@@ -343,12 +332,21 @@ const CouponTableList = ({
               Export
             </Button>
             <Button
+              color='error'
+              variant='tonal'
+              startIcon={<i className='tabler-upload' />}
+              className='is-full sm:is-auto'
+              onClick={resetFilter}
+            >
+              Reset
+            </Button>
+            <Button
               variant='contained'
               startIcon={<i className='tabler-plus' />}
               onClick={() => router.push(getLocalizedUrl(`/offers/allcoupons/addnewcoupon`, locale))}
               className='is-full sm:is-auto'
             >
-              Add New Coupon
+              Add Coupon
             </Button>
           </div>
         </div>

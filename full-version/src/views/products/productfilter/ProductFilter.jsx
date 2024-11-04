@@ -1,19 +1,36 @@
 'use client'
-import { useState, useEffect } from 'react'
-import FilterConfigCard from '@/views/products/productfilter/FilterConfigCard'
+import FilterContainer from '@/views/products/productfilter/FilterContainer'
+import { Button, Grid } from '@mui/material'
+import fetchData from '@/utils/fetchData'
+import { toast } from 'react-toastify'
 
-export default function ProductFilter({ handleLiftArray }) {
-  const initialItems = ['Item 1', 'Item 2', 'Item 3', 'item 4']
-
-  useEffect(() => {
-    handleLiftArray(initialItems)
-  }, [initialItems])
-
+export default function ProductFilter({ filterResponse, extraFilterResponse, fetchFilterData }) {
+  const addAvailableFilterOptions = async () => {
+    const ApiURL = '/admin/filters/AddAvailableFilterOptions'
+    try {
+      const responseData = await fetchData(ApiURL, 'GET')
+      if (responseData.success) {
+        toast.success(responseData.message || 'Added available config option')
+        fetchFilterData()
+      } else {
+        throw new Error(responseData.message || 'failed to get available option')
+      }
+    } catch (err) {
+      toast.error(err)
+    }
+  }
   return (
-    <>
-      {initialItems.map(id => (
-        <FilterConfigCard id={id} key={id} />
-      ))}
-    </>
+    <Grid container spacing={6}>
+      {extraFilterResponse.length > 0 && (
+        <Grid xs={12} item className='text-right'>
+          <Button variant='contained' color='primary' onClick={addAvailableFilterOptions}>
+            Add Remaining option
+          </Button>
+        </Grid>
+      )}
+      <Grid item xs={12}>
+        <FilterContainer data={filterResponse[0].fields} />
+      </Grid>
+    </Grid>
   )
 }

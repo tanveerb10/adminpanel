@@ -5,7 +5,7 @@ import SaveAsIcon from '@mui/icons-material/SaveAs'
 import EditIcon from '@mui/icons-material/Edit'
 import { useSortable } from '@dnd-kit/sortable'
 import fetchData from '@/utils/fetchData'
-import { useEffect, useState, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import CustomTextField from '@/@core/components/mui/TextField'
 import { CSS } from '@dnd-kit/utilities'
 import { toast } from 'react-toastify'
@@ -75,42 +75,6 @@ export default function FilterConfigCard({ _id, fieldName, fieldType, position, 
 
     debounceApi(updatedData)
   }
-
-  // const UpdateConfig = async updatedData => {
-  //   try {
-  //     const apiUrl = '/admin/filters/UpdateFilterConfig'
-
-  //     const response = await fetchData(apiUrl, 'POST', updatedData)
-  //     console.log('API Response:', response)
-
-  //     if (!response.success) {
-  //       console.log('error response', response.message)
-  //       toast.error(response.message)
-  //     }
-  //     if (response.success) {
-  //       return toast.success(response.message || 'SuccessFully Updated')
-  //     }
-  //   } catch (error) {
-  //     console.error('API Error:', error)
-  //     toast.error(error.message || 'An Error occurred')
-  //   }
-  // }
-
-  console.log('current name', currentName, 'current enabled', currentEnabled, '_id', _id)
-
-  // useEffect(() => {
-  //   if (!currentEnabled) {
-  //     UpdateConfig({
-  //       fields: [
-  //         {
-  //           displayName: currentName,
-  //           enabled: currentEnabled,
-  //           _id
-  //         }
-  //       ]
-  //     })
-  //   }
-  // }, [currentEnabled])
 
   return (
     <div

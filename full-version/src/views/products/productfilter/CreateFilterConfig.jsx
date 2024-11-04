@@ -1,4 +1,4 @@
-import { Button, Grid, Typography } from '@mui/material'
+import { Button, Grid } from '@mui/material'
 import React from 'react'
 import AddHeader from '@/libs/components/AddHeader'
 import fetchData from '@/utils/fetchData'
@@ -21,19 +21,6 @@ export default function CreateFilterConfig({ fetchFilterData }) {
   }
 
   return (
-    // <Grid className='backdrop-blur-[20px] rounded-lg shadow-lg bg-black/15  h-full w-full '>
-    //   <div className='flex justify-center items-center'>
-    //     <Typography>No filter configurations found. Start by adding a new filter configuration!</Typography>
-    //   </div>
-    //   <div className='flex flex-col h-full w-full justify-center items-center'>
-    //     <Button
-    //       variant='contained'
-    //       style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', color: '#333', marginTop: '20px' }}
-    //     >
-    //       Create Filter Config
-    //     </Button>
-    //   </div>
-    // </Grid>
     <Grid className='backdrop-blur-[20px] rounded-lg shadow-lg bg-black/15 h-full w-full flex flex-col justify-center items-center'>
       <AddHeader title='No filter configurations found. Start by adding a new filter configuration!' />
       <Button

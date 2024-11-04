@@ -19,6 +19,7 @@ export default function ProductFilter({ filterResponse, extraFilterResponse, fet
       toast.error(err)
     }
   }
+
   return (
     <Grid container spacing={6}>
       {extraFilterResponse.length > 0 && (

@@ -4,6 +4,7 @@ import ProductFilter from '@/views/products/productfilter/ProductFilter'
 import fetchData from '@/utils/fetchData'
 import Loader from '@/libs/components/Loader'
 import CreateFilterConfig from '@/views/products/productfilter/CreateFilterConfig'
+
 export default function Page() {
   // State for Customer Tab
   const [filterResponse, setFilterResponse] = useState([])

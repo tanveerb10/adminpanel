@@ -12,16 +12,22 @@ const Allproducts = ({
   handleSearch,
   value,
   setValue,
-  resetFilter
+  resetFilter,
+  setSorting,
+  handleSorting,
+  sortMethod,
+  selectStatus,
+  handleSelectStatus,
+  isSortingActive
 }) => {
   const tableData = allProductData?.map(product => ({
     name: product?.product_title,
     description: product?.product_description,
     isDeleted: product?.is_deleted,
     id: product?._id,
-    productBrand: product?.product_brand,
+    productBrand: product?.brand_name,
     productType: product?.product_type,
-    productCategory: product?.default_category,
+    productCategory: product?.category_name,
     productCount: product?.variation_count
   }))
 
@@ -40,6 +46,12 @@ const Allproducts = ({
         value={value}
         setValue={setValue}
         resetFilter={resetFilter}
+        setSorting={setSorting}
+        handleSorting={handleSorting}
+        sortMethod={sortMethod}
+        selectStatus={selectStatus}
+        handleSelectStatus={handleSelectStatus}
+        isSortingActive={isSortingActive}
       />
     </div>
   )

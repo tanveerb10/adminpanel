@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { useEffect, useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 
 // Next Imports
 import Link from 'next/link'
@@ -15,7 +15,6 @@ import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
 import Checkbox from '@mui/material/Checkbox'
 import IconButton from '@mui/material/IconButton'
-import { styled } from '@mui/material'
 import TablePagination from '@mui/material/TablePagination'
 import MenuItem from '@mui/material/MenuItem'
 
@@ -51,7 +50,6 @@ import { getLocalizedUrl } from '@/utils/i18n'
 import tableStyles from '@core/styles/table.module.css'
 
 // Styled Components
-const Icon = styled('i')({})
 
 const fuzzyFilter = (row, columnId, value, addMeta) => {
   // Rank the item
@@ -76,6 +74,8 @@ const truncateText = (text, maxLength) => {
 // Column Definitions
 const columnHelper = createColumnHelper()
 
+const ASCENDING = 'asc'
+
 const ProductTableList = ({
   tableData = [],
   totalProducts,
@@ -87,7 +87,12 @@ const ProductTableList = ({
   handleSearch,
   value,
   setValue,
-  resetFilter
+  resetFilter,
+  handleSorting,
+  sortMethod,
+  selectStatus,
+  handleSelectStatus,
+  isSortingActive
 }) => {
   console.log('table list', tableData)
   // States
@@ -95,12 +100,25 @@ const ProductTableList = ({
 
   const [data, setData] = useState(tableData)
   const [globalFilter, setGlobalFilter] = useState('')
-  // const [value, setValue] = useState('')
+  const [sortField, setSortField] = useState('')
+
   // Hooks
   const { lang: locale } = useParams()
   const router = useRouter()
 
   const LIMIT_OPTIONS = [3, 5, 10, 25]
+
+  const SortableHeader = ({ field, label }) => (
+    <div onClick={() => handleSorting(field)} className='cursor-pointer flex items-center'>
+      {label}
+      {isSortingActive &&
+        (sortMethod === ASCENDING ? (
+          <i className='tabler-chevron-up text-xl' />
+        ) : (
+          <i className='tabler-chevron-down text-xl' />
+        ))}
+    </div>
+  )
 
   const columns = useMemo(
     () => [
@@ -138,7 +156,7 @@ const ProductTableList = ({
       // }),
 
       columnHelper.accessor('name', {
-        header: 'Product',
+        header: <SortableHeader field='product_title' label='Product' />,
         cell: ({ row }) => {
           const description = row.original.description
           const maxLength = 50
@@ -168,35 +186,39 @@ const ProductTableList = ({
               </div>
             </div>
           )
-        }
+        },
+        enableSorting: false
       }),
 
       columnHelper.accessor('productBrand', {
-        header: 'Brand',
+        header: <SortableHeader field='product_brand' label='Brand' />,
         cell: ({ row }) => (
           <Typography color='text.primary' className='font-medium'>
             {row.original.productBrand}
           </Typography>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('productCategory', {
-        header: 'Category',
+        header: <SortableHeader field='default_category' label='Category' />,
         cell: ({ row }) => (
           <Typography color='text.primary' className='font-medium'>
             {row.original.productCategory}
           </Typography>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('productType', {
-        header: 'Type',
+        header: <SortableHeader field='product_type' label='Type' />,
         cell: ({ row }) => (
           <Typography color='text.primary' className='font-medium'>
             {row.original.productType}
           </Typography>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('isDeleted', {
-        header: 'Status',
+        header: <SortableHeader field='is_deleted' label='Status' />,
         cell: ({ row }) => (
           <div className='flex items-center gap-3'>
             <Chip
@@ -213,10 +235,11 @@ const ProductTableList = ({
               size='small'
             />
           </div>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('productCount', {
-        header: 'Count',
+        header: <SortableHeader field='variation_count' label='Count' />,
         cell: ({ row }) => (
           <div className='flex items-center gap-3'>
             <Chip
@@ -227,7 +250,8 @@ const ProductTableList = ({
               size='small'
             />
           </div>
-        )
+        ),
+        enableSorting: false
       }),
 
       columnHelper.accessor('action', {
@@ -253,7 +277,7 @@ const ProductTableList = ({
       })
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [handleSorting]
   )
 
   const table = useReactTable({
@@ -298,7 +322,12 @@ const ProductTableList = ({
     <>
       <Card>
         <CardHeader title='Filters' className='pbe-4' />
-        <ProductTableFilter setData={setData} tableData={tableData} />
+        <ProductTableFilter
+          setData={setData}
+          tableData={tableData}
+          handleSelectStatus={handleSelectStatus}
+          selectStatus={selectStatus}
+        />
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select

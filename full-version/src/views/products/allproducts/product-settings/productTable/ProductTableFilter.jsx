@@ -10,20 +10,7 @@ import MenuItem from '@mui/material/MenuItem'
 // Component Imports
 import CustomTextField from '@core/components/mui/TextField'
 
-const ProductTableFilter = ({ setData, tableData }) => {
-  // States
-
-  const [status, setStatus] = useState('')
-
-  useEffect(() => {
-    const filteredData = tableData?.filter(user => {
-      if (status && user.status !== status) return false
-      return true
-    })
-
-    setData(filteredData)
-  }, [status, tableData, setData])
-
+const ProductTableFilter = ({ handleSelectStatus, selectStatus }) => {
   return (
     <CardContent>
       <Grid container spacing={6}>
@@ -32,13 +19,13 @@ const ProductTableFilter = ({ setData, tableData }) => {
             select
             fullWidth
             id='select-status'
-            value={status}
-            onChange={e => setStatus(e.target.value)}
+            value={selectStatus}
+            onChange={e => handleSelectStatus(e.target.value)}
             SelectProps={{ displayEmpty: true }}
           >
             <MenuItem value=''>Select Status</MenuItem>
-            <MenuItem value={false}>Active</MenuItem>
-            <MenuItem value={true}>Inactive</MenuItem>
+            <MenuItem value='true'>Active</MenuItem>
+            <MenuItem value='false'>Inactive</MenuItem>
           </CustomTextField>
         </Grid>
       </Grid>

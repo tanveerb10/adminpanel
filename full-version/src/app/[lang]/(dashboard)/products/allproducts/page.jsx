@@ -4,6 +4,9 @@ import Allproducts from '@/views/products/allproducts/Allproducts'
 import fetchData from '@/utils/fetchData'
 import Loader from '@/libs/components/Loader'
 
+const ASCENDING = 'asc'
+const DESCENDING = 'dsc'
+
 export default function page() {
   const [productData, setProductData] = useState([])
   const [loading, setLoading] = useState(true)
@@ -14,12 +17,16 @@ export default function page() {
   const [totalProducts, setTotalProducts] = useState(0)
   const [searchValue, setSearchValue] = useState('')
   const [value, setValue] = useState('')
+  const [sortBy, setSortBy] = useState('')
+  const [sortMethod, setSortMethod] = useState(ASCENDING)
+  const [selectStatus, setSelectStatus] = useState('')
+  const [isSortingActive, setIsSortingActive] = useState(false)
 
   const fetchProducts = async (page, limit, searchValue = '') => {
-    const productUrl =
-      searchValue.length > 0
-        ? `/admin/products/searchProductByTitleandBrand?q=${searchValue}&page=${page}&limit=${limit}`
-        : `/admin/products/allproduct?page=${page}&limit=${limit}`
+    const productUrl = `/admin/products/allProduct/?page=${page}&limit=${limit}&q=${searchValue}&status=${selectStatus}&sortBy=${sortBy}&sortMethod=${sortMethod}`
+    // searchValue.length > 0
+    //   ? `/admin/products/searchProductByTitleandBrand?q=${searchValue}&page=${page}&limit=${limit}`
+    //   : `/admin/products/allproduct?page=${page}&limit=${limit}`
     try {
       setLoading(true)
       const responseData = await fetchData(productUrl, 'GET')
@@ -42,7 +49,7 @@ export default function page() {
     // if (!searchValue.length > 0) {
     fetchProducts(currentPage, limit, searchValue)
     // }
-  }, [currentPage, limit, searchValue])
+  }, [currentPage, limit, searchValue, sortBy, sortMethod, selectStatus])
 
   const handlePageChange = newPage => {
     console.log('handle page change', newPage)
@@ -59,6 +66,15 @@ export default function page() {
     setSearchValue(search)
     setCurrentPage(1)
   }
+  const handleSelectStatus = status => {
+    setSelectStatus(status)
+  }
+
+  const handleSorting = by => {
+    setSortBy(by)
+    setSortMethod(prevMethod => (prevMethod === ASCENDING ? DESCENDING : ASCENDING))
+    setIsSortingActive(true)
+  }
 
   if (loading) {
     return (
@@ -71,11 +87,15 @@ export default function page() {
     return <div>{error.message || 'An unknown error occurred.'}</div>
   }
   const resetFilter = () => {
+    fetchProducts(1, 3)
     setCurrentPage(1)
     setLimit(3)
     setSearchValue('')
     setValue('')
-    fetchProducts(1, 3)
+    setSortBy('')
+    setSortMethod(ASCENDING)
+    setSelectStatus('')
+    setIsSortingActive(false)
   }
   const productProps = {
     allProductData: productData,
@@ -88,7 +108,12 @@ export default function page() {
     handleLimitChange,
     handleSearch,
     setValue,
-    resetFilter
+    resetFilter,
+    handleSorting,
+    sortMethod,
+    selectStatus,
+    handleSelectStatus,
+    isSortingActive
   }
 
   console.log(productData, limit, totalPages, currentPage, totalProducts, value, error, searchValue)

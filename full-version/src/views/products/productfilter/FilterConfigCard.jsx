@@ -57,7 +57,7 @@ export default function FilterConfigCard({ _id, fieldName, fieldType, position, 
     debounceApi(updatedData)
   }
 
-  const handleToggleSwitch = () => {
+  const handleToggleSwitch = async () => {
     const newEnabledState = !currentEnabled
     setCurrentEnabled(newEnabledState)
 
@@ -73,7 +73,12 @@ export default function FilterConfigCard({ _id, fieldName, fieldType, position, 
       ]
     }
 
-    debounceApi(updatedData)
+    try {
+      await debounceApi(updatedData)
+      setCurrentEnabled(newEnabledState)
+    } catch (error) {
+      console.error('Error toggling switch:', error)
+    }
   }
 
   return (
@@ -88,48 +93,49 @@ export default function FilterConfigCard({ _id, fieldName, fieldType, position, 
       }}
       {...attributes}
     >
-      <Card>
-        <CardHeader
-          title={
-            !edit ? (
+      <Card className='flex items-center min-h-[70px]'>
+        {/* Drag Icon */}
+        <div className='flex items-center justify-center w-[40px] h-full'>
+          <IconButton {...listeners} aria-label={`Drag ${fieldName}`} size='small' className='cursor-grab'>
+            <DragHandleIcon />
+          </IconButton>
+        </div>
+        {/* Card Content */}
+        <div className='flex-1 flex flex-col justify-center px-3'>
+          <Typography variant='h6' className='font-bold'>
+            {!edit ? (
               currentName
             ) : (
               <CustomTextField placeholder='Edit' value={currentName} onChange={e => setCurrentName(e.target.value)} />
-            )
-          }
-          action={
-            <>
-              <IconButton {...listeners} aria-label={`Drag ${fieldName}`}>
-                <DragHandleIcon />
-              </IconButton>
-              {!edit ? (
-                <IconButton onClick={() => setEdit(true)}>
-                  <EditIcon />
-                </IconButton>
-              ) : (
-                <IconButton onClick={handleSave}>
-                  <SaveAsIcon />
-                </IconButton>
-              )}
-            </>
-          }
-        />
-        <CardContent className='flex justify-between items-center'>
+            )}
+          </Typography>
           <Typography variant='body2'>
             Type {fieldType} - Position {position}
           </Typography>
-
+        </div>
+        {/* Action Buttons */}
+        <div className='flex items-center space-x-2 pr-2'>
+          {!edit ? (
+            <IconButton onClick={() => setEdit(true)} size='small'>
+              <EditIcon />
+            </IconButton>
+          ) : (
+            <IconButton onClick={handleSave} size='small'>
+              <SaveAsIcon />
+            </IconButton>
+          )}
           <Switch
-            defaultChecked={currentEnabled}
+            checked={currentEnabled}
             onChange={handleToggleSwitch}
             color='primary'
+            size='small'
             inputProps={{
               'aria-label': `${fieldName} toggle`,
               'aria-labelledby': `${fieldName} switch`,
               'aria-describedby': `Enable or disable ${fieldName}`
             }}
           />
-        </CardContent>
+        </div>
       </Card>
     </div>
   )

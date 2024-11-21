@@ -4,6 +4,9 @@ import Adminusers from '@/views/admin/adminusers/Adminusers'
 import fetchData from '@/utils/fetchData'
 import Loader from '@/libs/components/Loader'
 
+const ASCENDING = 'asc'
+const DESCENDING = 'dsc'
+
 const Page = () => {
   const [userData, setUserData] = useState([])
   const [roleData, setRoleData] = useState(null)
@@ -17,12 +20,14 @@ const Page = () => {
   const [totalAdmin, setTotalAdmin] = useState(0)
   const [searchValue, setSearchValue] = useState('')
   const [value, setValue] = useState('')
+  const [sortBy, setSortBy] = useState('')
+  const [sortMethod, setSortMethod] = useState(ASCENDING)
+  const [selectStatus, setSelectStatus] = useState('')
+  const [isSortingActive, setIsSortingActive] = useState(false)
+  const [roleNameQuery, setRoleNameQuery] = useState('')
 
   const fetchAdmins = async (page = 1, limit = 3, searchValue = '') => {
-    const adminUrl =
-      searchValue.length > 0
-        ? `/admin/admins/searchadmins?q=${searchValue}&page=${page}&limit=${limit}`
-        : `/admin/admins/alladmin?page=${page}&limit=${limit}`
+    const adminUrl = `/admin/admins/alladmin?page=${page}&limit=${limit}&q=${searchValue}&status=${selectStatus}&sortBy=${sortBy}&sortMethod=${sortMethod}&role=${roleNameQuery}`
 
     try {
       setAdminLoading(true)
@@ -55,27 +60,49 @@ const Page = () => {
 
   useEffect(() => {
     fetchAdmins(currentPage, limit, searchValue)
-  }, [currentPage, limit, searchValue])
+  }, [currentPage, limit, searchValue, sortBy, sortMethod, selectStatus, roleNameQuery])
 
   useEffect(() => {
     fetchRoles()
   }, [])
 
   const handlePageChange = newPage => setCurrentPage(newPage)
+
   const handleLimitChange = newLimit => {
     setLimit(newLimit)
     setCurrentPage(1)
   }
+
   const handleSearch = search => {
     setSearchValue(search)
     setCurrentPage(1)
   }
+
+  const handleSelectStatus = status => {
+    setSelectStatus(status)
+  }
+
+  const handleSorting = by => {
+    setSortBy(by)
+    setSortMethod(prevMethod => (prevMethod === ASCENDING ? DESCENDING : ASCENDING))
+    setIsSortingActive(true)
+  }
+
+  const handleRoleQuery = role => {
+    setRoleNameQuery(role)
+  }
+
   const resetFilter = () => {
+    fetchAdmins(1, 3)
     setCurrentPage(1)
     setLimit(3)
     setSearchValue('')
     setValue('')
-    fetchAdmins(1, 3)
+    setSortBy('')
+    setSortMethod(ASCENDING)
+    setSelectStatus('')
+    setIsSortingActive(false)
+    roleNameQuery('')
   }
 
   if (adminLoading || roleLoading) {
@@ -102,7 +129,14 @@ const Page = () => {
     handleSearch,
     value,
     setValue,
-    resetFilter
+    resetFilter,
+    handleSorting,
+    sortMethod,
+    selectStatus,
+    handleSelectStatus,
+    isSortingActive,
+    roleNameQuery,
+    handleRoleQuery
   }
 
   return <Adminusers {...adminProps} />

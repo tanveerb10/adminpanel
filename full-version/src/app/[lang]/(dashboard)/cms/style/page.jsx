@@ -8,15 +8,15 @@ const FontSettings = dynamic(() => import('@/views/cms/style/FontSettings/FontSe
 const ThemeSettings = dynamic(() => import('@/views/cms/style/ThemeSettings/ThemeSettings'), {
   ssr: false
 })
-const MetaSettings = dynamic(() => import('@/views/cms/style/MetaSettings/MetaSettings'), {
-  ssr: false
-})
+// const MetaSettings = dynamic(() => import('@/views/cms/style/MetaSettings/MetaSettings'), {
+//   ssr: false
+// })
 
 export default function Page() {
   const tabContent = {
     fontSettings: <FontSettings TabValue='fontSettings' />,
-    themeSettings: <ThemeSettings TabValue='themeSettings' />,
-    metaSettings: <MetaSettings TabValue='metaSettings' />
+    themeSettings: <ThemeSettings TabValue='themeSettings' />
+    // metaSettings: <MetaSettings TabValue='metaSettings' />
   }
   return (
     <div>

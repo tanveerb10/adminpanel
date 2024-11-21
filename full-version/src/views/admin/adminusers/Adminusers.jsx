@@ -19,7 +19,14 @@ const Adminusers = ({
   handleSearch,
   value,
   setValue,
-  resetFilter
+  resetFilter,
+  handleSorting,
+  sortMethod,
+  selectStatus,
+  handleSelectStatus,
+  isSortingActive,
+  roleNameQuery,
+  handleRoleQuery
 }) => {
   const tableData = userData?.map(admin => ({
     fullName: `${admin.firstname} ${admin.lastname}`,
@@ -67,6 +74,13 @@ const Adminusers = ({
           value={value}
           setValue={setValue}
           resetFilter={resetFilter}
+          handleSorting={handleSorting}
+          sortMethod={sortMethod}
+          selectStatus={selectStatus}
+          handleSelectStatus={handleSelectStatus}
+          isSortingActive={isSortingActive}
+          roleNameQuery={roleNameQuery}
+          handleRoleQuery={handleRoleQuery}
         />
       </Grid>
     </Grid>

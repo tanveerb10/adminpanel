@@ -1,32 +1,25 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import Storesetup from '@/views/cms/storesetup/Storesetup'
-import { fetchInitialData } from '@/utils/api.js'
-import Loader from '@/libs/components/Loader'
-const StoreSetupPage = () => {
-  const [initialData, setInitialData] = useState(null)
+import React from 'react'
+import dynamic from 'next/dynamic'
+import Storesetup from '@/views/cms/storesetup/index'
 
-  useEffect(() => {
-    const getData = async () => {
-      const data = await fetchInitialData()
-      setInitialData(data)
-    }
-    getData()
-  }, [])
+const StoreSettings = dynamic(() => import('@/views/cms/storesetup/StoreSettings/StoreSettings'), {
+  ssr: false
+})
+const MetaSettings = dynamic(() => import('@/views/cms/storesetup/MetaSettings/MetaSettings'), {
+  ssr: false
+})
 
-  // Render loading state or the component with initial data
+export default function Page() {
+  const tabContent = {
+    storeSettings: <StoreSettings TabValue='storeSettings' />,
+    metaSettings: <MetaSettings TabValue='metaSettings' />
+  }
+
   return (
     <div>
-      {initialData ? (
-        <Storesetup initialData={initialData} />
-      ) : (
-        <div className='flex items-center justify-center'>
-          <Loader />
-        </div>
-      )}
+      <Storesetup tabContent={tabContent} />
     </div>
   )
 }
-
-export default StoreSetupPage

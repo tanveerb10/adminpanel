@@ -3,6 +3,10 @@ import React, { useEffect, useState } from 'react'
 import AllCoupons from '@/views/offers/allcoupons/AllCoupons'
 import fetchData from '@/utils/fetchData'
 import Loader from '@/libs/components/Loader'
+
+const ASCENDING = 'asc'
+const DESCENDING = 'dsc'
+
 export default function page() {
   const [coupons, setcoupons] = useState([])
   const [loading, setLoading] = useState(true)
@@ -13,18 +17,19 @@ export default function page() {
   const [totalCoupons, setTotalCoupons] = useState(0)
   const [searchValue, setSearchValue] = useState('')
   const [value, setValue] = useState('')
+  const [sortBy, setSortBy] = useState('')
+  const [sortMethod, setSortMethod] = useState(ASCENDING)
+  const [selectStatus, setSelectStatus] = useState('')
+  const [isSortingActive, setIsSortingActive] = useState(false)
 
   const fetchcoupons = async (page, limit, searchValue = '') => {
-    const couponUrl =
-      searchValue.length > 0
-        ? `/admin/coupons/searchcoupon?q=${searchValue}&page=${page}&limit=${limit}`
-        : `/admin/coupons/allcoupon?page=${page}&limit=${limit}`
+    const couponUrl = `/admin/coupons/allcoupon?page=${page}&limit=${limit}&sortBy=${sortBy}&sortMethod=${sortMethod}&q=${searchValue}&status=${selectStatus}`
 
     try {
       setLoading(true)
       const responseData = await fetchData(couponUrl, 'GET')
       if (responseData.success) {
-        setcoupons(responseData.Coupon)
+        setcoupons(responseData.coupons)
         setCurrentPage(responseData.currentPage)
         setTotalPages(responseData.totalPages)
         setTotalCoupons(responseData.couponCount)
@@ -39,7 +44,7 @@ export default function page() {
   }
   useEffect(() => {
     fetchcoupons(currentPage, limit, searchValue)
-  }, [currentPage, limit, searchValue])
+  }, [currentPage, limit, searchValue, sortBy, sortMethod, selectStatus])
 
   const handlePageChange = newPage => {
     console.log('handle page change', newPage)
@@ -57,6 +62,16 @@ export default function page() {
     setCurrentPage(1)
   }
 
+  const handleSelectStatus = status => {
+    setSelectStatus(status)
+  }
+
+  const handleSorting = by => {
+    setSortBy(by)
+    setSortMethod(prevMethod => (prevMethod === ASCENDING ? DESCENDING : ASCENDING))
+    setIsSortingActive(true)
+  }
+
   if (loading) {
     return <Loader />
   }
@@ -65,14 +80,16 @@ export default function page() {
     return <div>Error: {error.message || 'An unknown error occurred.'}</div>
   }
 
-  console.log(coupons, 'coupons all')
-
   const resetFilter = () => {
     setCurrentPage(1)
     setLimit(3)
     setSearchValue('')
     setValue('')
     fetchcoupons(1, 3)
+    setSortBy('')
+    setSortMethod(ASCENDING)
+    setSelectStatus('')
+    setIsSortingActive(false)
   }
   const couponsProps = {
     coupons,
@@ -85,7 +102,12 @@ export default function page() {
     value,
     handleSearch,
     setValue,
-    resetFilter
+    resetFilter,
+    handleSorting,
+    sortMethod,
+    selectStatus,
+    handleSelectStatus,
+    isSortingActive
   }
 
   return (

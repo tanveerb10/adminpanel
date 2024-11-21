@@ -138,7 +138,7 @@ const Login = ({ mode }) => {
   // console.log(token);
   // onSubmit function
   const onSubmit = async ({ email, password }) => {
-    const url = `/admin/admins/adminlogin`
+    const url = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/adminlogin`
     const payloaddata = JSON.stringify({ email, password })
     const nonce = generateNonce()
     const timestamp = generateTimestamp()

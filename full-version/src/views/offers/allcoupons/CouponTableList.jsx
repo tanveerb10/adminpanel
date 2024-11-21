@@ -79,6 +79,8 @@ const truncateText = (text, maxLength) => {
 // Column Definitions
 const columnHelper = createColumnHelper()
 
+const ASCENDING = 'asc'
+
 const CouponTableList = ({
   tableData,
   totalCoupons,
@@ -90,7 +92,12 @@ const CouponTableList = ({
   handleSearch,
   value,
   setValue,
-  resetFilter
+  resetFilter,
+  handleSorting,
+  sortMethod,
+  selectStatus,
+  handleSelectStatus,
+  isSortingActive
 }) => {
   // States
   const [rowSelection, setRowSelection] = useState({})
@@ -101,6 +108,18 @@ const CouponTableList = ({
   // Hooks
   const { lang: locale } = useParams()
   const router = useRouter()
+
+  const SortableHeader = ({ field, label }) => (
+    <div onClick={() => handleSorting(field)} className='cursor-pointer flex items-center'>
+      {label}
+      {isSortingActive &&
+        (sortMethod === ASCENDING ? (
+          <i className='tabler-chevron-up text-xl' />
+        ) : (
+          <i className='tabler-chevron-down text-xl' />
+        ))}
+    </div>
+  )
 
   const columns = useMemo(
     () => [
@@ -138,7 +157,7 @@ const CouponTableList = ({
       }),
 
       columnHelper.accessor('name', {
-        header: 'Coupon',
+        header: <SortableHeader field='coupon_name' label='Coupon' />,
         cell: ({ row }) => {
           const description = row.original.description
           const maxLength = 50
@@ -168,23 +187,27 @@ const CouponTableList = ({
               </div>
             </div>
           )
-        }
+        },
+        enableSorting: false
       }),
       columnHelper.accessor('code', {
-        header: 'Code',
-        cell: ({ row }) => <Chip label={row.original.code} variant='tonal' className='font-bold' color='primary' />
+        header: <SortableHeader field='coupon_code' label='Code' />,
+        cell: ({ row }) => <Chip label={row.original.code} variant='tonal' className='font-bold' color='primary' />,
+        enableSorting: false
       }),
       columnHelper.accessor('type', {
-        header: 'Type',
-        cell: ({ row }) => <Typography className='capitalize'>{row.original.type}</Typography>
+        header: <SortableHeader field='discount_type' label='Type' />,
+        cell: ({ row }) => <Typography className='capitalize'>{row.original.type}</Typography>,
+        enableSorting: false
       }),
       columnHelper.accessor('mov', {
-        header: 'mov',
-        cell: ({ row }) => <Typography>{row.original.mov}</Typography>
+        header: <SortableHeader field='min_order_value' label='mov' />,
+        cell: ({ row }) => <Typography>{row.original.mov}</Typography>,
+        enableSorting: false
       }),
 
       columnHelper.accessor('discountValue', {
-        header: 'Discount Value',
+        header: <SortableHeader field='discount_value' label='Discount Value' />,
         cell: ({ row }) => {
           const { type, discountValue } = row.original
           return (
@@ -192,14 +215,17 @@ const CouponTableList = ({
               {type === 'percent' ? `${discountValue} %` : `₹ ${discountValue}`}
             </Typography>
           )
-        }
+        },
+        enableSorting: false
       }),
       columnHelper.accessor('validity', {
-        header: 'Validity ',
-        cell: ({ row }) => <Typography>{row.original.validity}</Typography>
+        header: 'Validity',
+
+        cell: ({ row }) => <Typography>{row.original.validity}</Typography>,
+        enableSorting: false
       }),
       columnHelper.accessor('status', {
-        header: 'Status',
+        header: <SortableHeader field='status' label='Status' />,
         cell: ({ row }) => (
           <div className='flex items-center gap-3'>
             <Chip
@@ -210,10 +236,11 @@ const CouponTableList = ({
               size='small'
             />
           </div>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('couponCount', {
-        header: 'Coupon count',
+        header: <SortableHeader field='coupon_count' label='Coupon Count' />,
         cell: ({ row }) => (
           <div className='flex items-center justify-center gap-3'>
             <Chip
@@ -224,7 +251,8 @@ const CouponTableList = ({
               size='small'
             />
           </div>
-        )
+        ),
+        enableSorting: false
       }),
 
       columnHelper.accessor('action', {
@@ -242,7 +270,7 @@ const CouponTableList = ({
       })
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [handleSorting]
   )
 
   const table = useReactTable({
@@ -288,7 +316,12 @@ const CouponTableList = ({
     <>
       <Card>
         <CardHeader title='Filters' className='pbe-4' />
-        <CouponTableFilter setData={setData} tableData={tableData} />
+        <CouponTableFilter
+          setData={setData}
+          tableData={tableData}
+          selectStatus={selectStatus}
+          handleSelectStatus={handleSelectStatus}
+        />
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select

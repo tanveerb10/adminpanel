@@ -17,7 +17,14 @@ const Adminroles = ({
   handleSearch,
   value,
   setValue,
-  resetFilter
+  resetFilter,
+  handleSorting,
+  sortMethod,
+  selectStatus,
+  handleSelectStatus,
+  isSortingActive,
+  handleRoleQuery,
+  roleNameQuery
 }) => {
   const tableData = roleData?.map((role, index) => ({
     id: role.role_id,
@@ -41,6 +48,7 @@ const Adminroles = ({
       </Grid>
       <Grid item xs={12}>
         <RolesTable
+          roleData={roleData}
           tableData={tableData}
           totalRole={totalRoles}
           limit={limit}
@@ -53,6 +61,13 @@ const Adminroles = ({
           value={value}
           setValue={setValue}
           resetFilter={resetFilter}
+          handleSorting={handleSorting}
+          sortMethod={sortMethod}
+          selectStatus={selectStatus}
+          handleSelectStatus={handleSelectStatus}
+          isSortingActive={isSortingActive}
+          handleRoleQuery={handleRoleQuery}
+          roleNameQuery={roleNameQuery}
         />
       </Grid>
     </Grid>

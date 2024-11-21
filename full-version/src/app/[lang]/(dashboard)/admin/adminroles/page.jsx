@@ -4,6 +4,9 @@ import Adminroles from '@/views/admin/adminroles/Adminroles'
 import fetchData from '@/utils/fetchData'
 import Loader from '@/libs/components/Loader'
 
+const ASCENDING = 'asc'
+const DESCENDING = 'dsc'
+
 const Page = () => {
   const [roleData, setRoleData] = useState([])
   const [loading, setLoading] = useState(true)
@@ -14,12 +17,15 @@ const Page = () => {
   const [totalRoles, setTotalRoles] = useState(0)
   const [searchValue, setSearchValue] = useState('')
   const [value, setValue] = useState('')
+  const [sortBy, setSortBy] = useState('')
+  const [sortMethod, setSortMethod] = useState(ASCENDING)
+  const [selectStatus, setSelectStatus] = useState('')
+  const [isSortingActive, setIsSortingActive] = useState(false)
+  const [roleNameQuery, setRoleNameQuery] = useState('')
 
   const fetchRoles = async (page = 1, limit = 3, searchValue = '') => {
-    const roleApi =
-      searchValue.length > 0
-        ? `/admin/roles/searchrole?q=${searchValue}&page=${page}&limit=${limit}`
-        : `/admin/roles/allroles?page=${page}&limit=${limit}`
+    const roleApi = `/admin/roles/allroles?page=${page}&limit=${limit}&q=${searchValue}&status=${selectStatus}&sortBy=${sortBy}&sortMethod=${sortMethod}&role_name=${roleNameQuery}`
+
     try {
       setLoading(true)
       setError(null)
@@ -45,7 +51,7 @@ const Page = () => {
 
   useEffect(() => {
     fetchRoles(currentPage, limit, searchValue)
-  }, [currentPage, limit, searchValue])
+  }, [currentPage, limit, searchValue, sortBy, sortMethod, selectStatus, roleNameQuery])
 
   const handlePageChange = newPage => {
     console.log('handle page change', newPage)
@@ -62,13 +68,32 @@ const Page = () => {
     setCurrentPage(1)
   }
 
+  const handleSelectStatus = status => {
+    setSelectStatus(status)
+  }
+
+  const handleSorting = (by, method) => {
+    setSortBy(by)
+    setSortMethod(prevMethod => (prevMethod === ASCENDING ? DESCENDING : ASCENDING))
+    setIsSortingActive(true)
+  }
+
+  const handleRoleQuery = role => {
+    setRoleNameQuery(role)
+  }
   const resetFilter = () => {
     setCurrentPage(1)
     setLimit(3)
     setSearchValue('')
     setValue('')
+    setSortBy('')
+    setSortMethod(ASCENDING)
+    setSelectStatus('')
+    setIsSortingActive(false)
+    setRoleNameQuery('')
     fetchRoles(1, 3)
   }
+
   if (loading) {
     return <Loader />
   }
@@ -88,7 +113,14 @@ const Page = () => {
     handleSearch,
     setValue,
     resetFilter,
-    value
+    value,
+    handleRoleQuery,
+    handleSorting,
+    sortMethod,
+    selectStatus,
+    handleSelectStatus,
+    isSortingActive,
+    roleNameQuery
   }
 
   return <>{<Adminroles {...rolesProps} />}</>

@@ -68,6 +68,8 @@ const fuzzyFilter = (row, columnId, value, addMeta) => {
 // Column Definitions
 const columnHelper = createColumnHelper()
 
+const ASCENDING = 'asc'
+
 const UserListTable = ({
   tableData = [],
   totalAdmin,
@@ -80,7 +82,14 @@ const UserListTable = ({
   handleSearch,
   value,
   setValue,
-  resetFilter
+  resetFilter,
+  handleSorting,
+  sortMethod,
+  selectStatus,
+  handleSelectStatus,
+  isSortingActive,
+  roleNameQuery,
+  handleRoleQuery
 }) => {
   // States
   const [rowSelection, setRowSelection] = useState({})
@@ -91,7 +100,6 @@ const UserListTable = ({
   // Hooks
   const { lang: locale } = useParams()
   const router = useRouter()
-  // const { id } = params // Destructure id from params
 
   const columns = useMemo(
     () => [
@@ -118,7 +126,22 @@ const UserListTable = ({
         )
       },
       columnHelper.accessor('fullName', {
-        header: 'User',
+        header: () => (
+          <div
+            onClick={() => {
+              handleSorting('firstname')
+            }}
+            className='cursor-pointer flex items-center'
+          >
+            Users
+            {isSortingActive &&
+              (sortMethod === ASCENDING ? (
+                <i className='tabler-chevron-up text-xl' />
+              ) : (
+                <i className='tabler-chevron-down text-xl' />
+              ))}
+          </div>
+        ),
         cell: ({ row }) => (
           <div className='flex items-center gap-4'>
             {getAvatar({ avatar: row.original.avatar, fullName: row.original.fullName })}
@@ -129,32 +152,95 @@ const UserListTable = ({
               <Typography variant='body2'>{row.original.email}</Typography>
             </div>
           </div>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('role', {
-        header: 'Role',
+        header: () => (
+          <div
+            onClick={() => {
+              handleSorting('role')
+            }}
+            className='cursor-pointer flex items-center'
+          >
+            Roles
+            {isSortingActive &&
+              (sortMethod === ASCENDING ? (
+                <i className='tabler-chevron-up text-xl' />
+              ) : (
+                <i className='tabler-chevron-down text-xl' />
+              ))}
+          </div>
+        ),
         cell: ({ row }) => (
           <div className='flex items-center gap-2'>
             <Typography className='capitalize' color='text.primary'>
               {row.original.role}
             </Typography>
           </div>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('contact', {
-        header: 'Contact',
+        header: () => (
+          <div
+            onClick={() => {
+              handleSorting('contact')
+            }}
+            className='cursor-pointer flex items-center'
+          >
+            Contact
+            {isSortingActive &&
+              (sortMethod === ASCENDING ? (
+                <i className='tabler-chevron-up text-xl' />
+              ) : (
+                <i className='tabler-chevron-down text-xl' />
+              ))}
+          </div>
+        ),
         cell: ({ row }) => (
           <Typography className='capitalize' color='text.primary'>
             {row.original.contact}
           </Typography>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('city', {
-        header: 'City',
+        header: () => (
+          <div
+            onClick={() => {
+              handleSorting('city')
+            }}
+            className='cursor-pointer flex items-center'
+          >
+            City
+            {isSortingActive &&
+              (sortMethod === ASCENDING ? (
+                <i className='tabler-chevron-up text-xl' />
+              ) : (
+                <i className='tabler-chevron-down text-xl' />
+              ))}
+          </div>
+        ),
         cell: ({ row }) => <Typography className='capitalize'>{row.original.city}</Typography>
       }),
       columnHelper.accessor('status', {
-        header: 'Status',
+        header: () => (
+          <div
+            onClick={() => {
+              handleSorting('status')
+            }}
+            className='cursor-pointer flex items-center'
+          >
+            Status
+            {isSortingActive &&
+              (sortMethod === ASCENDING ? (
+                <i className='tabler-chevron-up text-xl' />
+              ) : (
+                <i className='tabler-chevron-down text-xl' />
+              ))}
+          </div>
+        ),
         cell: ({ row }) => (
           <div className='flex items-center gap-3'>
             <Chip
@@ -165,7 +251,8 @@ const UserListTable = ({
               size='small'
             />
           </div>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('action', {
         header: 'Action',
@@ -182,7 +269,7 @@ const UserListTable = ({
       })
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [handleSorting]
   )
 
   const table = useReactTable({
@@ -228,7 +315,15 @@ const UserListTable = ({
     <>
       <Card>
         <CardHeader title='Filters' className='pbe-4' />
-        <TableFilters setData={setData} tableData={tableData} roleData={roleData} />
+        <TableFilters
+          setData={setData}
+          tableData={tableData}
+          roleData={roleData}
+          selectStatus={selectStatus}
+          handleSelectStatus={handleSelectStatus}
+          roleNameQuery={roleNameQuery}
+          handleRoleQuery={handleRoleQuery}
+        />
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select

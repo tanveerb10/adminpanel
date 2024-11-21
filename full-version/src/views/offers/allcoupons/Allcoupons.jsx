@@ -12,7 +12,12 @@ const AllCoupons = ({
   handleSearch,
   value,
   setValue,
-  resetFilter
+  resetFilter,
+  handleSorting,
+  sortMethod,
+  selectStatus,
+  handleSelectStatus,
+  isSortingActive
 }) => {
   function formatDate(RawTime) {
     const dates = new Date(RawTime)
@@ -55,6 +60,11 @@ const AllCoupons = ({
         value={value}
         setValue={setValue}
         resetFilter={resetFilter}
+        handleSorting={handleSorting}
+        sortMethod={sortMethod}
+        selectStatus={selectStatus}
+        handleSelectStatus={handleSelectStatus}
+        isSortingActive={isSortingActive}
       />
     </div>
   )

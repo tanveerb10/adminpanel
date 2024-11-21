@@ -9,6 +9,8 @@ import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
 import { getLocalizedUrl } from '@/utils/i18n'
 import fetchFormData from '@/utils/fetchFormData'
+import dynamic from 'next/dynamic'
+const RichTextEditor = dynamic(() => import('@/libs/RichTextEditor'), { ssr: false })
 
 const CategoriesDetailForm = ({ isAddCategories, categoryData }) => {
   const initialFormData = {
@@ -26,6 +28,8 @@ const CategoriesDetailForm = ({ isAddCategories, categoryData }) => {
   const [imgSrc, setImgSrc] = useState(initialFormData.category_image_src)
   const [selectedFile, setSelectedFile] = useState(null)
   const [loading, setLoading] = useState(false)
+
+  const [description, setDescription] = useState('')
 
   const validationSchema = yup.object().shape({
     category_name: yup.string().required('category name is required'),
@@ -91,12 +95,16 @@ const CategoriesDetailForm = ({ isAddCategories, categoryData }) => {
         toast.error('Image is required')
         return
       }
+      if (description.length <= 0) {
+        toast.error('Description is required')
+        return
+      }
 
       const apiUrl = isAddCategories ? `/admin/Categories/createCategory` : `/admin/Categories/updateCategory/${id}`
 
       const formData = new FormData()
       formData.append('category_name', data.category_name)
-      formData.append('category_description', data.category_description)
+      formData.append('category_description', description)
       formData.append('sort_order', data.sort_order)
 
       if (!isAddCategories) {
@@ -173,7 +181,30 @@ const CategoriesDetailForm = ({ isAddCategories, categoryData }) => {
                 )}
               />
             </Grid>
+
             <Grid item xs={12} sm={6}>
+              <Controller
+                name='category_description'
+                control={control}
+                render={({ field }) => (
+                  <RichTextEditor
+                    {...field}
+                    label
+                    value={field.value || ''}
+                    placeholder='Enter category description'
+                    onChange={value => {
+                      field.onChange(value)
+                      setDescription(value)
+                    }}
+                  />
+                )}
+              />
+              {errors.category_description && (
+                <Typography color='error'>{errors.category_description.message}</Typography>
+              )}
+            </Grid>
+
+            {/* <Grid item xs={12} sm={6}>
               <Controller
                 name='category_description'
                 control={control}
@@ -188,7 +219,7 @@ const CategoriesDetailForm = ({ isAddCategories, categoryData }) => {
                   />
                 )}
               />
-            </Grid>
+            </Grid> */}
             {!isAddCategories && (
               <Grid item xs={12} sm={6}>
                 <CustomTextField
@@ -250,8 +281,8 @@ const CategoriesDetailForm = ({ isAddCategories, categoryData }) => {
                       error={Boolean(errors.status)}
                       helperText={errors.status?.message}
                     >
-                      <MenuItem value='true'>True</MenuItem>
-                      <MenuItem value='false'>False</MenuItem>
+                      <MenuItem value={true}>True</MenuItem>
+                      <MenuItem value={false}>False</MenuItem>
                     </CustomTextField>
                   )}
                 />

@@ -10,7 +10,15 @@ import MenuItem from '@mui/material/MenuItem'
 import CustomTextField from '@core/components/mui/TextField'
 import { Button, Typography } from '@mui/material'
 
-const TableFilters = ({ setData, tableData, roleData }) => {
+const TableFilters = ({
+  setData,
+  tableData,
+  roleData,
+  selectStatus,
+  handleSelectStatus,
+  roleNameQuery,
+  handleRoleQuery
+}) => {
   // States
   const [role, setRole] = useState('')
   const [status, setStatus] = useState('')
@@ -32,13 +40,12 @@ const TableFilters = ({ setData, tableData, roleData }) => {
           <CustomTextField
             select
             fullWidth
-            id='select-role'
-            value={role}
-            onChange={e => setRole(e.target.value)}
+            value={roleNameQuery}
+            onChange={e => handleRoleQuery(e.target.value)}
             SelectProps={{ displayEmpty: true }}
           >
             <MenuItem value=''>Select Role</MenuItem>
-            {roleData?.allRole?.map(role => (
+            {roleData?.roles?.map(role => (
               <MenuItem value={role.role_name} key={role._id}>
                 <Typography className='capitalize'>{role.role_name}</Typography>
               </MenuItem>
@@ -51,20 +58,14 @@ const TableFilters = ({ setData, tableData, roleData }) => {
             select
             fullWidth
             id='select-status'
-            value={status}
-            onChange={e => setStatus(e.target.value)}
+            value={selectStatus}
+            onChange={e => handleSelectStatus(e.target.value)}
             SelectProps={{ displayEmpty: true }}
           >
             <MenuItem value=''>Select Status</MenuItem>
-            <MenuItem value='active'>Active</MenuItem>
-            <MenuItem value='inactive'>Inactive</MenuItem>
+            <MenuItem value={true}>Active</MenuItem>
+            <MenuItem value={false}>Inactive</MenuItem>
           </CustomTextField>
-        </Grid>
-
-        <Grid item xs={12} sm={4}>
-          <Button variant='contained' color='error'>
-            Reset filter
-          </Button>
         </Grid>
       </Grid>
     </CardContent>

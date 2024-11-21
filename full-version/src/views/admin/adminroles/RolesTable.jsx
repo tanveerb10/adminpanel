@@ -42,12 +42,10 @@ import {
 } from '@tanstack/react-table'
 
 // Component Imports
-import CustomAvatar from '@core/components/mui/Avatar'
 import CustomTextField from '@core/components/mui/TextField'
 import TablePaginationComponent from '@components/TablePaginationComponent'
 
 // Util Imports
-import { getInitials } from '@/utils/getInitials'
 import { getLocalizedUrl } from '@/utils/i18n'
 
 // Style Imports
@@ -72,6 +70,8 @@ const fuzzyFilter = (row, columnId, value, addMeta) => {
 // Column Definitions
 const columnHelper = createColumnHelper()
 
+const ASCENDING = 'asc'
+
 const RolesTable = ({
   tableData,
   roleData,
@@ -84,7 +84,14 @@ const RolesTable = ({
   handleSearch,
   value,
   setValue,
-  resetFilter
+  resetFilter,
+  handleSorting,
+  sortMethod,
+  selectStatus,
+  handleSelectStatus,
+  isSortingActive,
+  handleRoleQuery,
+  roleNameQuery
 }) => {
   // States
   const [role, setRole] = useState('')
@@ -141,14 +148,30 @@ const RolesTable = ({
         )
       }),
       columnHelper.accessor('name', {
-        header: 'Role',
+        header: () => (
+          <div
+            onClick={() => {
+              handleSorting('role_name')
+            }}
+            className='cursor-pointer flex items-center'
+          >
+            Role
+            {isSortingActive &&
+              (sortMethod === ASCENDING ? (
+                <i className='tabler-chevron-up text-xl' />
+              ) : (
+                <i className='tabler-chevron-down text-xl' />
+              ))}
+          </div>
+        ),
         cell: ({ row }) => (
           <div className='flex items-center gap-2'>
             <Typography className='capitalize' color='text.primary'>
               {row.original.name}
             </Typography>
           </div>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('ability', {
         header: 'Ability',
@@ -159,19 +182,35 @@ const RolesTable = ({
         )
       }),
       columnHelper.accessor('status', {
-        header: 'Status',
+        header: () => (
+          <div
+            onClick={() => {
+              handleSorting('status')
+              console.log('onclick status')
+            }}
+            className='cursor-pointer flex items-center'
+          >
+            Status
+            {isSortingActive &&
+              (sortMethod === ASCENDING ? (
+                <i className='tabler-chevron-up text-xl' />
+              ) : (
+                <i className='tabler-chevron-down text-xl' />
+              ))}
+          </div>
+        ),
         cell: ({ row }) => (
           <div className='flex items-center gap-3'>
             <Chip
               variant='tonal'
               className='capitalize'
               label={row.original.status}
-              // color={userStatusObj[row.original.status]}
               color={row.original.status ? 'success' : 'error'}
               size='small'
             />
           </div>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('action', {
         header: 'Actions',
@@ -186,7 +225,7 @@ const RolesTable = ({
       })
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [handleSorting]
   )
 
   const table = useReactTable({
@@ -244,8 +283,6 @@ const RolesTable = ({
           <Typography>Show</Typography>
           <CustomTextField
             select
-            // value={table.getState().pagination.pageSize}
-            // onChange={e => table.setPageSize(Number(e.target.value))}
             value={limit}
             onChange={e => handleLimitChange(Number(e.target.value))}
             className='is-[70px]'
@@ -279,18 +316,27 @@ const RolesTable = ({
           />
           <CustomTextField
             select
-            value={role}
-            onChange={e => setRole(e.target.value)}
-            id='roles-app-role-select'
+            value={roleNameQuery}
+            onChange={e => handleRoleQuery(e.target.value)}
             className='is-[160px]'
             SelectProps={{ displayEmpty: true }}
           >
             <MenuItem value=''>Select Role</MenuItem>
-            {roleData?.allRole?.map(role => (
+            {roleData?.map(role => (
               <MenuItem value={role.role_name} key={role.role_id}>
                 {role.role_name}
               </MenuItem>
             ))}
+          </CustomTextField>
+          <CustomTextField
+            select
+            value={selectStatus}
+            onChange={e => handleSelectStatus(e.target.value)}
+            SelectProps={{ displayEmpty: true }}
+          >
+            <MenuItem value=''>Select Status</MenuItem>
+            <MenuItem value={true}>Active</MenuItem>
+            <MenuItem value={false}>Inactive</MenuItem>
           </CustomTextField>
           <Button
             color='error'
@@ -370,12 +416,6 @@ const RolesTable = ({
             handlePageChange={handlePageChange}
           />
         )}
-        // count={table.getFilteredRowModel().rows.length}
-        // rowsPerPage={table.getState().pagination.pageSize}
-        // page={table.getState().pagination.pageIndex}
-        // onPageChange={(_, page) => {
-        //   table.setPageIndex(page)
-        // }}
         count={totalRoles}
         rowsPerPage={limit}
         page={currentPage - 1}

@@ -30,6 +30,7 @@ const allAbility = [
   'bulkimport',
   'inventory',
   'metas',
+  'productfilter',
   'tags',
   'offers',
   'allcoupons',

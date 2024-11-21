@@ -38,7 +38,7 @@ const permissionsData = [
   },
   {
     category: 'Products',
-    permissions: ['All Products', 'Brands', 'Categories', 'Bulk Import', 'Inventory', 'Metas', 'Tags']
+    permissions: ['All Products', 'Brands', 'Categories', 'Bulk Import', 'Inventory', 'Metas', 'productfilter', 'Tags']
   },
   {
     category: 'Offers',

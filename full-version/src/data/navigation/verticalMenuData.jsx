@@ -478,7 +478,6 @@
 
 // export default verticalMenuData
 
-
 const verticalMenuData = (dictionary, params) => [
   // This is how you will normally render submenu
   {
@@ -523,8 +522,7 @@ const verticalMenuData = (dictionary, params) => [
         label: dictionary['navigation'].adminroles,
         icon: 'tabler-circle',
         href: '/dashboards/analytics'
-      },
-     
+      }
     ]
   },
   {
@@ -541,8 +539,7 @@ const verticalMenuData = (dictionary, params) => [
         label: dictionary['navigation'].customersegment,
         icon: 'tabler-circle',
         href: '/dashboards/analytics'
-      },
-     
+      }
     ]
   },
   {
@@ -576,11 +573,15 @@ const verticalMenuData = (dictionary, params) => [
         href: '/dashboards/analytics'
       },
       {
-        label: dictionary['navigation'].tags,
+        label: dictionary['navigation'].productfilter,
         icon: 'tabler-circle',
         href: '/dashboards/analytics'
       },
-     
+      {
+        label: dictionary['navigation'].tags,
+        icon: 'tabler-circle',
+        href: '/dashboards/analytics'
+      }
     ]
   },
   {
@@ -597,8 +598,7 @@ const verticalMenuData = (dictionary, params) => [
         label: dictionary['navigation'].customercoupons,
         icon: 'tabler-circle',
         href: '/dashboards/analytics'
-      },
-     
+      }
     ]
   },
   {
@@ -625,7 +625,7 @@ const verticalMenuData = (dictionary, params) => [
         label: dictionary['navigation'].archivedorders,
         icon: 'tabler-circle',
         href: '/dashboards/analytics'
-      },     
+      }
     ]
   },
   {
@@ -682,8 +682,7 @@ const verticalMenuData = (dictionary, params) => [
         label: dictionary['navigation'].socialprofiles,
         icon: 'tabler-circle',
         href: '/dashboards/analytics'
-      },
-     
+      }
     ]
   },
   {
@@ -705,7 +704,7 @@ const verticalMenuData = (dictionary, params) => [
         label: dictionary['navigation'].phonepe,
         icon: 'tabler-circle',
         href: '/dashboards/analytics'
-      },  
+      }
     ]
   },
   {
@@ -722,12 +721,12 @@ const verticalMenuData = (dictionary, params) => [
         label: dictionary['navigation'].shippingcharges,
         icon: 'tabler-circle',
         href: '/dashboards/analytics'
-      },  
+      },
       {
         label: dictionary['navigation'].pincodes,
         icon: 'tabler-circle',
         href: '/dashboards/crm'
-      },
+      }
     ]
   },
   {
@@ -744,7 +743,7 @@ const verticalMenuData = (dictionary, params) => [
         label: dictionary['navigation'].taxgroup,
         icon: 'tabler-circle',
         href: '/dashboards/analytics'
-      },  
+      }
     ]
   },
   {
@@ -766,7 +765,7 @@ const verticalMenuData = (dictionary, params) => [
         label: dictionary['navigation'].sendemails,
         icon: 'tabler-circle',
         href: '/dashboards/analytics'
-      },  
+      }
     ]
   },
   {
@@ -788,7 +787,7 @@ const verticalMenuData = (dictionary, params) => [
         label: dictionary['navigation'].sendnotifications,
         icon: 'tabler-circle',
         href: '/dashboards/analytics'
-      },  
+      }
     ]
   },
   {
@@ -805,7 +804,7 @@ const verticalMenuData = (dictionary, params) => [
         label: dictionary['navigation'].smstemplate,
         icon: 'tabler-circle',
         href: '/dashboards/analytics'
-      },  
+      }
     ]
   },
   {
@@ -832,10 +831,9 @@ const verticalMenuData = (dictionary, params) => [
         label: dictionary['navigation'].shipdelightsetup,
         icon: 'tabler-circle',
         href: '/dashboards/analytics'
-      },     
+      }
     ]
-  },
-
+  }
 ]
 
 export default verticalMenuData

@@ -18,12 +18,6 @@ export default function CreateBanner({ fetchBanner }) {
         }}
         dialogProps={{ fetchBanner: fetchBanner }}
       />
-      {/* <Button
-        variant='contained'
-        style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', color: '#333', marginTop: '20px' }}
-      >
-        Create Banner
-      </Button> */}
     </Grid>
   )
 }

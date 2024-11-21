@@ -175,5 +175,3 @@ const AddBannerDialog = ({ open, setOpen, fetchBanner }) => {
 }
 
 export default AddBannerDialog
-
-// className='overflow-visible flex flex-col gap-2 pbs-0 sm:pli-16'

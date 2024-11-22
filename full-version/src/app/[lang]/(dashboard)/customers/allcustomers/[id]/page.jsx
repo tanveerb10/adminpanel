@@ -5,8 +5,8 @@ import { useAuth } from '@/contexts/AuthContext'
 import fetchData from '@/utils/fetchData'
 import { useParams, useRouter } from 'next/navigation'
 import Loader from '@/libs/components/Loader'
-import CustomerSetting from '@/views/customers/allcustomers/index'
 import dynamic from 'next/dynamic'
+import TabsPanel from '@/libs/components/TabsPanel'
 
 const CustomerAddressToggleParent = dynamic(
   () => import('@/views/customers/allcustomers/customerAddress/CustomerAddressToggleParent')
@@ -49,10 +49,6 @@ export default function page() {
     )
   }
 
-  // if (role !== 'superadmin') {
-  //   setTimeout(() => router.push('/'), 3000)
-  //   return <div>wait you are going to redirect because you are not super admin...</div>
-  // }
   if (error) {
     return <div>No data available</div>
   }
@@ -64,13 +60,18 @@ export default function page() {
     AllCustomerAddress: <CustomerAddressToggleParent id={id} />
   }
 
+  const allTabs = [
+    { key: 'AllCustomer', label: 'Customer' },
+    { key: 'AllCustomerAddress', label: 'Customer Address' }
+  ]
+
   if (id === 'addnewcustomer') {
     return <CustomerDetailForm isAddCustomer={true} />
   }
 
   return (
     <>
-      <CustomerSetting tabContent={tabContent} />
+      <TabsPanel tabContent={tabContent} allTabs={allTabs} />
     </>
   )
 }

@@ -1,9 +1,9 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import TaxSetting from '@/views/taxes/index'
 import dynamic from 'next/dynamic'
 import fetchData from '@/utils/fetchData'
 import Loader from '@/libs/components/Loader'
+import TabsPanel from '@/libs/components/TabsPanel'
 
 const Taxrate = dynamic(() => import('@/views/taxes/taxrate/SetTax'), {
   ssr: false
@@ -73,9 +73,14 @@ export default function page() {
     )
   }
 
+  const allTabs = [
+    { key: 'setTax', label: 'Set Tax' },
+    { key: 'setTaxOverride', label: 'Set Tax Override' }
+  ]
+
   return (
     <>
-      <TaxSetting tabContent={tabContent} />
+      <TabsPanel tabContent={tabContent} allTabs={allTabs} />
     </>
   )
 }

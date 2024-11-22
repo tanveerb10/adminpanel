@@ -1,3 +1,4 @@
+//  ===============================This component is not in use =========================================
 'use client'
 // React Imports
 import { useState } from 'react'
@@ -9,11 +10,8 @@ import TabContext from '@mui/lab/TabContext'
 import TabPanel from '@mui/lab/TabPanel'
 import CustomTabList from '@core/components/mui/TabList'
 
-const Storesetup = ({ tabContent }) => {
-  const tabs = [
-    { key: 'storeSettings', label: 'Store Settings' },
-    { key: 'metaSettings', label: 'Meta Settings' }
-  ].map(({ key, label }) => (
+const Storesetup = ({ tabContent, allTabs }) => {
+  const tabs = allTabs.map(({ key, label }) => (
     <Tab key={key} value={key} label={<div className='flex items-center gap-1.5'>{label}</div>} />
   ))
 
@@ -33,7 +31,7 @@ const Storesetup = ({ tabContent }) => {
           </Grid>
           <Grid item xs={12}>
             <TabPanel value={activeTab} className='p-0'>
-              {tabContent[activeTab] || <div>No Content Available</div>}
+              {tabContent[activeTab] || <div className='w-full h-full text-center m-auto'>No Content Available</div>}
             </TabPanel>
           </Grid>
         </Grid>

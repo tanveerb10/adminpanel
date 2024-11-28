@@ -1,8 +1,8 @@
 'use client'
 
 // React Imports
-import { useState } from 'react'
-import { useForm, Controller, useFieldArray } from 'react-hook-form'
+import { useCallback, useRef, useState } from 'react'
+import { useForm, Controller } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 // MUI Imports
@@ -11,39 +11,29 @@ import fetchData from '@/utils/fetchData'
 import DialogCloseButton from '@/components/dialogs/DialogCloseButton'
 import CustomTextField from '@core/components/mui/TextField'
 import { toast } from 'react-toastify'
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Grid, MenuItem } from '@mui/material'
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Grid, MenuItem, Typography } from '@mui/material'
 import Loader from '@/libs/components/Loader'
+import Image from 'next/image'
 
 const AddStoriesDialog = ({ open, setOpen, fetchStories, categoryData }) => {
   const [loading, setLoading] = useState(false)
-  console.log(categoryData)
+
+  const [src, setSrc] = useState({
+    imgSrc: '/images/avatars/1.png',
+    thumbnailSrc: '/images/avatars/2.png'
+  })
+  const [selectedFile, setSelectedFile] = useState({ imgSelect: null, thumbnailSelect: null })
+
   const validationSchema = yup.object({
-    stories: yup.array().of(
-      yup.object({
-        image_link: yup
-          .string()
-          .matches(
-            /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/,
-            'Enter a valid URL!'
-          )
-          .required('Image Link is required'),
-        redirect_link: yup
-          .string()
-          .matches(
-            /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/,
-            'Enter a valid URL!'
-          )
-          .required('Redirect Link is required'),
-        thumbnail_image_link: yup
-          .string()
-          .matches(
-            /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/,
-            'Enter a valid URL!'
-          )
-          .required('Thumbnail Image Link is required'),
-        category: yup.string().required('Category is required')
-      })
-    )
+    redirect_link: yup
+      .string()
+      .matches(
+        /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/,
+        'Enter a valid URL!'
+      )
+      .required('Redirect Link is required'),
+
+    category: yup.string().required('Category is required')
   })
 
   const {
@@ -53,22 +43,69 @@ const AddStoriesDialog = ({ open, setOpen, fetchStories, categoryData }) => {
     reset
   } = useForm({
     resolver: yupResolver(validationSchema),
-    defaultValues: { stories: [{ image_link: '', redirect_link: '', thumbnail_image_link: '', category: '' }] }
+    defaultValues: { redirect_link: '', category: '' }
   })
-
-  const { fields, append, remove } = useFieldArray({ control, name: 'stories' })
 
   const handleClose = () => {
     setOpen(false)
-    reset({ stories: [{ image_link: '', redirect_link: '', thumbnail_image_link: '', category: '' }] })
+    reset({ redirect_link: '', category: '' })
+    setSelectedFile({ imgSelect: null, thumbnailSelect: null })
+    setSrc({
+      imgSrc: '/images/avatars/1.png',
+      thumbnailSrc: '/images/avatars/2.png'
+    })
+    setLoading(false)
+  }
+
+  const mainFileInputRef = useRef(null)
+  const thumbnailFileInputRef = useRef(null)
+
+  const handleFileInputChange = useCallback((event, type) => {
+    const file = event.target.files[0]
+    if (file) {
+      if (!['image/jpeg', 'image/png'].includes(file.type)) {
+        toast.error('Invalid file type. Only JPG and PNG are allowed.')
+        return
+      }
+
+      const reader = new FileReader()
+      reader.onload = e => {
+        setSrc(prev => ({ ...prev, [`${type}Src`]: e.target.result }))
+      }
+      reader.readAsDataURL(file)
+
+      setSelectedFile(prev => ({ ...prev, [`${type}Select`]: file }))
+    }
+  }, [])
+
+  const handleImageClick = type => {
+    if (type === 'imgSrc') {
+      mainFileInputRef.current.click()
+    } else {
+      thumbnailFileInputRef.current.click()
+    }
   }
 
   const onSubmit = async data => {
+    console.log('datatatata', data)
+
+    if (!selectedFile.imgSelect == null || selectedFile.thumbnailSelect == null) {
+      toast.error('Image is required')
+      return
+    }
+
     setLoading(true)
+
+    const formData = new FormData()
+
+    formData.append('image_src', selectedFile.imgSelect)
+    formData.append('thumbnail_image_src', selectedFile.thumbnailSelect)
+    formData.append('redirect_link', data.redirect_link)
+    formData.append('category', data.category)
 
     const url = '/admin/cms/addStorySettings'
     try {
-      const responseData = await fetchData(url, 'POST', { storys: data.stories })
+      const responseData = await fetchData(url, 'POST', formData, 'image')
       if (responseData.success) {
         toast.success('Stories added successfully')
         fetchStories()
@@ -105,104 +142,90 @@ const AddStoriesDialog = ({ open, setOpen, fetchStories, categoryData }) => {
       </DialogTitle>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className='text-end mr-3'>
-          <Button
-            variant='tonal'
-            onClick={() => append({ image_link: '', redirect_link: '', thumbnail_image_link: '', category: '' })}
-          >
-            Add Another
-          </Button>
-        </div>
-
         <DialogContent>
-          {fields.map((item, index) => (
-            <Grid key={item.id} container spacing={6}>
-              <Grid item xs={12}>
-                <div className='flex flex-col gap-2'>
-                  <Controller
-                    name={`stories.${index}.image_link`}
-                    control={control}
-                    render={({ field }) => (
-                      <CustomTextField
-                        {...field}
-                        label={`Image Link ${index + 1}`}
-                        variant='outlined'
-                        fullWidth
-                        placeholder='Enter Image Link'
-                        error={!!errors?.stories?.[index]?.image_link}
-                        helperText={errors?.stories?.[index]?.image_link?.message}
-                      />
-                    )}
+          <Grid container spacing={6}>
+            <Grid item xs={12}>
+              <Grid className='flex justify-center max-sm:flex-col my-1 gap-5 items-center'>
+                <Grid className='flex flex-col items-center justify-center'>
+                  <p className='text-center'>Main Image</p>
+                  <Image
+                    height={100}
+                    width={100}
+                    className='rounded'
+                    src={src.imgSrc}
+                    alt='Main image'
+                    onClick={() => handleImageClick('imgSrc')}
                   />
-
-                  <Controller
-                    name={`stories.${index}.redirect_link`}
-                    control={control}
-                    render={({ field }) => (
-                      <CustomTextField
-                        {...field}
-                        label='Redirect Link'
-                        variant='outlined'
-                        fullWidth
-                        placeholder='Enter Redirect Link'
-                        error={!!errors?.stories?.[index]?.redirect_link}
-                        helperText={errors?.stories?.[index]?.redirect_link?.message}
-                      />
-                    )}
+                  <input
+                    hidden
+                    type='file'
+                    accept='image/png, image/jpeg'
+                    onChange={e => handleFileInputChange(e, 'img')}
+                    ref={mainFileInputRef}
                   />
-                  <Controller
-                    name={`stories.${index}.thumbnail_image_link`}
-                    control={control}
-                    render={({ field }) => (
-                      <CustomTextField
-                        {...field}
-                        label='Thumbnail Image Link'
-                        variant='outlined'
-                        fullWidth
-                        placeholder='Enter Thumbnail Image Link'
-                        error={!!errors?.stories?.[index]?.thumbnail_image_link}
-                        helperText={errors?.stories?.[index]?.thumbnail_image_link?.message}
-                      />
-                    )}
-                  />
-                  <Controller
-                    name={`stories.${index}.category`}
-                    control={control}
-                    render={({ field }) => (
-                      <CustomTextField
-                        {...field}
-                        label='Category Link'
-                        variant='outlined'
-                        fullWidth
-                        select
-                        placeholder='Enter Category Link'
-                        error={!!errors?.stories?.[index]?.category}
-                        helperText={errors?.stories?.[index]?.category?.message}
-                      >
-                        {categoryData.map(item => (
-                          <MenuItem value={item} key={item}>
-                            {item}
-                          </MenuItem>
-                        ))}
-                      </CustomTextField>
-                    )}
-                  />
-                </div>
-              </Grid>
-              {fields.length > 1 && (
-                <Grid item xs={12} className='text-center'>
-                  <Button
-                    variant='outlined'
-                    onClick={() => remove(index)}
-                    color='error'
-                    endIcon={<i className='tabler-trash' />}
-                  >
-                    Delete
-                  </Button>
                 </Grid>
-              )}
+                <Grid className='flex flex-col items-center justify-center'>
+                  <p className='text-center'>Thumbnail Image</p>
+                  <Image
+                    height={100}
+                    width={100}
+                    className='rounded'
+                    src={src.thumbnailSrc}
+                    alt='Thumbnail image'
+                    onClick={() => handleImageClick('thumbnailSrc')}
+                  />
+                  <input
+                    hidden
+                    type='file'
+                    accept='image/png, image/jpeg'
+                    onChange={e => handleFileInputChange(e, 'thumbnail')}
+                    ref={thumbnailFileInputRef}
+                  />
+                </Grid>
+              </Grid>
+
+              <div className='flex flex-col gap-2'>
+                <Controller
+                  name={`redirect_link`}
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      label='Redirect Link'
+                      variant='outlined'
+                      fullWidth
+                      placeholder='Enter Redirect Link'
+                      error={!!errors?.redirect_link}
+                      helperText={errors?.redirect_link?.message}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name={`category`}
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      label='Category Link'
+                      variant='outlined'
+                      fullWidth
+                      select
+                      placeholder='Enter Category Link'
+                      error={!!errors?.category}
+                      helperText={errors?.category?.message}
+                    >
+                      {categoryData.map(item => (
+                        <MenuItem value={item} key={item}>
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </CustomTextField>
+                  )}
+                />
+              </div>
             </Grid>
-          ))}
+          </Grid>
         </DialogContent>
 
         <DialogActions className='justify-center pbs-0 sm:pbe-16 sm:pli-16'>

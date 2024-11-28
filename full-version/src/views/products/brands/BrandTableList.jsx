@@ -37,7 +37,6 @@ import {
 
 // Component Imports
 import BrandTableFilter from '@views/products/brands/BrandTableFilter'
-import OptionMenu from '@core/components/option-menu'
 import TablePaginationComponent from '@components/TablePaginationComponent'
 import CustomTextField from '@core/components/mui/TextField'
 import CustomAvatar from '@core/components/mui/Avatar'

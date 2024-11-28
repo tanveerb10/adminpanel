@@ -1,13 +1,15 @@
 'use client'
-import { Card, IconButton, Switch } from '@mui/material'
+
+import { Card, IconButton, Switch, Button } from '@mui/material'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import { useSortable } from '@dnd-kit/sortable'
 import fetchData from '@/utils/fetchData'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import CustomTextField from '@/@core/components/mui/TextField'
 import { CSS } from '@dnd-kit/utilities'
 import { toast } from 'react-toastify'
 import debounce from 'lodash.debounce'
+import Image from 'next/image'
 
 const useBannerApi = (_id, fetchBanner) => {
   const [loading, setLoading] = useState(false)
@@ -15,9 +17,10 @@ const useBannerApi = (_id, fetchBanner) => {
   const updateBanner = useCallback(
     async updatedData => {
       setLoading(true)
+      console.log('update data ', updatedData)
       try {
         const apiUrl = `/admin/cms/updateBannerSettings/${_id}`
-        const response = await fetchData(apiUrl, 'PUT', updatedData)
+        const response = await fetchData(apiUrl, 'PUT', updatedData, 'image')
 
         if (!response.success) {
           toast.error(response.message)
@@ -52,15 +55,18 @@ const useBannerApi = (_id, fetchBanner) => {
       setLoading(false)
     }
   }, [_id, fetchBanner])
+
   return { updateBanner, deleteBanner, loading }
 }
 
-export default function BannerCard({ _id, image_link, redirect_link, enable, fetchBanner }) {
+export default function BannerCard({ _id, image_link, banner_image_src, redirect_link, enable, fetchBanner }) {
   console.log(fetchBanner, 'from card')
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: _id })
 
   const [currentEnabled, setCurrentEnabled] = useState(enable)
-  const [link, setLink] = useState({ image_link, redirect_link })
+  const [redirectLink, setRedirectLink] = useState(redirect_link)
+  const [imgSrc, setImgSrc] = useState(banner_image_src || '/images/avatars/1.png')
+  const [selectedFile, setSelectedFile] = useState(null)
 
   const { updateBanner, deleteBanner, loading } = useBannerApi(_id, fetchBanner)
 
@@ -76,31 +82,51 @@ export default function BannerCard({ _id, image_link, redirect_link, enable, fet
   }
 
   const handleSave = () => {
-    const updatedData = {
-      image_link: link.image_link,
-      redirect_link: link.redirect_link,
-      enable: currentEnabled,
-      _id
+    const formData = new FormData()
+    formData.append('redirect_link', redirectLink)
+    if (selectedFile != null) {
+      formData.append('banner_image_src', selectedFile)
     }
-    debounceApi(updatedData)
+    formData.append('enable', currentEnabled)
+    formData.append('_id', _id)
+    debounceApi(formData)
   }
 
   const handleToggleSwitch = () => {
     const newEnabledState = !currentEnabled
     setCurrentEnabled(newEnabledState)
-    const updatedData = {
-      image_link: link.image_link,
-      redirect_link: link.redirect_link,
-      enable: newEnabledState,
-      _id
+
+    const formData = new FormData()
+    formData.append('redirect_link', redirectLink)
+    formData.append('enable', newEnabledState)
+    formData.append('_id', _id)
+
+    debounceApi(formData)
+  }
+
+  const fileInputRef = useRef(null)
+
+  const handleFileInputChange = useCallback(event => {
+    const file = event.target.files[0]
+    if (file) {
+      if (file.size > 800 * 1024) {
+        toast.error('File size should not exceed 800KB')
+        return
+      }
+      if (!['image/jpeg', 'image/png'].includes(file.type)) {
+        toast.error('Invalid file type. Only JPG and PNG are allowed.')
+        return
+      }
+      setSelectedFile(file)
+      const reader = new FileReader()
+      reader.onload = e => setImgSrc(e.target.result)
+      reader.readAsDataURL(file)
     }
-    debounceApi(updatedData)
-  }
+  }, [])
 
-  const handleLinkChange = (name, value) => {
-    setLink(prev => ({ ...prev, [name]: value }))
+  const handleImageClick = () => {
+    fileInputRef.current.click()
   }
-
   return (
     <div
       ref={setNodeRef}
@@ -120,22 +146,35 @@ export default function BannerCard({ _id, image_link, redirect_link, enable, fet
           </IconButton>
         </div>
 
-        <div className='flex-1 flex flex-col justify-center gap-2 my-2'>
-          <CustomTextField
-            placeholder='Image link'
-            name='image_link'
-            onChange={e => handleLinkChange('image_link', e.target.value)}
-            defaultValue={link.image_link}
+        <div className='flex max-sm:flex-col my-2 items-center'>
+          <Image
+            height={70}
+            width={70}
+            className='rounded'
+            src={imgSrc}
+            alt='Banner image'
+            onClick={handleImageClick}
           />
-          <CustomTextField
-            placeholder='Redirect link'
-            name='redirect_link'
-            onChange={e => handleLinkChange('redirect_link', e.target.value)}
-            defaultValue={link.redirect_link}
+          <input
+            hidden
+            type='file'
+            accept='image/png, image/jpeg'
+            onChange={handleFileInputChange}
+            ref={fileInputRef}
           />
         </div>
 
-        <div className='flex flex-col items-center justify-center space-x-2 pr-2'>
+        <div className='w-full ml-2'>
+          <CustomTextField
+            placeholder='Redirect link'
+            name='redirect_link'
+            onChange={e => setRedirectLink(e.target.value)}
+            defaultValue={redirectLink}
+            className='w-full'
+          />
+        </div>
+
+        <div className='flex items-center justify-center space-x-2 pr-2'>
           <Switch checked={currentEnabled} onChange={handleToggleSwitch} color='primary' size='small' />
 
           <IconButton onClick={handleSave} size='small' disabled={loading}>

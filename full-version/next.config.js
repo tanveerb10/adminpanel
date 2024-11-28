@@ -15,7 +15,10 @@ const nextConfig = {
   },
 
   // TODO: below line is added to resolve twice event dispatch in the calendar reducer
-  reactStrictMode: false
+  reactStrictMode: false,
+  images: {
+    domains: ['localhost']
+  }
 }
 
 module.exports = nextConfig

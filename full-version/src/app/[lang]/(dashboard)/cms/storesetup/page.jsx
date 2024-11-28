@@ -1,6 +1,5 @@
 'use client'
 
-import React from 'react'
 import dynamic from 'next/dynamic'
 import TabsPanel from '@/libs/components/TabsPanel'
 
@@ -11,19 +10,25 @@ const MetaSettings = dynamic(() => import('@/views/cms/storesetup/MetaSettings/M
   ssr: false
 })
 
-const SearchSettings = dynamic(() => import('@/views/cms/storesetup/SearchSettings/SearchSettings'))
+const SearchSettings = dynamic(() => import('@/views/cms/storesetup/SearchSettings/SearchSettings'), {
+  ssr: false
+})
+
+const PaymentSettings = dynamic(() => import('@/views/cms/storesetup/PaymentSettings/PaymentSettings'), { ssr: false })
 
 export default function Page() {
   const tabContent = {
     storeSettings: <StoreSettings TabValue='storeSettings' />,
     metaSettings: <MetaSettings TabValue='metaSettings' />,
-    searchSettings: <SearchSettings TabValue='searchSettings' />
+    searchSettings: <SearchSettings TabValue='searchSettings' />,
+    paymentSettings: <PaymentSettings TabValue='paymentSettings' />
   }
 
   const allTabs = [
     { key: 'storeSettings', label: 'Store Settings' },
     { key: 'metaSettings', label: 'Meta Settings' },
-    { key: 'searchSettings', label: 'Search Settings' }
+    { key: 'searchSettings', label: 'Search Settings' },
+    { key: 'paymentSettings', label: 'Payment Settings' }
   ]
   return (
     <div>

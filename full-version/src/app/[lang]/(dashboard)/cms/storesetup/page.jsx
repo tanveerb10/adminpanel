@@ -15,20 +15,25 @@ const SearchSettings = dynamic(() => import('@/views/cms/storesetup/SearchSettin
 })
 
 const PaymentSettings = dynamic(() => import('@/views/cms/storesetup/PaymentSettings/PaymentSettings'), { ssr: false })
+const ProductConfig = dynamic(() => import('@/views/cms/storesetup/productConfig/ProductConfigSettings'), {
+  ssr: false
+})
 
 export default function Page() {
   const tabContent = {
     storeSettings: <StoreSettings TabValue='storeSettings' />,
     metaSettings: <MetaSettings TabValue='metaSettings' />,
     searchSettings: <SearchSettings TabValue='searchSettings' />,
-    paymentSettings: <PaymentSettings TabValue='paymentSettings' />
+    paymentSettings: <PaymentSettings TabValue='paymentSettings' />,
+    productConfig: <ProductConfig TabValue='paymentSettings' />
   }
 
   const allTabs = [
     { key: 'storeSettings', label: 'Store Settings' },
     { key: 'metaSettings', label: 'Meta Settings' },
     { key: 'searchSettings', label: 'Search Settings' },
-    { key: 'paymentSettings', label: 'Payment Settings' }
+    { key: 'paymentSettings', label: 'Payment Settings' },
+    { key: 'productConfig', label: 'Product Config' }
   ]
   return (
     <div>

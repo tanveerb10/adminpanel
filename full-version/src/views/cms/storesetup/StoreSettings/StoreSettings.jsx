@@ -4,12 +4,12 @@ import StoreSettingsDetailForm from './StoreSettingsDetailForm'
 import Loader from '@/libs/components/Loader'
 import fetchData from '@/utils/fetchData'
 
-export default function MetaSettings() {
+export default function StoreSettings() {
   const [response, setResponse] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const fetchMeta = async () => {
+  const fetchStore = async () => {
     setLoading(true)
     setError(null)
     try {
@@ -29,7 +29,7 @@ export default function MetaSettings() {
   }
 
   useEffect(() => {
-    fetchMeta()
+    fetchStore()
   }, [])
 
   if (loading) {

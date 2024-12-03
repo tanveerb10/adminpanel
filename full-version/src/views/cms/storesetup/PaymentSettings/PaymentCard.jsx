@@ -30,7 +30,7 @@ export default function PaymentCard({ detail, paymentApi, gatewayList }) {
   }
 
   return (
-    <Card>
+    <Card className='mt-2'>
       <CardContent>
         <Grid className='flex justify-between'>
           <Grid>
@@ -41,14 +41,28 @@ export default function PaymentCard({ detail, paymentApi, gatewayList }) {
               </span>
             </Typography>
           </Grid>
-          <Grid className='gap-2'>
+          <Grid className=''>
             <Chip
               variant='outlined'
               color={detail?.status ? 'success' : 'error'}
               label={detail?.status ? 'Active' : 'Inactive'}
               sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}
+              className='mr-2'
             />
+            <Chip
+              variant='outlined'
+              color='primary'
+              label={detail?.payment_type}
+              sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}
+            />
+          </Grid>
+        </Grid>
+        <Grid className='flex justify-between'>
+          <Grid>
+            <Typography>{detail?.payment_message || 'No message available'}</Typography>
+          </Grid>
 
+          <Grid>
             <IconButton onClick={deletePayment}>
               <i className='tabler-trash text-[22px] text-Secondary text-red-500' />
             </IconButton>
@@ -60,20 +74,6 @@ export default function PaymentCard({ detail, paymentApi, gatewayList }) {
                 dialogProps={{ detail: detail, paymentApi: paymentApi, gatewayList: gatewayList }}
               />
             </IconButton>
-          </Grid>
-        </Grid>
-        <Grid className='flex justify-between'>
-          <Grid>
-            <Typography>{detail?.payment_message || 'No message available'}</Typography>
-          </Grid>
-
-          <Grid>
-            <Chip
-              variant='outlined'
-              color='primary'
-              label={detail?.payment_type}
-              sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}
-            />
           </Grid>
         </Grid>
       </CardContent>

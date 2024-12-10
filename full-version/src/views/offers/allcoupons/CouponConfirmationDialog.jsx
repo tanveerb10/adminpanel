@@ -17,7 +17,7 @@ import { useRouter, useParams } from 'next/navigation'
 // Third-party Imports
 import classnames from 'classnames'
 
-const BrandConfirmationDialog = ({ open, setOpen, type, id, status }) => {
+const CouponConfirmationDialog = ({ open, setOpen, type, id, status }) => {
   // States
   const [secondDialog, setSecondDialog] = useState(false)
   const [userInput, setUserInput] = useState(false)
@@ -133,4 +133,4 @@ const BrandConfirmationDialog = ({ open, setOpen, type, id, status }) => {
   )
 }
 
-export default BrandConfirmationDialog
+export default CouponConfirmationDialog

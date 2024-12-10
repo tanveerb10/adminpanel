@@ -7,8 +7,28 @@ import Grid from '@mui/material/Grid'
 import UserListTable from './UserListTable'
 import UserListCards from './UserListCards'
 
-const Adminusers = ({ userData, roleData }) => {
-  const tableData = userData.allAdmin.map(admin => ({
+const Adminusers = ({
+  userData,
+  roleData,
+  handleLimitChange,
+  handlePageChange,
+  totalPages,
+  totalAdmin,
+  limit,
+  currentPage,
+  handleSearch,
+  value,
+  setValue,
+  resetFilter,
+  handleSorting,
+  sortMethod,
+  selectStatus,
+  handleSelectStatus,
+  isSortingActive,
+  roleNameQuery,
+  handleRoleQuery
+}) => {
+  const tableData = userData?.map(admin => ({
     fullName: `${admin.firstname} ${admin.lastname}`,
     email: admin.email,
     role: admin.role.role_name,
@@ -20,9 +40,7 @@ const Adminusers = ({ userData, roleData }) => {
     id: admin._id
   }))
 
-  const totalAdmin = userData.adminsCount
-
-  const cardData = userData.allAdmin.reduce((acc, curr) => {
+  const cardData = userData?.reduce((acc, curr) => {
     const roleName = curr.role.role_name
     const avatar = curr.profile_image
     const fullName = `${curr.firstname} ${curr.lastname}`
@@ -43,7 +61,27 @@ const Adminusers = ({ userData, roleData }) => {
         <UserListCards cardData={cardData} />
       </Grid>
       <Grid item xs={12}>
-        <UserListTable tableData={tableData} totalAdmin={totalAdmin} roleData={roleData} />
+        <UserListTable
+          tableData={tableData}
+          totalAdmin={totalAdmin}
+          roleData={roleData}
+          limit={limit}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
+          handleLimitChange={handleLimitChange}
+          handleSearch={handleSearch}
+          value={value}
+          setValue={setValue}
+          resetFilter={resetFilter}
+          handleSorting={handleSorting}
+          sortMethod={sortMethod}
+          selectStatus={selectStatus}
+          handleSelectStatus={handleSelectStatus}
+          isSortingActive={isSortingActive}
+          roleNameQuery={roleNameQuery}
+          handleRoleQuery={handleRoleQuery}
+        />
       </Grid>
     </Grid>
   )

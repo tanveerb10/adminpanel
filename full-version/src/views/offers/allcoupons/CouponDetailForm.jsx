@@ -91,9 +91,7 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
     console.log('Form Submit called', data)
     setSubmitting(true)
     try {
-      const apiUrl = isAddCoupon
-        ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/coupons/createcoupon`
-        : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/coupons/updatecoupon/${id}`
+      const apiUrl = isAddCoupon ? `/admin/coupons/createcoupon` : `/admin/coupons/updatecoupon/${id}`
 
       const response = await fetchData(apiUrl, isAddCoupon ? 'POST' : 'PUT', data)
       console.log('API Response:', response)
@@ -117,7 +115,7 @@ const CouponDetailForm = ({ isAddCoupon, couponData }) => {
   const allCustomers = useCallback(async () => {
     setLoading(true)
     try {
-      const getCustomerUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/customers/allcustomers`
+      const getCustomerUrl = `/admin/customers/allcustomers`
       const responseData = await fetchData(getCustomerUrl, 'GET')
       if (responseData.success) {
         const formattedOptions = responseData.totalCustomer.map(customer => ({

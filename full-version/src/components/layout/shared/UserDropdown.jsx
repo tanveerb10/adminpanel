@@ -72,7 +72,7 @@ const UserDropdown = () => {
 
   const handleUserLogout = async () => {
     try {
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/logout/${userId}`
+      const apiUrl = `/admin/admins/logout/${userId}`
       const responseData = await fetchData(apiUrl, 'POST', {})
 
       console.log('API Response:', responseData)

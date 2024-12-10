@@ -11,7 +11,6 @@ import fetchData from '@/utils/fetchData'
 import { getLocalizedUrl } from '@/utils/i18n'
 
 const MetasDetailForm = ({ isAddMetas, id, metaData }) => {
-
   console.log(metaData.meta_title, 'id from form ')
   console.log(metaData, 'metaData from form ')
 
@@ -43,8 +42,6 @@ const MetasDetailForm = ({ isAddMetas, id, metaData }) => {
     }
   })
 
-  // Listen for changes in metaData and reset form fields
-
   useEffect(() => {
     if (metaData) {
       reset({
@@ -64,11 +61,9 @@ const MetasDetailForm = ({ isAddMetas, id, metaData }) => {
       return toast.error('Meta keywords should not be empty')
     }
     try {
-      const apiUrl = isAddMetas
-        ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/addProductMeta`
-        : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/updateProductMeta/${id}`
+      const apiUrl = `/admin/products/addProductMeta`
 
-      const response = await fetchData(apiUrl, isAddMetas ? 'POST' : 'PUT', data)
+      const response = await fetchData(apiUrl, 'POST', data)
       console.log('API Response:', response)
 
       if (response.success) {

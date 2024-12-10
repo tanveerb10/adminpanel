@@ -2,20 +2,16 @@
 import Pagination from '@mui/material/Pagination'
 import Typography from '@mui/material/Typography'
 
-const TablePaginationComponent = ({ table }) => {
+const TablePaginationComponent = ({ total, currentPage, limit, handlePageChange }) => {
   // Ensure table and its properties are defined before accessing them
-  const filteredRowCount = table?.getFilteredRowModel()?.rows.length ?? 0;
-  const pageIndex = table?.getState()?.pagination.pageIndex ?? 0;
-  const pageSize = table?.getState()?.pagination.pageSize ?? 10; // Default page size example
-  
+  const filteredRowCount = total
+  const pageIndex = currentPage - 1
+  const pageSize = limit
+
   return (
     <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
       <Typography color='text.disabled'>
-        {`Showing ${
-          filteredRowCount === 0
-            ? 0
-            : pageIndex * pageSize + 1
-        }
+        {`Showing ${filteredRowCount === 0 ? 0 : pageIndex * pageSize + 1}
         to ${Math.min((pageIndex + 1) * pageSize, filteredRowCount)} of ${filteredRowCount} entries`}
       </Typography>
       <Pagination
@@ -23,9 +19,9 @@ const TablePaginationComponent = ({ table }) => {
         color='primary'
         variant='tonal'
         count={Math.ceil(filteredRowCount / pageSize)}
-        page={pageIndex + 1}
+        page={currentPage}
         onChange={(_, page) => {
-          table?.setPageIndex(page - 1);
+          handlePageChange(page)
         }}
         showFirstButton
         showLastButton

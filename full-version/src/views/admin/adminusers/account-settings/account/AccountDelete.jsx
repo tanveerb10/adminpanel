@@ -46,7 +46,7 @@ const AccountDelete = () => {
   const handleDelete = async () => {
     setLoading(true)
     try {
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/admins/deleteadmin/${id}`
+      const apiUrl = `/admin/admins/deleteadmin/${id}`
       const response = await fetchData(apiUrl, 'DELETE', {})
       if (response.success) {
         showFeedback('Account deleted successfully.', 'success')

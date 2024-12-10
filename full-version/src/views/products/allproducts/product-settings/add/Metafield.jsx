@@ -50,7 +50,7 @@ export default function Metafield() {
   const isButtonDisabled = addOption.key.trim() === '' || addOption.value.trim() === ''
 
   return (
-    <Card className='ml-5'>
+    <Card>
       <Grid>
         <CardHeader title='Metafield' />
       </Grid>

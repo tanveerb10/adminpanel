@@ -32,10 +32,12 @@ const revertVariants = variants => {
         // console.log('Option name', optionName)
         const optionValue = variant[`option${index}_value`]
         // console.log('Option Value', optionValue)
-        if (!optionMap[optionName]) {
-          optionMap[optionName] = new Set()
+        if (optionName !== null && optionValue !== null) {
+          if (!optionMap[optionName]) {
+            optionMap[optionName] = new Set()
+          }
+          optionMap[optionName].add(optionValue)
         }
-        optionMap[optionName].add(optionValue)
       }
     })
   })
@@ -108,7 +110,11 @@ const ProductVariants = ({ isAddProduct }) => {
   }, [])
 
   const deleteForm = useCallback(optionIndex => {
-    setFormData(prevFormData => prevFormData.filter((_, index) => index !== optionIndex))
+    setFormData(prevFormData => {
+      const updatedFormData = prevFormData.filter((_, index) => index !== optionIndex)
+      return updatedFormData
+    })
+    setoptionChange(true)
   }, [])
 
   const variantInput = useCallback((e, optionIndex, variantIndex) => {
@@ -135,9 +141,10 @@ const ProductVariants = ({ isAddProduct }) => {
       }))
       if (JSON.stringify(newVariantTableData) !== JSON.stringify(variantTableData)) {
         setVariantTableData(newVariantTableData)
+        updateChildData(generateVariants(newVariantTableData))
       }
     }
-  }, [formData])
+  }, [formData, isOptionChange])
 
   useEffect(() => {
     if (variantTableData.length) {
@@ -145,77 +152,74 @@ const ProductVariants = ({ isAddProduct }) => {
     }
   }, [variantTableData])
   return (
-    <Grid container className='flex flex-col gap-3 pl-5'>
-      <Card>
-        <CardHeader title='Product Variants' />
-        <CardContent>
-          <Grid container spacing={6}>
-            {formData.map((variants, optionIndex) => (
-              <Grid key={optionIndex} container spacing={6} item xs={12} className='repeater-item'>
-                <Grid item xs={12} md={4}>
-                  <CustomControlledAutoComplete
-                    fullWidth
-                    label='Options Name'
-                    placeholder='Select or Add Option'
-                    initialOptions={[]}
-                    value={variants.option_name}
-                    onChange={(e, newValue) => handleChange(optionIndex, newValue)}
-                  />
-                </Grid>
-                <Grid item xs={12} md={8} alignSelf='end' className=''>
-                  <Typography>Option Value</Typography>
-                  <div className='flex flex-col items-center gap-6'>
-                    {Array.isArray(variants.option_values) &&
-                      variants.option_values.map((variant, variantIndex) => (
-                        <CustomTextField
-                          key={variantIndex}
-                          fullWidth
-                          placeholder='Enter Variant Value'
-                          value={variant.option_value}
-                          onChange={e => variantInput(e, optionIndex, variantIndex)}
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position='end'>
-                                {variantIndex > 0 && (
-                                  <IconButton
-                                    onClick={() => deleteInput(optionIndex, variantIndex)}
-                                    className='min-is-fit'
-                                  >
-                                    <i className='tabler-x' />
-                                  </IconButton>
-                                )}
-                              </InputAdornment>
-                            )
-                          }}
-                        />
-                      ))}
-                    {formData.length > 1 && (
-                      <Button
-                        variant='outlined'
-                        color='error'
-                        onClick={() => deleteForm(optionIndex)}
-                        endIcon={<i className='tabler-trash' />}
-                      >
-                        Delete
-                      </Button>
-                    )}
-                  </div>
-                </Grid>
+    <Card>
+      <CardHeader title='Product Variants' />
+      <CardContent>
+        <Grid container spacing={6}>
+          {formData.map((variants, optionIndex) => (
+            <Grid key={optionIndex} container spacing={6} item xs={12} className='repeater-item'>
+              <Grid item xs={12} md={4}>
+                <CustomControlledAutoComplete
+                  fullWidth
+                  label='Options Name'
+                  placeholder='Select or Add Option'
+                  initialOptions={[]}
+                  value={variants.option_name}
+                  onChange={(e, newValue) => handleChange(optionIndex, newValue)}
+                />
               </Grid>
-            ))}
-            <Grid item xs={12} gap={2}>
-              {formData.length < 3 && (
-                <Button variant='contained' onClick={addOption} startIcon={<i className='tabler-plus' />}>
-                  Add Another Option
-                </Button>
-              )}
+              <Grid item xs={12} md={8} alignSelf='end' className=''>
+                <Typography>Option Value</Typography>
+                <div className='flex flex-col items-center gap-6'>
+                  {Array.isArray(variants.option_values) &&
+                    variants.option_values.map((variant, variantIndex) => (
+                      <CustomTextField
+                        key={variantIndex}
+                        fullWidth
+                        placeholder='Enter Variant Value'
+                        value={variant.option_value}
+                        onChange={e => variantInput(e, optionIndex, variantIndex)}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position='end'>
+                              {variantIndex > 0 && (
+                                <IconButton
+                                  onClick={() => deleteInput(optionIndex, variantIndex)}
+                                  className='min-is-fit'
+                                >
+                                  <i className='tabler-x' />
+                                </IconButton>
+                              )}
+                            </InputAdornment>
+                          )
+                        }}
+                      />
+                    ))}
+                  {formData.length > 1 && (
+                    <Button
+                      variant='outlined'
+                      color='error'
+                      onClick={() => deleteForm(optionIndex)}
+                      endIcon={<i className='tabler-trash' />}
+                    >
+                      Delete
+                    </Button>
+                  )}
+                </div>
+              </Grid>
             </Grid>
+          ))}
+          <Grid item xs={12} gap={2}>
+            {formData.length < 3 && (
+              <Button variant='contained' onClick={addOption} startIcon={<i className='tabler-plus' />}>
+                Add Another Option
+              </Button>
+            )}
           </Grid>
-        </CardContent>
-      </Card>
-
+        </Grid>
+      </CardContent>
       <VariantCombinationTable data={variantTableData} isAddProduct={isAddProduct} />
-    </Grid>
+    </Card>
   )
 }
 

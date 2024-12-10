@@ -26,7 +26,7 @@ export default function Page() {
 
   useEffect(() => {
     // if (id !== 'addnewmetas') {
-    const metaUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/getproductmeta/${id}`
+    const metaUrl = `/admin/products/getproductmeta/${id}`
     setLoading(true)
     try {
       fetchData(metaUrl, 'GET').then(response => {

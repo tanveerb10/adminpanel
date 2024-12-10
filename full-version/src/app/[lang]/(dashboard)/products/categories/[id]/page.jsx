@@ -18,7 +18,7 @@ export default function page() {
     if (id !== 'addnewcategory') {
       const individualCategories = async () => {
         try {
-          const getIndividualCategories = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/categories/${id}`
+          const getIndividualCategories = `/admin/categories/${id}`
           const responseData = await fetchData(getIndividualCategories, 'GET')
           setGetIndividualData(responseData)
         } catch (error) {

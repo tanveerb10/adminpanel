@@ -1,24 +1,29 @@
 'use client'
 
 // React Imports
-import { useEffect, useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 
 // Next Imports
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 
 // MUI Imports
-import Card from '@mui/material/Card'
-import CardHeader from '@mui/material/CardHeader'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import Chip from '@mui/material/Chip'
-import Checkbox from '@mui/material/Checkbox'
-import IconButton from '@mui/material/IconButton'
-import { styled } from '@mui/material'
-import TablePagination from '@mui/material/TablePagination'
-import MenuItem from '@mui/material/MenuItem'
 
+import {
+  styled,
+  TablePagination,
+  CardHeader,
+  Card,
+  MenuItem,
+  InputAdornment,
+  Button,
+  IconButton,
+  Checkbox,
+  Chip,
+  Typography
+} from '@mui/material'
+
+import SearchIcon from '@mui/icons-material/Search'
 // Third-party Imports
 import classnames from 'classnames'
 import { rankItem } from '@tanstack/match-sorter-utils'
@@ -37,7 +42,6 @@ import {
 
 // Component Imports
 import CouponTableFilter from '@views/offers/allcoupons/CouponTableFilter'
-import OptionMenu from '@core/components/option-menu'
 import TablePaginationComponent from '@components/TablePaginationComponent'
 import CustomTextField from '@core/components/mui/TextField'
 import CustomAvatar from '@core/components/mui/Avatar'
@@ -65,30 +69,6 @@ const fuzzyFilter = (row, columnId, value, addMeta) => {
   return itemRank.passed
 }
 
-const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...props }) => {
-  // States
-  const [value, setValue] = useState(initialValue)
-
-  useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value)
-    }, debounce)
-
-    return () => clearTimeout(timeout)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
-
-  return <CustomTextField {...props} value={value} onChange={e => setValue(e.target.value)} />
-}
-
-const userStatusObj = {
-  Active: 'error',
-  Inactive: 'error'
-}
-
 const truncateText = (text, maxLength) => {
   if (text.length > maxLength) {
     return text.substring(0, maxLength) + '...'
@@ -99,7 +79,26 @@ const truncateText = (text, maxLength) => {
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const CouponTableList = ({ tableData, totalCoupons }) => {
+const ASCENDING = 'asc'
+
+const CouponTableList = ({
+  tableData,
+  totalCoupons,
+  limit,
+  totalPages,
+  handlePageChange,
+  handleLimitChange,
+  currentPage,
+  handleSearch,
+  value,
+  setValue,
+  resetFilter,
+  handleSorting,
+  sortMethod,
+  selectStatus,
+  handleSelectStatus,
+  isSortingActive
+}) => {
   // States
   const [rowSelection, setRowSelection] = useState({})
 
@@ -109,6 +108,18 @@ const CouponTableList = ({ tableData, totalCoupons }) => {
   // Hooks
   const { lang: locale } = useParams()
   const router = useRouter()
+
+  const SortableHeader = ({ field, label }) => (
+    <div onClick={() => handleSorting(field)} className='cursor-pointer flex items-center'>
+      {label}
+      {isSortingActive &&
+        (sortMethod === ASCENDING ? (
+          <i className='tabler-chevron-up text-xl' />
+        ) : (
+          <i className='tabler-chevron-down text-xl' />
+        ))}
+    </div>
+  )
 
   const columns = useMemo(
     () => [
@@ -146,7 +157,7 @@ const CouponTableList = ({ tableData, totalCoupons }) => {
       }),
 
       columnHelper.accessor('name', {
-        header: 'Coupon',
+        header: <SortableHeader field='coupon_name' label='Coupon' />,
         cell: ({ row }) => {
           const description = row.original.description
           const maxLength = 50
@@ -161,7 +172,7 @@ const CouponTableList = ({ tableData, totalCoupons }) => {
                 <Typography
                   variant='body2'
                   color='text.primary'
-                  style={{
+                  sx={{
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     display: '-webkit-box',
@@ -176,23 +187,27 @@ const CouponTableList = ({ tableData, totalCoupons }) => {
               </div>
             </div>
           )
-        }
+        },
+        enableSorting: false
       }),
       columnHelper.accessor('code', {
-        header: 'Code',
-        cell: ({ row }) => <Chip label={row.original.code} variant='tonal' className='font-bold' color='primary' />
+        header: <SortableHeader field='coupon_code' label='Code' />,
+        cell: ({ row }) => <Chip label={row.original.code} variant='tonal' className='font-bold' color='primary' />,
+        enableSorting: false
       }),
       columnHelper.accessor('type', {
-        header: 'Type',
-        cell: ({ row }) => <Typography className='capitalize'>{row.original.type}</Typography>
+        header: <SortableHeader field='discount_type' label='Type' />,
+        cell: ({ row }) => <Typography className='capitalize'>{row.original.type}</Typography>,
+        enableSorting: false
       }),
       columnHelper.accessor('mov', {
-        header: 'mov',
-        cell: ({ row }) => <Typography>{row.original.mov}</Typography>
+        header: <SortableHeader field='min_order_value' label='mov' />,
+        cell: ({ row }) => <Typography>{row.original.mov}</Typography>,
+        enableSorting: false
       }),
 
       columnHelper.accessor('discountValue', {
-        header: 'Discount Value',
+        header: <SortableHeader field='discount_value' label='Discount Value' />,
         cell: ({ row }) => {
           const { type, discountValue } = row.original
           return (
@@ -200,27 +215,32 @@ const CouponTableList = ({ tableData, totalCoupons }) => {
               {type === 'percent' ? `${discountValue} %` : `₹ ${discountValue}`}
             </Typography>
           )
-        }
+        },
+        enableSorting: false
       }),
       columnHelper.accessor('validity', {
-        header: 'Validity ',
-        cell: ({ row }) => <Typography>{row.original.validity}</Typography>
+        header: 'Validity',
+
+        cell: ({ row }) => <Typography>{row.original.validity}</Typography>,
+        enableSorting: false
       }),
       columnHelper.accessor('status', {
-        header: 'Status',
+        header: <SortableHeader field='status' label='Status' />,
         cell: ({ row }) => (
           <div className='flex items-center gap-3'>
             <Chip
               variant='tonal'
               className='capitalize'
               label={row.original.status ? 'Active' : 'Inactive'}
+              color={row.original.status ? 'success' : 'error'}
               size='small'
             />
           </div>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('couponCount', {
-        header: 'Coupon count',
+        header: <SortableHeader field='coupon_count' label='Coupon Count' />,
         cell: ({ row }) => (
           <div className='flex items-center justify-center gap-3'>
             <Chip
@@ -231,7 +251,8 @@ const CouponTableList = ({ tableData, totalCoupons }) => {
               size='small'
             />
           </div>
-        )
+        ),
+        enableSorting: false
       }),
 
       columnHelper.accessor('action', {
@@ -249,7 +270,7 @@ const CouponTableList = ({ tableData, totalCoupons }) => {
       })
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [handleSorting]
   )
 
   const table = useReactTable({
@@ -295,30 +316,45 @@ const CouponTableList = ({ tableData, totalCoupons }) => {
     <>
       <Card>
         <CardHeader title='Filters' className='pbe-4' />
-        <CouponTableFilter setData={setData} tableData={tableData} />
+        <CouponTableFilter
+          setData={setData}
+          tableData={tableData}
+          selectStatus={selectStatus}
+          handleSelectStatus={handleSelectStatus}
+        />
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select
-            value={table.getState().pagination.pageSize}
-            onChange={e => table.setPageSize(Number(e.target.value))}
+            value={limit}
+            onChange={e => handleLimitChange(Number(e.target.value))}
             className='is-[70px]'
           >
-            <MenuItem value='10'>10</MenuItem>
-            <MenuItem value='25'>25</MenuItem>
-            <MenuItem value='50'>50</MenuItem>
+            {[2, 3, 4].map(size => (
+              <MenuItem key={size} value={size}>
+                {size}
+              </MenuItem>
+            ))}
           </CustomTextField>
           <div>
             Total Coupons:
-            {/* <Chip variant='outlined' label={totalAdmin} color='warning' size='small' className='ml-2' /> */}
             <Chip variant='outlined' label={totalCoupons} color='warning' size='small' className='ml-2' />
           </div>
 
           <div className='flex flex-col sm:flex-row is-full sm:is-auto items-start sm:items-center gap-4'>
-            <DebouncedInput
-              value={globalFilter ?? ''}
-              onChange={value => setGlobalFilter(String(value))}
-              placeholder='Search User'
+            <CustomTextField
+              value={value}
+              onChange={e => setValue(e.target.value)}
+              placeholder='Search Coupon'
               className='is-full sm:is-auto'
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton onClick={() => handleSearch(value)} edge='end'>
+                      <SearchIcon />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
             <Button
               color='secondary'
@@ -329,12 +365,21 @@ const CouponTableList = ({ tableData, totalCoupons }) => {
               Export
             </Button>
             <Button
+              color='error'
+              variant='tonal'
+              startIcon={<i className='tabler-upload' />}
+              className='is-full sm:is-auto'
+              onClick={resetFilter}
+            >
+              Reset
+            </Button>
+            <Button
               variant='contained'
               startIcon={<i className='tabler-plus' />}
               onClick={() => router.push(getLocalizedUrl(`/offers/allcoupons/addnewcoupon`, locale))}
               className='is-full sm:is-auto'
             >
-              Add New Coupon
+              Add Coupon
             </Button>
           </div>
         </div>
@@ -394,12 +439,24 @@ const CouponTableList = ({ tableData, totalCoupons }) => {
           </table>
         </div>
         <TablePagination
-          component={() => <TablePaginationComponent table={table} />}
-          count={table.getFilteredRowModel().rows.length}
-          rowsPerPage={table.getState().pagination.pageSize}
-          page={table.getState().pagination.pageIndex}
+          component={() => (
+            <TablePaginationComponent
+              total={totalCoupons}
+              currentPage={currentPage}
+              limit={limit}
+              handlePageChange={handlePageChange}
+            />
+          )}
+          // count={table.getFilteredRowModel().rows.length}
+          // rowsPerPage={table.getState().pagination.pageSize}
+          // page={table.getState().pagination.pageIndex}
+
+          count={totalCoupons}
+          rowsPerPage={limit}
+          page={currentPage - 1}
           onPageChange={(_, page) => {
-            table.setPageIndex(page)
+            // table.setPageIndex(page)
+            handlePageChange(page + 1)
           }}
         />
       </Card>

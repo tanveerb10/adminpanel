@@ -18,7 +18,7 @@ export default function page() {
     if (id !== 'addnewbrand') {
       const individualBrand = async () => {
         try {
-          const getIndividualBrand = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/getbrand/${id}`
+          const getIndividualBrand = `/admin/brands/getbrand/${id}`
           const responseData = await fetchData(getIndividualBrand, 'GET')
           setGetIndividualData(responseData)
         } catch (error) {

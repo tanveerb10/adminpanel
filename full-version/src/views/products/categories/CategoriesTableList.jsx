@@ -83,11 +83,6 @@ const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...prop
   return <CustomTextField {...props} value={value} onChange={e => setValue(e.target.value)} />
 }
 
-const userStatusObj = {
-  Active: 'success',
-  Inactive: 'secondary'
-}
-
 const truncateText = (text, maxLength) => {
   if (text.length > maxLength) {
     return text.substring(0, maxLength) + '...'
@@ -98,12 +93,20 @@ const truncateText = (text, maxLength) => {
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const CategoriesTableList = ({ tableData, totalCategories }) => {
+const CategoriesTableList = ({
+  tableData,
+  totalCategories,
+  handlePageChange,
+  totalPages,
+  handleLimitChange,
+  limit,
+  currentPage
+}) => {
   console.log(tableData, 'table daata abhi walwa')
   // States
   const [rowSelection, setRowSelection] = useState({})
 
-  const [data, setData] = useState([...tableData])
+  const [data, setData] = useState(tableData)
   const [globalFilter, setGlobalFilter] = useState('')
 
   // Hooks
@@ -170,7 +173,7 @@ const CategoriesTableList = ({ tableData, totalCategories }) => {
             <Typography
               variant='body2'
               color='text.primary'
-              style={{
+              sx={{
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 display: '-webkit-box',
@@ -185,10 +188,6 @@ const CategoriesTableList = ({ tableData, totalCategories }) => {
           )
         }
       }),
-      // columnHelper.accessor('sortOrder', {
-      //   header: 'Sort Order',
-      //   cell: ({ row }) => <Typography>{row.original.sortOrder}</Typography>
-      // }),
       columnHelper.accessor('isDeleted', {
         header: 'Status',
         cell: ({ row }) => (
@@ -197,7 +196,7 @@ const CategoriesTableList = ({ tableData, totalCategories }) => {
               variant='tonal'
               className='capitalize'
               label={row.original.isDeleted ? 'Active' : 'Inactive'}
-              color={userStatusObj[row.original.isDeleted]}
+              color={row.original.isDeleted ? 'success' : 'error'}
               size='small'
             />
           </div>
@@ -221,16 +220,11 @@ const CategoriesTableList = ({ tableData, totalCategories }) => {
       columnHelper.accessor('action', {
         header: 'Action',
         cell: ({ row }) => (
-          // <div className='flex items-center'>
-          //   <IconButton>
-          //     <i className='tabler-trash text-[22px] text-textSecondary' />
-          //   </IconButton>
           <IconButton>
             <Link href={getLocalizedUrl(`/products/categories/${row.original.id}`, locale)} className='flex'>
               <i className='tabler-edit text-[25px] text-textSecondary' />
             </Link>
           </IconButton>
-          // </div>
         ),
         enableSorting: false
       })
@@ -286,13 +280,17 @@ const CategoriesTableList = ({ tableData, totalCategories }) => {
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select
-            value={table.getState().pagination.pageSize}
-            onChange={e => table.setPageSize(Number(e.target.value))}
+            value={limit}
+            onChange={e => handleLimitChange(Number(e.target.value))}
+            // value={table.getState().pagination.pageSize}
+            // onChange={e => table.setPageSize(Number(e.target.value))}
             className='is-[70px]'
           >
-            <MenuItem value='10'>10</MenuItem>
-            <MenuItem value='25'>25</MenuItem>
-            <MenuItem value='50'>50</MenuItem>
+            {[2, 3, 4].map(size => (
+              <MenuItem key={size} value={size}>
+                {size}
+              </MenuItem>
+            ))}
           </CustomTextField>
 
           <div>
@@ -304,7 +302,7 @@ const CategoriesTableList = ({ tableData, totalCategories }) => {
             <DebouncedInput
               value={globalFilter ?? ''}
               onChange={value => setGlobalFilter(String(value))}
-              placeholder='Search User'
+              placeholder='Search Category'
               className='is-full sm:is-auto'
             />
             <Button
@@ -381,12 +379,23 @@ const CategoriesTableList = ({ tableData, totalCategories }) => {
           </table>
         </div>
         <TablePagination
-          component={() => <TablePaginationComponent table={table} />}
-          count={table.getFilteredRowModel().rows.length}
-          rowsPerPage={table.getState().pagination.pageSize}
-          page={table.getState().pagination.pageIndex}
+          component={() => (
+            <TablePaginationComponent
+              total={totalCategories}
+              currentPage={currentPage}
+              limit={limit}
+              handlePageChange={handlePageChange}
+            />
+          )}
+          // count={table.getFilteredRowModel().rows.length}
+          // rowsPerPage={table.getState().pagination.pageSize}
+          // page={table.getState().pagination.pageIndex}
+          count={totalCategories}
+          rowsPerPage={limit}
+          page={currentPage - 1}
           onPageChange={(_, page) => {
-            table.setPageIndex(page)
+            // table.setPageIndex(page)
+            handlePageChange(page + 1)
           }}
         />
       </Card>

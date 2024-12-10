@@ -29,7 +29,7 @@ export default function Page() {
   }, [role, router])
 
   useEffect(() => {
-    const brandUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands`
+    const brandUrl = `/admin/brands`
     fetchData(brandUrl, 'GET')
       .then(response => {
         setBrandData(response)
@@ -42,7 +42,7 @@ export default function Page() {
 
   const fetchCategories = async () => {
     try {
-      const categoryUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/categories`
+      const categoryUrl = `/admin/categories`
       const response = await fetchData(categoryUrl, 'GET')
 
       // setCategoryData(response.allCategory.map(option => option.category_name) || [])
@@ -57,7 +57,7 @@ export default function Page() {
   }
   const fetchTags = async () => {
     try {
-      const tagUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/tags`
+      const tagUrl = `/admin/tags`
       const response = await fetchData(tagUrl, 'GET')
       const tags = response.allTag.map(option => option.tag_name)
       console.log('ander vala tag', tags)
@@ -81,7 +81,7 @@ export default function Page() {
 
   useEffect(() => {
     if (id !== 'addnewproduct') {
-      const getSingleProduct = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/products/getproduct/${id}`
+      const getSingleProduct = `/admin/products/getproduct/${id}`
       setLoading(true)
       try {
         fetchData(getSingleProduct, 'GET').then(response => {

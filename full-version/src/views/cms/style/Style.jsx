@@ -1,3 +1,4 @@
+//  ===============================This component is not in use =========================================
 'use client'
 // React Imports
 import { useState } from 'react'
@@ -12,8 +13,8 @@ import CustomTabList from '@core/components/mui/TabList'
 const Style = ({ tabContent }) => {
   const tabs = [
     { key: 'fontSettings', label: 'Font Settings' },
-    { key: 'themeSettings', label: 'Theme Settings' },
-    { key: 'metaSettings', label: 'Meta Settings' }
+    { key: 'themeSettings', label: 'Theme Settings' }
+    // { key: 'metaSettings', label: 'Meta Settings' }
   ].map(({ key, label }) => (
     <Tab key={key} value={key} label={<div className='flex items-center gap-1.5'>{label}</div>} />
   ))

@@ -19,7 +19,7 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import fetchData from '@/utils/fetchData'
 
 // Component Imports
-import DialogCloseButton from '../DialogCloseButton'
+import DialogCloseButton from '@/components/dialogs/DialogCloseButton'
 import CustomTextField from '@core/components/mui/TextField'
 import { toast } from 'react-toastify'
 // Data
@@ -38,7 +38,7 @@ const permissionsData = [
   },
   {
     category: 'Products',
-    permissions: ['All Products', 'Brands', 'Categories', 'Bulk Import', 'Inventory', 'Metas', 'Tags']
+    permissions: ['All Products', 'Brands', 'Categories', 'Bulk Import', 'Inventory', 'Metas', 'productfilter', 'Tags']
   },
   {
     category: 'Offers',
@@ -158,7 +158,7 @@ const RoleDialog = ({ open, setOpen }) => {
   }
 
   const handleUpdateRole = async payload => {
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles/createRole`
+    const apiUrl = `/admin/roles/createRole`
     try {
       setLoading(true)
       setError(null)

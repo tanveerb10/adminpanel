@@ -149,7 +149,7 @@ const VariantRow = ({ variant, selectedItems, handleSelectItems, index }) => {
 export const VariantCombinationTable = () => {
   const { productData } = useProduct()
 
-  const [openStates, setOpenStates] = useState({})
+  // const [openStates, setOpenStates] = useState({})
   const [selectedItems, setSelectedItems] = useState({})
 
   const handleSelectItems = useCallback(itemId => {
@@ -168,9 +168,9 @@ export const VariantCombinationTable = () => {
     setSelectedItems(newSelectedItems)
   }, [productData, selectedItems])
 
-  const handleToggle = useCallback(variant => {
-    setOpenStates(prevState => ({ ...prevState, [variant]: !prevState[variant] }))
-  }, [])
+  // const handleToggle = useCallback(variant => {
+  //   setOpenStates(prevState => ({ ...prevState, [variant]: !prevState[variant] }))
+  // }, [])
 
   if (!productData.child || productData.child.length === 0) {
     return (

@@ -21,7 +21,7 @@ const RoleConfirmationDialog = ({ open, setOpen, id, roleName }) => {
   const handleDeleteRole = async () => {
     setLoading(true)
     try {
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/roles/deleteRole/${id}`
+      const apiUrl = `/admin/roles/deleteRole/${id}`
       const response = await fetchData(apiUrl, 'DELETE', {})
       if (response.success) {
         showFeedback('Role deleted successfully.', 'success')

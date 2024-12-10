@@ -18,7 +18,7 @@ export default function page() {
     if (id !== 'addnewcoupon') {
       const individualCoupon = async () => {
         try {
-          const getIndividualCoupon = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/coupons/getcoupon/${id}`
+          const getIndividualCoupon = `/admin/coupons/getcoupon/${id}`
           const responseData = await fetchData(getIndividualCoupon, 'GET')
           setGetIndividualData(responseData)
         } catch (error) {

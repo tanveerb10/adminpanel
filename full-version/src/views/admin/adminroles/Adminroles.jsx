@@ -6,8 +6,27 @@ import Typography from '@mui/material/Typography'
 // Component Imports
 import RolesTable from './RolesTable'
 
-const Adminroles = ({ roleData }) => {
-  const tableData = roleData.allRole.map((role, index) => ({
+const Adminroles = ({
+  roleData,
+  limit,
+  totalPages,
+  handlePageChange,
+  handleLimitChange,
+  currentPage,
+  totalRoles,
+  handleSearch,
+  value,
+  setValue,
+  resetFilter,
+  handleSorting,
+  sortMethod,
+  selectStatus,
+  handleSelectStatus,
+  isSortingActive,
+  handleRoleQuery,
+  roleNameQuery
+}) => {
+  const tableData = roleData?.map((role, index) => ({
     id: role.role_id,
     name: role.role_name,
     status: role.status ? 'active' : 'inactive',
@@ -15,7 +34,6 @@ const Adminroles = ({ roleData }) => {
     abilityCount: role.ability.length,
     srno: index + 1
   }))
-  const totalRole = roleData.roleCount
 
   return (
     <Grid container spacing={6}>
@@ -29,7 +47,28 @@ const Adminroles = ({ roleData }) => {
         </Typography>
       </Grid>
       <Grid item xs={12}>
-        <RolesTable tableData={tableData} totalRole={totalRole} roleData={roleData} />
+        <RolesTable
+          roleData={roleData}
+          tableData={tableData}
+          totalRole={totalRoles}
+          limit={limit}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
+          handleLimitChange={handleLimitChange}
+          currentPage={currentPage}
+          totalRoles={totalRoles}
+          handleSearch={handleSearch}
+          value={value}
+          setValue={setValue}
+          resetFilter={resetFilter}
+          handleSorting={handleSorting}
+          sortMethod={sortMethod}
+          selectStatus={selectStatus}
+          handleSelectStatus={handleSelectStatus}
+          isSortingActive={isSortingActive}
+          handleRoleQuery={handleRoleQuery}
+          roleNameQuery={roleNameQuery}
+        />
       </Grid>
     </Grid>
   )

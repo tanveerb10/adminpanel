@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { useEffect, useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 
 // Next Imports
 import Link from 'next/link'
@@ -15,10 +15,11 @@ import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
 import Checkbox from '@mui/material/Checkbox'
 import IconButton from '@mui/material/IconButton'
-import { styled } from '@mui/material'
 import TablePagination from '@mui/material/TablePagination'
 import MenuItem from '@mui/material/MenuItem'
 
+import InputAdornment from '@mui/material/InputAdornment'
+import SearchIcon from '@mui/icons-material/Search'
 // Third-party Imports
 import classnames from 'classnames'
 import { rankItem } from '@tanstack/match-sorter-utils'
@@ -49,7 +50,6 @@ import { getLocalizedUrl } from '@/utils/i18n'
 import tableStyles from '@core/styles/table.module.css'
 
 // Styled Components
-const Icon = styled('i')({})
 
 const fuzzyFilter = (row, columnId, value, addMeta) => {
   // Rank the item
@@ -64,30 +64,6 @@ const fuzzyFilter = (row, columnId, value, addMeta) => {
   return itemRank.passed
 }
 
-const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...props }) => {
-  // States
-  const [value, setValue] = useState(initialValue)
-
-  useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value)
-    }, debounce)
-
-    return () => clearTimeout(timeout)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
-
-  return <CustomTextField {...props} value={value} onChange={e => setValue(e.target.value)} />
-}
-
-const userStatusObj = {
-  Active: 'error',
-  Inactive: 'error'
-}
-
 const truncateText = (text, maxLength) => {
   if (text.length > maxLength) {
     return text.substring(0, maxLength) + '...'
@@ -98,21 +74,51 @@ const truncateText = (text, maxLength) => {
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const ProductTableList = ({ tableData = [], totalProducts, fromMetas }) => {
+const ASCENDING = 'asc'
+
+const ProductTableList = ({
+  tableData = [],
+  totalProducts,
+  fromMetas,
+  limit,
+  handlePageChange,
+  handleLimitChange,
+  currentPage,
+  handleSearch,
+  value,
+  setValue,
+  resetFilter,
+  handleSorting,
+  sortMethod,
+  selectStatus,
+  handleSelectStatus,
+  isSortingActive
+}) => {
   console.log('table list', tableData)
   // States
   const [rowSelection, setRowSelection] = useState({})
 
   const [data, setData] = useState(tableData)
   const [globalFilter, setGlobalFilter] = useState('')
+  const [sortField, setSortField] = useState('')
 
   // Hooks
   const { lang: locale } = useParams()
   const router = useRouter()
 
-  if (!tableData || tableData.length === 0) {
-    return <Typography>No table data available</Typography>
-  }
+  const LIMIT_OPTIONS = [3, 5, 10, 25]
+
+  const SortableHeader = ({ field, label }) => (
+    <div onClick={() => handleSorting(field)} className='cursor-pointer flex items-center'>
+      {label}
+      {isSortingActive &&
+        (sortMethod === ASCENDING ? (
+          <i className='tabler-chevron-up text-xl' />
+        ) : (
+          <i className='tabler-chevron-down text-xl' />
+        ))}
+    </div>
+  )
 
   const columns = useMemo(
     () => [
@@ -150,7 +156,7 @@ const ProductTableList = ({ tableData = [], totalProducts, fromMetas }) => {
       // }),
 
       columnHelper.accessor('name', {
-        header: 'Product',
+        header: <SortableHeader field='product_title' label='Product' />,
         cell: ({ row }) => {
           const description = row.original.description
           const maxLength = 50
@@ -165,7 +171,7 @@ const ProductTableList = ({ tableData = [], totalProducts, fromMetas }) => {
                 <Typography
                   variant='body2'
                   color='text.primary'
-                  style={{
+                  sx={{
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     display: '-webkit-box',
@@ -175,75 +181,51 @@ const ProductTableList = ({ tableData = [], totalProducts, fromMetas }) => {
                     whiteSpace: 'pre-wrap'
                   }}
                 >
-                  <p dangerouslySetInnerHTML={{ __html: truncatedDescription }} />
-
-                  {/* {truncatedDescription} */}
+                  {truncatedDescription}
                 </Typography>
               </div>
             </div>
           )
-        }
+        },
+        enableSorting: false
       }),
 
-      // columnHelper.accessor('description', {
-      //   header: 'Description',
-      //   cell: ({ row }) => {
-      //     const description = row.original.description
-      //     const maxLength = 50
-      //     const truncatedDescription = truncateText(description, maxLength)
-      //     return (
-      //       <Typography
-      //         variant='body2'
-      //         color='text.primary'
-      //         style={{
-      //           overflow: 'hidden',
-      //           textOverflow: 'ellipsis',
-      //           display: '-webkit-box',
-      //           WebkitBoxOrient: 'vertical',
-      //           WebkitLineClamp: 2,
-      //           wordBreak: 'break-word',
-      //           whiteSpace: 'pre-wrap'
-      //         }}
-      //       >
-      //         <p dangerouslySetInnerHTML={{ __html: truncatedDescription }} />
-
-      //         {/* {truncatedDescription} */}
-      //       </Typography>
-      //     )
-      //   }
-      // }),
       columnHelper.accessor('productBrand', {
-        header: 'Brand',
+        header: <SortableHeader field='product_brand' label='Brand' />,
         cell: ({ row }) => (
           <Typography color='text.primary' className='font-medium'>
             {row.original.productBrand}
           </Typography>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('productCategory', {
-        header: 'Category',
+        header: <SortableHeader field='default_category' label='Category' />,
         cell: ({ row }) => (
           <Typography color='text.primary' className='font-medium'>
             {row.original.productCategory}
           </Typography>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('productType', {
-        header: 'Type',
+        header: <SortableHeader field='product_type' label='Type' />,
         cell: ({ row }) => (
           <Typography color='text.primary' className='font-medium'>
             {row.original.productType}
           </Typography>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('isDeleted', {
-        header: 'Status',
+        header: <SortableHeader field='is_deleted' label='Status' />,
         cell: ({ row }) => (
           <div className='flex items-center gap-3'>
             <Chip
               variant='tonal'
               className='capitalize'
               label={row.original.isDeleted ? 'Inactive' : 'Active'}
+              color={row.original.isDeleted ? 'error' : 'success'}
               // color={userStatusObj[row.original.isDeleted]}
               //   color={statusO={
               //     "Inactive" : 'error'
@@ -253,10 +235,11 @@ const ProductTableList = ({ tableData = [], totalProducts, fromMetas }) => {
               size='small'
             />
           </div>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('productCount', {
-        header: 'Count',
+        header: <SortableHeader field='variation_count' label='Count' />,
         cell: ({ row }) => (
           <div className='flex items-center gap-3'>
             <Chip
@@ -267,7 +250,8 @@ const ProductTableList = ({ tableData = [], totalProducts, fromMetas }) => {
               size='small'
             />
           </div>
-        )
+        ),
+        enableSorting: false
       }),
 
       columnHelper.accessor('action', {
@@ -293,7 +277,7 @@ const ProductTableList = ({ tableData = [], totalProducts, fromMetas }) => {
       })
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [handleSorting]
   )
 
   const table = useReactTable({
@@ -334,36 +318,50 @@ const ProductTableList = ({ tableData = [], totalProducts, fromMetas }) => {
       return <CustomAvatar size={34}>{getInitials(name)}</CustomAvatar>
     }
   }
-
   return (
     <>
       <Card>
         <CardHeader title='Filters' className='pbe-4' />
-        <ProductTableFilter setData={setData} tableData={tableData} />
+        <ProductTableFilter
+          setData={setData}
+          tableData={tableData}
+          handleSelectStatus={handleSelectStatus}
+          selectStatus={selectStatus}
+        />
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select
-            value={table.getState().pagination.pageSize}
-            onChange={e => table.setPageSize(Number(e.target.value))}
+            value={limit}
+            onChange={e => handleLimitChange(Number(e.target.value))}
             className='is-[70px]'
           >
-            <MenuItem value='10'>10</MenuItem>
-            <MenuItem value='25'>25</MenuItem>
-            <MenuItem value='50'>50</MenuItem>
+            {LIMIT_OPTIONS.map(size => (
+              <MenuItem key={size} value={size}>
+                {size}
+              </MenuItem>
+            ))}
           </CustomTextField>
 
           <div>
             Total Products:
-            {/* <Chip variant='outlined' label={totalAdmin} color='warning' size='small' className='ml-2' /> */}
             <Chip variant='outlined' label={totalProducts} color='warning' size='small' className='ml-2' />
           </div>
 
           <div className='flex flex-col sm:flex-row is-full sm:is-auto items-start sm:items-center gap-4'>
-            <DebouncedInput
-              value={globalFilter ?? ''}
-              onChange={value => setGlobalFilter(String(value))}
-              placeholder='Search User'
+            <CustomTextField
+              value={value}
+              onChange={e => setValue(e.target.value)}
+              placeholder='Search Product'
               className='is-full sm:is-auto'
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton onClick={() => handleSearch(value)} edge='end'>
+                      <SearchIcon />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
             <Button
               color='secondary'
@@ -374,15 +372,24 @@ const ProductTableList = ({ tableData = [], totalProducts, fromMetas }) => {
               Export
             </Button>
             <Button
-              variant='contained'
-              startIcon={<i className='tabler-plus' />}
-              // onClick={() => router.push(getLocalizedUrl(`/admin/adminusers/addadminuser`,locale))}
-
-              onClick={() => router.push(getLocalizedUrl(`/products/allproducts/addnewproduct`, locale))}
+              color='error'
+              variant='tonal'
+              startIcon={<i className='tabler-upload' />}
               className='is-full sm:is-auto'
+              onClick={resetFilter}
             >
-              Add New Product
+              Reset
             </Button>
+            {!fromMetas && (
+              <Button
+                variant='contained'
+                startIcon={<i className='tabler-plus' />}
+                onClick={() => router.push(getLocalizedUrl(`/products/allproducts/addnewproduct`, locale))}
+                className='is-full sm:is-auto'
+              >
+                Add Product
+              </Button>
+            )}
           </div>
         </div>
         <div className='overflow-x-auto'>
@@ -441,12 +448,19 @@ const ProductTableList = ({ tableData = [], totalProducts, fromMetas }) => {
           </table>
         </div>
         <TablePagination
-          component={() => <TablePaginationComponent table={table} />}
-          count={table.getFilteredRowModel().rows.length}
-          rowsPerPage={table.getState().pagination.pageSize}
-          page={table.getState().pagination.pageIndex}
+          component={() => (
+            <TablePaginationComponent
+              total={totalProducts}
+              currentPage={currentPage}
+              limit={limit}
+              handlePageChange={handlePageChange}
+            />
+          )}
+          count={totalProducts}
+          rowsPerPage={limit}
+          page={currentPage - 1}
           onPageChange={(_, page) => {
-            table.setPageIndex(page)
+            handlePageChange(page + 1)
           }}
         />
       </Card>

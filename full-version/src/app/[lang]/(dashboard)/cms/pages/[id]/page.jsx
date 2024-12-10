@@ -18,7 +18,7 @@ export default function page() {
     if (id !== 'addnewstaticpage') {
       const individualStatic = async () => {
         try {
-          const getIndividualCoupon = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/cms/getStaticPage/${id}`
+          const getIndividualCoupon = `/admin/cms/getStaticPage/${id}`
           const responseData = await fetchData(getIndividualCoupon, 'GET')
           setGetStaticData(responseData)
         } catch (error) {

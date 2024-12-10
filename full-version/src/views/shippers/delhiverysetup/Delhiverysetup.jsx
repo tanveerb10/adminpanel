@@ -1,8 +1,10 @@
 import React from 'react'
-
-const Delhiverysetup = () => {
+import DelhiverySetupForm from '@/views/shippers/delhiverysetup/DelhiverySetupForm'
+const Delhiverysetup = ({ detail, isAddLogistic, fetchDelhivery }) => {
   return (
-    <div>Delhiverysetup</div>
+    <div>
+      <DelhiverySetupForm detail={detail} isAddLogistic={isAddLogistic} fetchDelhivery={fetchDelhivery} />
+    </div>
   )
 }
 

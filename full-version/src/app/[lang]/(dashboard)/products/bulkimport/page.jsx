@@ -1,7 +1,6 @@
 import React from 'react'
-// import Bulkimport from '@/views/products/bulkimport/Bulkimport'
-import BulkSetting from '@/views/products/BulkSetting/index'
 import dynamic from 'next/dynamic'
+import TabsPanel from '@/libs/components/TabsPanel'
 
 const Bulkimport = dynamic(() => import('@/views/products/bulkSetting/bulkimport/Bulkimport'), {
   ssr: false
@@ -16,9 +15,18 @@ export default function Page() {
     metas: <Bulkimport TabValue='metasTab' HeaderValue='Metas Update' />,
     inventory: <Bulkimport TabValue='inventoryTab' HeaderValue='Inventory Update' />
   }
+
+  const allTabs = [
+    { key: 'upload', label: 'Product Import' },
+    { key: 'update', label: 'Product Update' },
+    { key: 'price', label: 'Price Update' },
+    { key: 'category', label: 'Category Update' },
+    { key: 'metas', label: 'Metas Update' },
+    { key: 'inventory', label: 'Inventory Update' }
+  ]
   return (
     <div>
-      <BulkSetting tabContent={tabContent} />
+      <TabsPanel tabContent={tabContent} allTabs={allTabs} />
     </div>
   )
 }

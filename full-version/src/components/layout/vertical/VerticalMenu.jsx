@@ -134,6 +134,9 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
               {hasAbility('metas') && (
                 <MenuItem href={`/${locale}/products/metas`}>{dictionary['navigation'].metas}</MenuItem>
               )}
+              {/* {hasAbility('productfilter') && ( */}
+              <MenuItem href={`/${locale}/products/productfilter`}>{dictionary['navigation'].productfilter}</MenuItem>
+              {/* )} */}
               {hasAbility('tags') && (
                 <MenuItem href={`/${locale}/products/tags`}>{dictionary['navigation'].tags}</MenuItem>
               )}

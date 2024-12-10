@@ -1,3 +1,4 @@
+//  ===============================This component is not in use =========================================
 'use client'
 
 // React Imports
@@ -19,7 +20,7 @@ import { Typography } from '@mui/material'
 // Components Imports
 import CustomTextField from '@core/components/mui/TextField'
 
-const Storesetup = ({initialData}) => {
+const Storesetup = ({ initialData }) => {
   const {
     control: storeControl,
     handleSubmit: handleStoreSubmit,
@@ -54,19 +55,13 @@ const Storesetup = ({initialData}) => {
 
   // Hooks
   useEffect(() => {
- 
-      resetStoreForm(initialData) // Reset the form with fetched data
-      resetLegalForm(initialData) // Reset the form with fetched data
-
-
-    
+    resetStoreForm(initialData) // Reset the form with fetched data
+    resetLegalForm(initialData) // Reset the form with fetched data
   }, [resetStoreForm, resetLegalForm, initialData])
-
-  
 
   const onSubmitStore = data => {
     console.log('Store submitted:', data)
-    setStoreEditable(false) 
+    setStoreEditable(false)
     setStoreSubmitDisabled(true)
   }
 
@@ -78,23 +73,23 @@ const Storesetup = ({initialData}) => {
 
   const handleEditStore = () => {
     if (storeEditable) {
-      setStoreEditable(false);
-      setStoreSubmitDisabled(true);
+      setStoreEditable(false)
+      setStoreSubmitDisabled(true)
     } else {
-      setStoreEditable(true);
-      setStoreSubmitDisabled(false);
+      setStoreEditable(true)
+      setStoreSubmitDisabled(false)
     }
-  };
+  }
 
   const handleEditLegal = () => {
     if (legalEditable) {
-      setLegalEditable(false);
-      setLegalSubmitDisabled(true);
+      setLegalEditable(false)
+      setLegalSubmitDisabled(true)
     } else {
-      setLegalEditable(true);
-      setLegalSubmitDisabled(false);
+      setLegalEditable(true)
+      setLegalSubmitDisabled(false)
     }
-  };
+  }
 
   return (
     <div className='flex flex-col  gap-4'>
@@ -104,7 +99,7 @@ const Storesetup = ({initialData}) => {
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '16px', paddingTop: '16px' }}>
           <Typography variant='h6' className='cursor-pointer' onClick={handleEditStore}>
-            {storeEditable?"Close":"Edit"}
+            {storeEditable ? 'Close' : 'Edit'}
           </Typography>
         </div>
         <CardContent>
@@ -144,7 +139,8 @@ const Storesetup = ({initialData}) => {
                   rules={{
                     required: 'This field is required',
                     pattern: {
-                      value: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                      value:
+                        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                       message: 'Enter a valid email'
                     }
                   }}
@@ -255,7 +251,7 @@ const Storesetup = ({initialData}) => {
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '16px', paddingTop: '16px' }}>
           <Typography variant='h6' className='cursor-pointer' onClick={handleEditLegal}>
-           {legalEditable?"Close":"Edit"}
+            {legalEditable ? 'Close' : 'Edit'}
           </Typography>
         </div>
         <CardContent>
@@ -295,7 +291,8 @@ const Storesetup = ({initialData}) => {
                   rules={{
                     required: 'This field is required',
                     pattern: {
-                      value: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                      value:
+                        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                       message: 'Enter a valid email'
                     }
                   }}

@@ -198,7 +198,13 @@ export default function ProductFormWrapper({ initialData, brandData, isAddProduc
           </Grid>
           <Grid item xs={12}>
             <Button variant='contained' type='submit' disabled={loading}>
-              {loading ? 'Saving...' : 'Save Product'}
+              {loading
+                ? isAddProduct
+                  ? 'Uploading...'
+                  : 'Updating...'
+                : isAddProduct
+                  ? 'Upload Product'
+                  : 'Update Product'}
             </Button>
           </Grid>
         </Grid>

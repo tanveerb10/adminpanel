@@ -14,7 +14,7 @@ import BrandDelete from '@views/products/brands/BrandDelete'
 const BrandDetailForm = ({ isAddBrand, brandData }) => {
   const initialFormData = {
     brand_name: brandData?.brand?.brand_name || '',
-    brand_image_src: brandData?.brand?.brand_image_src || null,
+    brand_image_src: brandData?.brand?.brand_image_src || '/images/icons/default-image.jpg',
     products_count: brandData?.brand?.products_count || 0,
     brand_description: brandData?.brand?.brand_description || '',
     is_deleted: brandData?.brand?.is_deleted || false,
@@ -94,7 +94,6 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
 
       if (selectedFile) {
         formData.append('brand_image_src', selectedFile)
-
       } else if (!isAddBrand) {
         formData.append('brand_image_src', data.brand_image_src)
       }
@@ -103,11 +102,9 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
 
       console.log('formimimimimi', formData)
 
-      const apiUrl = isAddBrand
-        ? `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/createBrand`
-        : `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/brands/updateBrand/${id}`
+      const apiUrl = isAddBrand ? `/admin/brands/createBrand` : `/admin/brands/updateBrand/${id}`
 
-      const response = await fetchData(apiUrl, isAddBrand ? 'POST' : 'PUT', formData,'image')
+      const response = await fetchData(apiUrl, isAddBrand ? 'POST' : 'PUT', formData, 'image')
       console.log('API Response:', response)
 
       if (!response.success) {
@@ -115,7 +112,6 @@ const BrandDetailForm = ({ isAddBrand, brandData }) => {
         toast.error(response.message)
       }
       if (response.success) {
-
         setTimeout(() => router.push(getLocalizedUrl(`/products/brands`, locale)), 3000)
         return toast.success(response.message)
       }

@@ -45,7 +45,7 @@ const PagesDelete = ({ id, redirect }) => {
   const handleDelete = async () => {
     setLoading(true)
     try {
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL_LIVE}/admin/cms/deleteStaticPage/${id}`
+      const apiUrl = `/admin/cms/deleteStaticPage/${id}`
       const response = await fetchData(apiUrl, 'DELETE')
       if (response.success) {
         showFeedback('Page deleted successfully.', 'success')

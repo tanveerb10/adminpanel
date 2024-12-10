@@ -37,7 +37,6 @@ import {
 
 // Component Imports
 import BrandTableFilter from '@views/products/brands/BrandTableFilter'
-import OptionMenu from '@core/components/option-menu'
 import TablePaginationComponent from '@components/TablePaginationComponent'
 import CustomTextField from '@core/components/mui/TextField'
 import CustomAvatar from '@core/components/mui/Avatar'
@@ -84,11 +83,6 @@ const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...prop
   return <CustomTextField {...props} value={value} onChange={e => setValue(e.target.value)} />
 }
 
-const userStatusObj = {
-  Active: 'error',
-  Inactive: 'error'
-}
-
 const truncateText = (text, maxLength) => {
   if (text.length > maxLength) {
     return text.substring(0, maxLength) + '...'
@@ -99,11 +93,19 @@ const truncateText = (text, maxLength) => {
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const BrandTableList = ({ tableData, totalBrands }) => {
+const BrandTableList = ({
+  tableData,
+  totalBrands,
+  handlePageChange,
+  totalPages,
+  handleLimitChange,
+  limit,
+  currentPage
+}) => {
   // States
   const [rowSelection, setRowSelection] = useState({})
 
-  const [data, setData] = useState([...tableData])
+  const [data, setData] = useState(tableData)
   const [globalFilter, setGlobalFilter] = useState('')
 
   // Hooks
@@ -168,7 +170,7 @@ const BrandTableList = ({ tableData, totalBrands }) => {
             <Typography
               variant='body2'
               color='text.primary'
-              style={{
+              sx={{
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 display: '-webkit-box',
@@ -195,12 +197,7 @@ const BrandTableList = ({ tableData, totalBrands }) => {
               variant='tonal'
               className='capitalize'
               label={row.original.isDeleted ? 'Inactive' : 'Active'}
-              // color={userStatusObj[row.original.isDeleted]}
-              //   color={statusO={
-              //     "Inactive" : 'error'
-
-              // }
-              // }
+              color={row.original.isDeleted ? 'error' : 'success'}
               size='small'
             />
           </div>
@@ -226,28 +223,10 @@ const BrandTableList = ({ tableData, totalBrands }) => {
         cell: ({ row }) => (
           <div className='flex items-center'>
             <IconButton>
-              <i className='tabler-trash text-[22px] text-textSecondary' />
-            </IconButton>
-            <IconButton>
               <Link href={getLocalizedUrl(`/products/brands/${row.original.id}`, locale)} className='flex'>
                 <i className='tabler-edit text-[22px] text-textSecondary' />
               </Link>
             </IconButton>
-            <OptionMenu
-              iconClassName='text-[22px] text-textSecondary'
-              options={[
-                {
-                  text: 'Download',
-                  icon: 'tabler-download text-[22px]',
-                  menuItemProps: { className: 'flex items-center gap-2 text-textSecondary' }
-                },
-                {
-                  text: 'Edit',
-                  icon: 'tabler-edit text-[22px]',
-                  menuItemProps: { className: 'flex items-center gap-2 text-textSecondary' }
-                }
-              ]}
-            />
           </div>
         ),
         enableSorting: false
@@ -304,13 +283,17 @@ const BrandTableList = ({ tableData, totalBrands }) => {
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select
-            value={table.getState().pagination.pageSize}
-            onChange={e => table.setPageSize(Number(e.target.value))}
+            // value={table.getState().pagination.pageSize}
+            value={limit}
+            onChange={e => handleLimitChange(Number(e.target.value))}
+            // onChange={e => table.setPageSize(Number(e.target.value))}
             className='is-[70px]'
           >
-            <MenuItem value='10'>10</MenuItem>
-            <MenuItem value='25'>25</MenuItem>
-            <MenuItem value='50'>50</MenuItem>
+            {[2, 3, 4].map(size => (
+              <MenuItem key={size} value={size}>
+                {size}
+              </MenuItem>
+            ))}
           </CustomTextField>
           <div>
             Total Brands:
@@ -318,12 +301,11 @@ const BrandTableList = ({ tableData, totalBrands }) => {
             <Chip variant='outlined' label={totalBrands} color='warning' size='small' className='ml-2' />
           </div>
 
-
           <div className='flex flex-col sm:flex-row is-full sm:is-auto items-start sm:items-center gap-4'>
             <DebouncedInput
               value={globalFilter ?? ''}
               onChange={value => setGlobalFilter(String(value))}
-              placeholder='Search User'
+              placeholder='Search Brands'
               className='is-full sm:is-auto'
             />
             <Button
@@ -400,12 +382,19 @@ const BrandTableList = ({ tableData, totalBrands }) => {
           </table>
         </div>
         <TablePagination
-          component={() => <TablePaginationComponent table={table} />}
-          count={table.getFilteredRowModel().rows.length}
-          rowsPerPage={table.getState().pagination.pageSize}
-          page={table.getState().pagination.pageIndex}
+          component={() => (
+            <TablePaginationComponent
+              total={totalBrands}
+              currentPage={currentPage}
+              limit={limit}
+              handlePageChange={handlePageChange}
+            />
+          )}
+          count={totalBrands}
+          rowsPerPage={limit}
+          page={currentPage - 1}
           onPageChange={(_, page) => {
-            table.setPageIndex(page)
+            handlePageChange(page + 1)
           }}
         />
       </Card>

@@ -13,13 +13,22 @@ const CircularProgressIndeterminate = styled(CircularProgress)(({ theme }) => ({
   color: theme.palette.mode === 'light' ? '#1a90ff' : '#308fe8'
 }))
 
-const Loader = () => {
+const Loader = ({ size = 50, isVisible = true }) => {
+  if (!isVisible) return null
   return (
-    <div className='relative'>
-      <CircularProgressDeterminate variant='determinate' size={50} thickness={5} value={100} />
-      <CircularProgressIndeterminate variant='indeterminate' disableShrink size={50} thickness={5} />
+    <div className='fixed inset-0 bg-black/30 z-50 h-full w-full flex items-center justify-center cursor-not-allowed'>
+      <div className='relative'>
+        <CircularProgressDeterminate variant='determinate' size={size} thickness={5} value={100} />
+        <CircularProgressIndeterminate variant='indeterminate' disableShrink size={size} thickness={5} />
+      </div>
     </div>
   )
 }
 
 export default Loader
+
+// From Refresh Content
+
+// <Backdrop open={reload} className='absolute text-white z-[cal(var(--mui-zIndex-mobileStepper)-1)]'>
+// <CircularProgress color='inherit' />
+// </Backdrop>

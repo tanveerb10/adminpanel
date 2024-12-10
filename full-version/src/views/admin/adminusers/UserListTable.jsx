@@ -65,53 +65,32 @@ const fuzzyFilter = (row, columnId, value, addMeta) => {
   return itemRank.passed
 }
 
-const DebouncedInput = ({ value: initialValue, onChange, onSearch, debounce = 500, ...props }) => {
-  // States
-  const [value, setValue] = useState(initialValue)
-
-  useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value)
-    }, debounce)
-
-    return () => clearTimeout(timeout)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value, onChange, debounce])
-
-  const handleSearch = () => {
-    onSearch(value) // Calls the search function when the button is clicked
-  }
-
-  return (
-    <CustomTextField
-      {...props}
-      value={value}
-      onChange={e => setValue(e.target.value)}
-      InputProps={{
-        endAdornment: (
-          <InputAdornment position='end'>
-            <IconButton onClick={handleSearch} edge='end'>
-              <SearchIcon />
-            </IconButton>
-          </InputAdornment>
-        )
-      }}
-    />
-  )
-}
-
-const userStatusObj = {
-  active: 'success',
-  inactive: 'secondary'
-}
-
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const UserListTable = ({ tableData, totalAdmin, roleData }) => {
+const ASCENDING = 'asc'
+
+const UserListTable = ({
+  tableData = [],
+  totalAdmin,
+  roleData,
+  handleLimitChange,
+  handlePageChange,
+  totalPages,
+  limit,
+  currentPage,
+  handleSearch,
+  value,
+  setValue,
+  resetFilter,
+  handleSorting,
+  sortMethod,
+  selectStatus,
+  handleSelectStatus,
+  isSortingActive,
+  roleNameQuery,
+  handleRoleQuery
+}) => {
   // States
   const [rowSelection, setRowSelection] = useState({})
 
@@ -121,7 +100,6 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
   // Hooks
   const { lang: locale } = useParams()
   const router = useRouter()
-  // const { id } = params // Destructure id from params
 
   const columns = useMemo(
     () => [
@@ -148,7 +126,22 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
         )
       },
       columnHelper.accessor('fullName', {
-        header: 'User',
+        header: () => (
+          <div
+            onClick={() => {
+              handleSorting('firstname')
+            }}
+            className='cursor-pointer flex items-center'
+          >
+            Users
+            {isSortingActive &&
+              (sortMethod === ASCENDING ? (
+                <i className='tabler-chevron-up text-xl' />
+              ) : (
+                <i className='tabler-chevron-down text-xl' />
+              ))}
+          </div>
+        ),
         cell: ({ row }) => (
           <div className='flex items-center gap-4'>
             {getAvatar({ avatar: row.original.avatar, fullName: row.original.fullName })}
@@ -159,43 +152,107 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
               <Typography variant='body2'>{row.original.email}</Typography>
             </div>
           </div>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('role', {
-        header: 'Role',
+        header: () => (
+          <div
+            onClick={() => {
+              handleSorting('role')
+            }}
+            className='cursor-pointer flex items-center'
+          >
+            Roles
+            {isSortingActive &&
+              (sortMethod === ASCENDING ? (
+                <i className='tabler-chevron-up text-xl' />
+              ) : (
+                <i className='tabler-chevron-down text-xl' />
+              ))}
+          </div>
+        ),
         cell: ({ row }) => (
           <div className='flex items-center gap-2'>
             <Typography className='capitalize' color='text.primary'>
               {row.original.role}
             </Typography>
           </div>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('contact', {
-        header: 'Contact',
+        header: () => (
+          <div
+            onClick={() => {
+              handleSorting('contact')
+            }}
+            className='cursor-pointer flex items-center'
+          >
+            Contact
+            {isSortingActive &&
+              (sortMethod === ASCENDING ? (
+                <i className='tabler-chevron-up text-xl' />
+              ) : (
+                <i className='tabler-chevron-down text-xl' />
+              ))}
+          </div>
+        ),
         cell: ({ row }) => (
           <Typography className='capitalize' color='text.primary'>
             {row.original.contact}
           </Typography>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('city', {
-        header: 'City',
+        header: () => (
+          <div
+            onClick={() => {
+              handleSorting('city')
+            }}
+            className='cursor-pointer flex items-center'
+          >
+            City
+            {isSortingActive &&
+              (sortMethod === ASCENDING ? (
+                <i className='tabler-chevron-up text-xl' />
+              ) : (
+                <i className='tabler-chevron-down text-xl' />
+              ))}
+          </div>
+        ),
         cell: ({ row }) => <Typography className='capitalize'>{row.original.city}</Typography>
       }),
       columnHelper.accessor('status', {
-        header: 'Status',
+        header: () => (
+          <div
+            onClick={() => {
+              handleSorting('status')
+            }}
+            className='cursor-pointer flex items-center'
+          >
+            Status
+            {isSortingActive &&
+              (sortMethod === ASCENDING ? (
+                <i className='tabler-chevron-up text-xl' />
+              ) : (
+                <i className='tabler-chevron-down text-xl' />
+              ))}
+          </div>
+        ),
         cell: ({ row }) => (
           <div className='flex items-center gap-3'>
             <Chip
               variant='tonal'
               className='capitalize'
               label={row.original.status}
-              color={userStatusObj[row.original.status]}
+              color={row.original.status ? 'success' : 'error'}
               size='small'
             />
           </div>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('action', {
         header: 'Action',
@@ -212,7 +269,7 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
       })
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [handleSorting]
   )
 
   const table = useReactTable({
@@ -258,17 +315,27 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
     <>
       <Card>
         <CardHeader title='Filters' className='pbe-4' />
-        <TableFilters setData={setData} tableData={tableData} roleData={roleData} />
+        <TableFilters
+          setData={setData}
+          tableData={tableData}
+          roleData={roleData}
+          selectStatus={selectStatus}
+          handleSelectStatus={handleSelectStatus}
+          roleNameQuery={roleNameQuery}
+          handleRoleQuery={handleRoleQuery}
+        />
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select
-            value={table.getState().pagination.pageSize}
-            onChange={e => table.setPageSize(Number(e.target.value))}
+            value={limit}
+            onChange={e => handleLimitChange(Number(e.target.value))}
             className='is-[70px]'
           >
-            <MenuItem value='10'>10</MenuItem>
-            <MenuItem value='25'>25</MenuItem>
-            <MenuItem value='50'>50</MenuItem>
+            {[2, 3, 4].map(size => (
+              <MenuItem key={size} value={size}>
+                {size}
+              </MenuItem>
+            ))}
           </CustomTextField>
 
           <div>
@@ -277,16 +344,20 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
           </div>
 
           <div className='flex flex-col sm:flex-row is-full sm:is-auto items-start sm:items-center gap-4'>
-            <DebouncedInput
-              value={globalFilter ?? ''}
-              onChange={value => setGlobalFilter(String(value))}
-              onSearch={searchValue => {
-                // Trigger the API call here using searchValue
-                // fetchUsers(searchValue) // Call the API function
-                console.log('search')
-              }}
-              placeholder='Search User'
+            <CustomTextField
+              value={value}
+              onChange={e => setValue(e.target.value)}
+              placeholder='Search Admin'
               className='is-full sm:is-auto'
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton onClick={() => handleSearch(value)} edge='end'>
+                      <SearchIcon />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
             <Button
               color='secondary'
@@ -296,6 +367,17 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
             >
               Export
             </Button>
+
+            <Button
+              color='error'
+              variant='tonal'
+              startIcon={<i className='tabler-upload' />}
+              className='is-full sm:is-auto'
+              onClick={resetFilter}
+            >
+              Reset
+            </Button>
+
             <Button
               variant='contained'
               startIcon={<i className='tabler-plus' />}
@@ -304,7 +386,7 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
               onClick={() => router.push(getLocalizedUrl(`/admin/adminusers/addadminuser`, locale))}
               className='is-full sm:is-auto'
             >
-              Add New User
+              Add Admin
             </Button>
           </div>
         </div>
@@ -364,12 +446,19 @@ const UserListTable = ({ tableData, totalAdmin, roleData }) => {
           </table>
         </div>
         <TablePagination
-          component={() => <TablePaginationComponent table={table} />}
-          count={table.getFilteredRowModel().rows.length}
-          rowsPerPage={table.getState().pagination.pageSize}
-          page={table.getState().pagination.pageIndex}
+          component={() => (
+            <TablePaginationComponent
+              total={totalAdmin}
+              currentPage={currentPage}
+              limit={limit}
+              handlePageChange={handlePageChange}
+            />
+          )}
+          count={totalAdmin}
+          rowsPerPage={limit}
+          page={currentPage - 1}
           onPageChange={(_, page) => {
-            table.setPageIndex(page)
+            handlePageChange(page + 1)
           }}
         />
       </Card>

@@ -482,89 +482,110 @@ const productData1 = [
 ]
 
 export const TestingComponent = () => {
-  const [checked, setChecked] = useState([])
-  const [underChecked, setUnderChecked] = useState([])
-  // const handleCheck = data => {
-  //   // const product = productData.find(product => product._id == data)
-  //   setChecked(prev => {
-  //     if (prev?.includes(data)) {
-  //       const checkFilter = prev.filter(value => value != data)
-  //       console.log('checkfilter', checkFilter)
-  //       return [...checkFilter]
-  //     }
-  //     return [...prev, data]
-  //   })
-  // }
-  // const handleUnderCheck = data => {
-  //   // const product = productData.find(product => product._id == data)
-  //   setUnderChecked(prev => {
-  //     if (prev?.includes(data)) {
-  //       const checkFilter = prev.filter(value => value != data)
-  //       console.log('checkfilter', checkFilter)
-  //       setChecked(prev => [...prev, ...checkFilter])
-
-  //       console.log('under wala check', checked)
-  //       return [...checkFilter]
-  //     }
-  //     setChecked(prev => [...prev, data])
-  //     console.log('under wala check', checked)
-  //     return [...prev, data]
-  //   })
-  // }
+  const [checked, setChecked] = useState([{ parentId: '', variant: [], isChecked: false }])
 
   const handleCheck = data => {
+    console.log('Previous state:', checked, 'coming data', data)
+
     setChecked(prev => {
-      if (prev?.includes(data)) {
-        const getIdObject = productData.find(value => value._id == data)
-        const allChecked = getIdObject.product_variations.map(id => id._id)
-        setUnderChecked(prev => {
-          return [...prev].filter(value => !allChecked.includes(value))
-        })
+      prev?.map(item =>
+        item.parentId === data
+          ? { ...item, isChecked: !item.isChecked }
+          : { ...item, parentId: data, isChecked: !prev.isChecked }
+      )
+      console.log('New data:', data)
 
-        const checkFilter = prev.filter(value => value != data)
-        return [...checkFilter]
-      }
-      const getIdObject = productData.find(value => value._id == data)
-      const allChecked = getIdObject.product_variations.map(id => id._id)
-      setUnderChecked(prev => [...prev, ...allChecked])
-
-      return [...prev, data]
+      // if (prev.map(item => item.parentId === data)) {
+      //   console.log('New data:', data)
+      //   return { ...prev, parentId: data, isChecked: !prev.isChecked }
+      // }
+      // return { ...prev, isChecked: !prev.isChecked }
     })
   }
-  console.log('under check', underChecked)
 
   const handleVariantCheck = (data, parentId) => {
     console.log('handfle varuaint', data, parentId)
-    setUnderChecked(prev => {
-      if (prev?.includes(data)) {
-        const checkFilter = prev.filter(value => value != data)
-
-        // setChecked(prev => {
-        //   if (prev?.includes(parentId)) {
-        //     const checkFilter = prev.filter(value => value != parentId)
-
-        //     return [...checkFilter]
-        //   }
-        //   return [...prev, parentId]
-        // })
-
-        return [...checkFilter]
-      }
-
-      return [...prev, data]
-    })
-
-    setChecked(prev => {
-      if (!prev.includes(parentId)) {
-        return [...prev, parentId]
-      }
-      if (underChecked.length <= 0) {
-        return checked.filter(val => val != parentId)
-      }
-
-      return [...prev]
-    })
+    // setChecked(prev => {
+    //   if (prev.variant.includes(data)) {
+    //     const filterData = prev.variant.filter(val => val !== data)
+    //     return {
+    //       ...prev,
+    //       variant: filterData
+    //     }
+    //   }
+    //   return {
+    //     ...prev,
+    //     variant: [...prev.variant, data]
+    //   }
+    // })
   }
+
+  // setChecked(prev => {
+  // const getIdObject = productData.find(value => value._id == data)
+  // const allChecked = getIdObject.product_variations.map(id => id._id)
+  // setUnderChecked(prev => {
+  //   return [...prev].filter(value => !allChecked.includes(value))
+  // })
+  // const checkFilter = prev.filter(value => value != data)
+  // return [...checkFilter]
+  // const getIdObject = productData.find(value => value._id == data)
+  // const allChecked = getIdObject.product_variations.map(id => id._id)
+  // setUnderChecked(prev => [...prev, ...allChecked])
+  // return [...prev, data]
+  // })
+
+  // const handleCheck = data => {
+  //   setChecked(prev => {
+  //     if (prev?.parent == data) {
+  //        const getIdObject = productData.find(value => value._id == data)
+  //        const allChecked = getIdObject.product_variations.map(id => id._id)
+  //       setUnderChecked(prev => {
+  //         return [...prev].filter(value => !allChecked.includes(value))
+  //       })
+
+  //       const checkFilter = prev.filter(value => value != data)
+  //       return [...checkFilter]
+  //     }
+  //     const getIdObject = productData.find(value => value._id == data)
+  //     const allChecked = getIdObject.product_variations.map(id => id._id)
+  //     setUnderChecked(prev => [...prev, ...allChecked])
+
+  //     return [...prev, data]
+  //   })
+  // }
+
+  // const handleVariantCheck = (data, parentId) => {
+  //   console.log('handfle varuaint', data, parentId)
+  //   setUnderChecked(prev => {
+  //     if (prev?.includes(data)) {
+  //       const checkFilter = prev.filter(value => value != data)
+
+  //       // setChecked(prev => {
+  //       //   if (prev?.includes(parentId)) {
+  //       //     const checkFilter = prev.filter(value => value != parentId)
+
+  //       //     return [...checkFilter]
+  //       //   }
+  //       //   return [...prev, parentId]
+  //       // })
+
+  //       return [...checkFilter]
+  //     }
+
+  //     return [...prev, data]
+  //   })
+
+  //   setChecked(prev => {
+  //     if (!prev.includes(parentId)) {
+  //       return [...prev, parentId]
+  //     }
+  //     if (underChecked.length <= 0) {
+  //       return checked.filter(val => val != parentId)
+  //     }
+
+  //     return [...prev]
+  //   })
+  // }
 
   console.log('check', checked)
   return (
@@ -576,7 +597,12 @@ export const TestingComponent = () => {
               <>
                 <TableRow sx={{ '& > *': { borderBottom: 'unset' } }} key={row}>
                   <TableCell>
-                    <Checkbox checked={checked.includes(row._id)} onClick={() => handleCheck(row._id)} />
+                    <Checkbox
+                      // checked={checked.map(val => val.parentId == row._id)}
+                      // checked={checked.parentId === row._id}
+                      checked={checked?.map(item => item.isChecked)}
+                      onClick={() => handleCheck(row._id)}
+                    />
                   </TableCell>
                   <TableCell align='left'>
                     <div className='flex max-sm:flex-col items-center gap-6'>
@@ -596,7 +622,9 @@ export const TestingComponent = () => {
                             <TableRow key={variantRow._id}>
                               <TableCell component='th' scope='row'>
                                 <Checkbox
-                                  checked={underChecked.includes(variantRow._id)}
+                                  // checked={underChecked.includes(variantRow._id)}
+                                  // checked={checked?.variant.includes(variantRow._id)}
+                                  checked={checked?.map(item => item.variant.includes(variantRow._id))}
                                   // onClick={() => handleUnderCheck(variantRow._id)}
                                   onClick={() => handleVariantCheck(variantRow._id, row._id)}
                                 />

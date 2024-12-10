@@ -483,25 +483,24 @@ const productData1 = [
 
 export const TestingComponent = () => {
   const [checked, setChecked] = useState(
-    productData.map(product => ({ parentId: product._id, variant: [], isChecked: false }))
+    productData.map(product => ({ parentId: product._id, variant: new Set(), isChecked: false }))
   )
+
+  const getProductVariations = parentId =>
+    productData.find(product => product._id === parentId)?.product_variations.map(v => v._id) || [].map(v => v._id)
 
   const handleCheck = parentId => {
     setChecked(prev =>
       prev.map(item => {
-        console.log(item, 'item')
-
-        const product = productData.find(val => val._id === parentId)
         if (item.parentId === parentId) {
-          if (item.variant.length === 0) {
-            return {
-              ...item,
-              isChecked: !item.isChecked,
-              variant: product.product_variations.map(val => val._id)
-            }
-          }
+          const variations = getProductVariations(parentId)
+          const isChecked = !item.isChecked
 
-          return { ...item, isChecked: !item.isChecked, variant: [] }
+          return {
+            ...item,
+            isChecked,
+            variant: isChecked ? new Set(variations) : new Set()
+          }
         }
         return item
       })
@@ -512,14 +511,20 @@ export const TestingComponent = () => {
     setChecked(prev =>
       prev.map(item => {
         if (item.parentId === parentId) {
-          const newVariants = item.variant.includes(variantId)
-            ? item.variant.filter(id => id !== variantId)
-            : [...item.variant, variantId]
+          const newVariants = new Set(item.variant)
+          if (newVariants.has(variantId)) {
+            newVariants.delete(variantId)
+          } else {
+            newVariants.add(variantId)
+          }
+
+          const variations = getProductVariations(parentId)
+          const isChecked = newVariants.size === variations.length
 
           return {
             ...item,
             variant: newVariants,
-            isChecked: newVariants.length === productData.find(p => p._id === parentId).product_variations.length
+            isChecked
           }
         }
         return item
@@ -527,14 +532,16 @@ export const TestingComponent = () => {
     )
   }
 
-  console.log('check', checked)
+  const resetCheckedState = () =>
+    setChecked(productData.map(product => ({ parentId: product._id, variant: new Set(), isChecked: false })))
+
   return (
     <TableContainer component={Paper}>
       <Button
         color='error'
         variant='contained'
         onClick={() => {
-          setChecked(productData.map(product => ({ parentId: product._id, variant: [], isChecked: false })))
+          resetCheckedState
         }}
       >
         Reset
@@ -542,15 +549,18 @@ export const TestingComponent = () => {
       <Table>
         <TableBody>
           {productData.map(row => {
-            const parentChecked =
-              checked.find(item => item.parentId === row._id)?.isChecked ||
-              checked.find(item => item.parentId === row._id).variant.length > 0
-            const parentVariants = checked.find(item => item.parentId === row._id)?.variant || []
+            const { isChecked, variant } = checked.find(item => item.parentId === row._id) || {}
+            const parentChecked = isChecked
+            const parentIndeterminate = !isChecked && variant.size > 0 && variant.size < row.product_variations.length
             return (
               <React.Fragment key={row._id}>
                 <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                   <TableCell>
-                    <Checkbox checked={parentChecked} onClick={() => handleCheck(row._id)} />
+                    <Checkbox
+                      checked={parentChecked}
+                      indeterminate={parentIndeterminate}
+                      onClick={() => handleCheck(row._id)}
+                    />
                   </TableCell>
                   <TableCell align='left'>
                     <div className='flex max-sm:flex-col items-center gap-6'>
@@ -567,7 +577,7 @@ export const TestingComponent = () => {
                       <Table size='small' aria-label='purchases'>
                         <TableBody>
                           {row.product_variations.map(variantRow => {
-                            const isVariantChecked = parentVariants.includes(variantRow._id)
+                            const isVariantChecked = variant.has(variantRow._id)
                             return (
                               <TableRow key={variantRow._id}>
                                 <TableCell component='th' scope='row'>

@@ -1,8 +1,21 @@
 import CustomTextField from '@/@core/components/mui/TextField'
-import { Card, CardContent, CardHeader, MenuItem, Typography } from '@mui/material'
-import React from 'react'
+import Loader from '@/libs/components/Loader'
+import fetchData from '@/utils/fetchData'
 
-const customerData = [
+import {
+  Autocomplete,
+  Card,
+  CardContent,
+  CardHeader,
+  IconButton,
+  InputAdornment,
+  MenuItem,
+  Typography
+} from '@mui/material'
+import CustomerReviewCard from '@views/orders/allorders/createorder/customerReview/CustomerReviewCard'
+import React, { useCallback, useEffect, useState } from 'react'
+import SearchIcon from '@mui/icons-material/Search'
+const apiCustomerData = [
   {
     _id: '66f102833c6960e2b7830f4f',
     firstname: 'check2',
@@ -91,17 +104,191 @@ const customerData = [
 ]
 
 export default function CustomerReview() {
+  const [searchValue, setSearchValue] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [options, setOptions] = useState([])
+  const [customerData, setCustomerData] = useState({})
+  const [error, setError] = useState(null)
+
+  console.log('customer data', customerData)
+
+  const allCustomers = useCallback(async () => {
+    if (!searchValue.trim()) return
+
+    setLoading(true)
+    try {
+      const getCustomerUrl = `/admin/customers/allcustomers?q=${searchValue}`
+      const responseData = await fetchData(getCustomerUrl, 'GET')
+      if (responseData.success) {
+        setOptions(responseData.totalCustomer || [])
+        console.log(options, 'option all customer')
+      } else {
+        toast.error('Failed to fetch options')
+      }
+    } catch (error) {
+      setError('Failed to fetch options')
+    } finally {
+      setLoading(false)
+    }
+  }, [searchValue])
+
+  const handleSearch = () => {
+    allCustomers()
+  }
+
+  const handleSelectCustomer = selectedCustomer => {
+    setCustomerData(selectedCustomer)
+  }
+
   return (
-    <Card>
+    <Card sx={{ maxWidth: 600, margin: 'auto', padding: 2 }}>
       <CardHeader title='Customer' />
       <CardContent>
-        <CustomTextField select label='Customer' fullWidth>
-          {customerData.map(data => (
-            <MenuItem value={data._id}>{data.firstname}</MenuItem>
+        {/* =================== */}
+
+        <Autocomplete
+          sx={{ width: 300 }}
+          open={open}
+          onOpen={() => {
+            setOpen(true)
+          }}
+          onClose={() => {
+            setOpen(false)
+          }}
+          onChange={(event, value) => setCustomerData(value)}
+          isOptionEqualToValue={(option, value) => option.id === value?.id}
+          getOptionLabel={option => option.label || 'No Name'}
+          options={options}
+          loading={loading}
+          renderInput={params => (
+            <CustomTextField
+              {...params}
+              placeholder='Search for customer'
+              label='Select Customer'
+              input={{
+                ...params.InputProps,
+                endAdornment: (
+                  <>
+                    {loading ? <Loader /> : null}
+                    {params.InputProps.endAdornment}
+
+                    <InputAdornment position='start'>
+                      <IconButton onClick={''} edge='end'>
+                        <SearchIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  </>
+                )
+              }}
+            />
+          )}
+        />
+
+        {/* //================ */}
+
+        <CustomTextField
+          select
+          label='Select Customer'
+          value={customerData?._id || ''}
+          fullWidth
+          onChange={e => {
+            const selectedCustomer = options.find(data => data._id === e.target.value)
+            setCustomerData(selectedCustomer)
+          }}
+          sx={{ marginBottom: 2 }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position='end'>
+                <IconButton onClick={() => handleSearch(value)} edge='end'>
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            )
+          }}
+        >
+          {options.map(data => (
+            <MenuItem key={data._id} value={data._id}>
+              {data.firstname} {data.lastname}
+            </MenuItem>
           ))}
         </CustomTextField>
-        <Typography>hello</Typography>
+
+        {customerData?._id && <CustomerReviewCard customerData={customerData} />}
+
+        {/* =========================== */}
+
+        <CustomTextField
+          label='Search for Customer'
+          value={searchValue}
+          onChange={e => setSearchValue(e.target.value)} // Update searchValue as user types
+          fullWidth
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position='end'>
+                <IconButton onClick={handleSearch} edge='end'>
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            )
+          }}
+        />
+
+        {/* Loading indicator */}
+        {loading && <Loader />}
+
+        {/* Display search results */}
+        {options.length > 0 && (
+          <div>
+            <ul style={{ listStyleType: 'none', padding: 0 }}>
+              {options.map(customer => (
+                <MenuItem
+                  key={customer._id}
+                  onClick={() => handleSelectCustomer(customer)} // Set the customer data when a result is selected
+                >
+                  {customer.firstname} {customer.lastname}
+                </MenuItem>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* If customerData is selected, show details */}
+        {customerData && (
+          <div>
+            <h3>
+              {customerData.firstname} {customerData.lastname}
+            </h3>
+            {/* You can add more details here based on what you need to display for the selected customer */}
+          </div>
+        )}
+
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {/* ============================= */}
       </CardContent>
     </Card>
   )
 }
+
+// <Card>
+//   <CardHeader title='Customer' />
+//   <CardContent>
+//     <CustomTextField
+//       select
+//       label='Customer'
+//       value={customerData?._id || ''}
+//       fullWidth
+//       onChange={e => {
+//         const selectedCustomer = apiCustomerData.find(data => data._id === e.target.value)
+//         setCustomerData(selectedCustomer)
+//       }}
+//     >
+//       {apiCustomerData.map(data => (
+//         <MenuItem value={data?._id} key={data?._id}>
+//           {data?.firstname} {data?.lastname}
+//         </MenuItem>
+//       ))}
+//     </CustomTextField>
+//     <CustomerReviewCard customerData={customerData} />
+//   </CardContent>
+// </Card>

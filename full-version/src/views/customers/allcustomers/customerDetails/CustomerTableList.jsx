@@ -18,7 +18,8 @@ import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material'
 import TablePagination from '@mui/material/TablePagination'
 import MenuItem from '@mui/material/MenuItem'
-
+import InputAdornment from '@mui/material/InputAdornment'
+import SearchIcon from '@mui/icons-material/Search'
 // Third-party Imports
 import classnames from 'classnames'
 import { rankItem } from '@tanstack/match-sorter-utils'
@@ -93,7 +94,16 @@ const CustomerTableList = ({
   totalPages,
   handleLimitChange,
   limit,
-  currentPage
+  currentPage,
+  value,
+  handleSearch,
+  setValue,
+  resetFilter,
+  handleSorting,
+  sortMethod,
+  selectStatus,
+  handleSelectStatus,
+  isSortingActive
 }) => {
   console.log(tableData, 'table daata abhi walwa')
   // States
@@ -107,6 +117,18 @@ const CustomerTableList = ({
   const router = useRouter()
   const params = useParams()
   const { id } = params // Destructure id from params
+
+  const SortableHeader = ({ field, label }) => (
+    <div onClick={() => handleSorting(field)} className='cursor-pointer flex items-center'>
+      {label}
+      {isSortingActive &&
+        (sortMethod === ASCENDING ? (
+          <i className='tabler-chevron-up text-xl' />
+        ) : (
+          <i className='tabler-chevron-down text-xl' />
+        ))}
+    </div>
+  )
 
   const columns = useMemo(
     () => [
@@ -252,7 +274,12 @@ const CustomerTableList = ({
     <>
       <Card>
         <CardHeader title='Filters' className='pbe-4' />
-        <CategoriesTableFilter setData={setData} tableData={tableData} />
+        <CategoriesTableFilter
+          setData={setData}
+          tableData={tableData}
+          handleSelectStatus={handleSelectStatus}
+          selectStatus={selectStatus}
+        />
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select
@@ -275,11 +302,20 @@ const CustomerTableList = ({
           </div>
 
           <div className='flex flex-col sm:flex-row is-full sm:is-auto items-start sm:items-center gap-4'>
-            <DebouncedInput
-              value={globalFilter ?? ''}
-              onChange={value => setGlobalFilter(String(value))}
+            <CustomTextField
+              value={value}
+              onChange={e => setValue(e.target.value)}
               placeholder='Search Customer'
               className='is-full sm:is-auto'
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton onClick={() => handleSearch(value)} edge='end'>
+                      <SearchIcon />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
             <Button
               color='secondary'
@@ -288,6 +324,15 @@ const CustomerTableList = ({
               className='is-full sm:is-auto'
             >
               Export
+            </Button>
+            <Button
+              color='error'
+              variant='tonal'
+              startIcon={<i className='tabler-upload' />}
+              className='is-full sm:is-auto'
+              onClick={resetFilter}
+            >
+              Reset
             </Button>
             <Button
               variant='contained'

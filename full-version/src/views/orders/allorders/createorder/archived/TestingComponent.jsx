@@ -15,7 +15,7 @@ import {
   CardContent
 } from '@mui/material'
 import CustomTextField from '@/@core/components/mui/TextField'
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import { toast } from 'react-toastify'
 import PropTypes from 'prop-types'
 import Box from '@mui/material/Box'
@@ -31,8 +31,9 @@ import Button from '@mui/material/Button'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
+import { useOrder } from '../../orderContext/OrderStateManagement'
 
-const productData = [
+const productData1 = [
   {
     _id: '6752bce96d6c6164d55a66de',
     product_title: 'Men Blue Denim Jeans - ABCD-12',
@@ -382,7 +383,7 @@ const productData = [
     ]
   }
 ]
-const productData1 = [
+const productData = [
   {
     _id: '6752bce96d6c6164d55a66de',
     product_title: 'Men Blue Denim Jeans - ABCD-12',
@@ -444,6 +445,7 @@ const productData1 = [
     published: 'TRUE',
     type_standard: 'Apparel & Accessories > Handbag & Wallet Accessories > Wallet Chains',
     uuid: '8568916903',
+
     createdAt: '2024-12-06T08:59:25.048Z',
     updatedAt: '2024-12-06T08:59:25.048Z',
     product_id: 2,
@@ -481,25 +483,43 @@ const productData1 = [
   }
 ]
 
+const initialCheckedState = data =>
+  data.map(product => ({
+    parentId: product._id,
+    selectedVariants: new Set(),
+    isChecked: false
+  }))
 export const TestingComponent = () => {
-  const [checked, setChecked] = useState(
-    productData.map(product => ({ parentId: product._id, variant: new Set(), isChecked: false }))
+  const [checked, setChecked] = useState(() => initialCheckedState(productData))
+  const [variantData, setVariantData] = useState([])
+
+  const { addOrder, removeOrder, orders } = useOrder()
+  const getProductVariations = useCallback(
+    parentId => productData.find(product => product._id === parentId)?.product_variations || [],
+    []
   )
 
-  const getProductVariations = parentId =>
-    productData.find(product => product._id === parentId)?.product_variations.map(v => v._id) || [].map(v => v._id)
+  const toggleSetValue = (set, value) => {
+    const newSet = new Set(set)
+    if (newSet.has(value)) {
+      newSet.delete(value)
+    } else {
+      newSet.add(value)
+    }
+    return newSet
+  }
 
   const handleCheck = parentId => {
+    const variations = getProductVariations(parentId).map(v => v._id)
     setChecked(prev =>
       prev.map(item => {
         if (item.parentId === parentId) {
-          const variations = getProductVariations(parentId)
           const isChecked = !item.isChecked
 
           return {
             ...item,
             isChecked,
-            variant: isChecked ? new Set(variations) : new Set()
+            selectedVariants: isChecked ? new Set(variations) : new Set()
           }
         }
         return item
@@ -511,19 +531,13 @@ export const TestingComponent = () => {
     setChecked(prev =>
       prev.map(item => {
         if (item.parentId === parentId) {
-          const newVariants = new Set(item.variant)
-          if (newVariants.has(variantId)) {
-            newVariants.delete(variantId)
-          } else {
-            newVariants.add(variantId)
-          }
-
-          const variations = getProductVariations(parentId)
+          const variations = getProductVariations(parentId).map(v => v._id)
+          const newVariants = toggleSetValue(item.selectedVariants, variantId)
           const isChecked = newVariants.size === variations.length
 
           return {
             ...item,
-            variant: newVariants,
+            selectedVariants: newVariants,
             isChecked
           }
         }
@@ -532,89 +546,199 @@ export const TestingComponent = () => {
     )
   }
 
-  const resetCheckedState = () =>
-    setChecked(productData.map(product => ({ parentId: product._id, variant: new Set(), isChecked: false })))
+  const resetCheckedState = () => setChecked(initialCheckedState(productData))
+
+  // const selectedData = useMemo(() => {
+  //   return checked
+  //     .filter(item => item.isChecked || item.selectedVariants.size > 0)
+  //     .map(val => ({ productId: val.parentId || null, variants: Array.from(val.selectedVariants || []) }))
+  //     .filter(data => data.productId && data.variants.length > 0)
+  // }, [checked])
+
+  // got correct data
+
+  // const selectedData = useMemo(() => {
+  //   return checked
+  //     .filter(item => item.isChecked || item.selectedVariants.size > 0)
+  //     .map(val => {
+  //       const product = productData.find(item => item._id === val.parentId)
+  //       if (!product) return null
+  //       console.log('sselectled val', product)
+
+  //       const selectedVariants = Array.from(val.selectedVariants || [])
+  //         .map(variantId => {
+  //           const variation = product.product_variations.find(v => v._id === variantId)
+  //           if (!variation) return null
+
+  //           return {
+  //             variationName: [
+  //               variation.variation1?.variation_option_value,
+  //               variation.variation2?.variation_option_value,
+  //               variation.variation3?.variation_option_value
+  //             ]
+  //               .filter(Boolean)
+  //               .join('/'),
+  //             price: variation.variation_selling_price,
+  //             available: variation.variation_quantity
+  //           }
+  //         })
+  //         .filter(Boolean)
+
+  //       return {
+  //         productId: val.parentId || null,
+  //         variants: selectedVariants,
+  //         productTitle: product.product_title
+  //       }
+  //     })
+  //     .filter(data => data.productId && data.variants.length > 0)
+  // }, [checked])
+  const selectedData = useMemo(() => {
+    const productMap = Object.fromEntries(productData.map(product => [product._id, product]))
+    return checked
+      .filter(item => item.isChecked || item.selectedVariants.size > 0)
+      .flatMap(val => {
+        const product = productMap[val.parentId]
+        if (!product) {
+          console.warn(`Product with ID ${val.parentId} not found in productData.`)
+          return [] // Return an empty array to maintain flattening
+        }
+
+        console.log('sselectled val', product)
+
+        return Array.from(val.selectedVariants)
+          .map(variantId => {
+            const variation = product.product_variations.find(v => v._id === variantId)
+            if (!variation) {
+              console.warn(`Variation with ID ${variantId} not found for product ID ${val.parentId}.`)
+              return null // Filter out invalid variants later
+            }
+
+            return {
+              variationName: [
+                variation.variation1?.variation_option_value,
+                variation.variation2?.variation_option_value,
+                variation.variation3?.variation_option_value
+              ]
+                .filter(Boolean)
+                .join('/'),
+              price: variation.variation_selling_price,
+              available: variation.variation_quantity,
+              productId: val.parentId || null,
+              productTitle: product.product_title
+            }
+          })
+          .filter(Boolean)
+      })
+  }, [checked, productData])
+
+  const handleVariantData = () => {
+    // console.log('selected data', selectedData)
+    // setVariantData(selectedData)
+    addOrder(...selectedData)
+  }
 
   return (
-    <TableContainer component={Paper}>
-      <Button
-        color='error'
-        variant='contained'
-        onClick={() => {
-          resetCheckedState
-        }}
-      >
-        Reset
-      </Button>
-      <Table>
-        <TableBody>
-          {productData.map(row => {
-            const { isChecked, variant } = checked.find(item => item.parentId === row._id) || {}
-            const parentChecked = isChecked
-            const parentIndeterminate = !isChecked && variant.size > 0 && variant.size < row.product_variations.length
-            return (
-              <React.Fragment key={row._id}>
-                <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                  <TableCell>
-                    <Checkbox
-                      checked={parentChecked}
-                      indeterminate={parentIndeterminate}
-                      onClick={() => handleCheck(row._id)}
-                    />
-                  </TableCell>
-                  <TableCell align='left'>
-                    <div className='flex max-sm:flex-col items-center gap-6'>
-                      <img height={50} width={50} className='rounded' src={'/images/avatars/1.png'} alt='Profile' />
-                    </div>
-                  </TableCell>
-                  <TableCell component='th' scope='row' align='left'>
-                    <Typography>{row.product_title}</Typography>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                    <Box sx={{ margin: 1 }}>
-                      <Table size='small' aria-label='purchases'>
-                        <TableBody>
-                          {row.product_variations.map(variantRow => {
-                            const isVariantChecked = variant.has(variantRow._id)
-                            return (
-                              <TableRow key={variantRow._id}>
-                                <TableCell component='th' scope='row'>
-                                  <Checkbox
-                                    checked={isVariantChecked}
-                                    onClick={() => handleVariantCheck(variantRow._id, row._id)}
-                                  />
-                                </TableCell>
+    <>
+      <TableContainer component={Paper}>
+        <Button
+          color='error'
+          variant='contained'
+          onClick={() => {
+            resetCheckedState()
+          }}
+        >
+          Reset
+        </Button>
+        <Table>
+          <TableBody>
+            {productData.map(row => {
+              const { isChecked, selectedVariants } = checked.find(item => item.parentId === row._id) || {}
 
-                                <TableCell>
-                                  {[
-                                    variantRow?.variation1?.variation_option_value,
-                                    variantRow?.variation2?.variation_option_value,
-                                    variantRow?.variation3?.variation_option_value
-                                  ]
-                                    .filter(Boolean)
-                                    .join('/')}
-                                </TableCell>
-                                <TableCell align='right'>
-                                  <CustomTextField label='Price' value={variantRow?.variation_selling_price} />
-                                </TableCell>
-                                <TableCell align='right'>
-                                  <CustomTextField label='Quantity' value={variantRow?.variation_quantity} />
-                                </TableCell>
-                              </TableRow>
-                            )
-                          })}
-                        </TableBody>
-                      </Table>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              </React.Fragment>
-            )
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+              const variations = getProductVariations(row._id)
+              const parentIndeterminate =
+                !isChecked && selectedVariants?.size > 0 && selectedVariants?.size < variations.length
+              return (
+                <React.Fragment key={row._id}>
+                  <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+                    <TableCell>
+                      <Checkbox
+                        checked={isChecked}
+                        indeterminate={parentIndeterminate}
+                        onClick={() => handleCheck(row._id)}
+                      />
+                    </TableCell>
+                    <TableCell align='left'>
+                      <div className='flex max-sm:flex-col items-center gap-6'>
+                        <img
+                          height={50}
+                          width={50}
+                          className='rounded'
+                          src={'/images/avatars/1.png'}
+                          alt={row.product_title}
+                        />
+                      </div>
+                    </TableCell>
+                    <TableCell component='th' scope='row' align='left'>
+                      <Typography>{row.product_title}</Typography>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                      <Box sx={{ margin: 1 }}>
+                        <Table size='small' aria-label='purchases'>
+                          <TableBody>
+                            {variations.map(
+                              ({
+                                _id,
+                                variation1,
+                                variation2,
+                                variation3,
+                                variation_selling_price,
+                                variation_quantity
+                              }) => {
+                                const isVariantChecked = selectedVariants.has(_id)
+                                return (
+                                  <TableRow key={_id}>
+                                    <TableCell component='th' scope='row'>
+                                      <Checkbox
+                                        checked={isVariantChecked}
+                                        onClick={() => handleVariantCheck(_id, row._id)}
+                                      />
+                                    </TableCell>
+
+                                    <TableCell>
+                                      {[
+                                        variation1?.variation_option_value,
+                                        variation2?.variation_option_value,
+                                        variation3?.variation_option_value
+                                      ]
+                                        .filter(Boolean)
+                                        .join('/')}
+                                    </TableCell>
+                                    <TableCell align='right'>
+                                      <CustomTextField label='Price' value={variation_selling_price} />
+                                    </TableCell>
+                                    <TableCell align='right'>
+                                      <CustomTextField label='Available' value={variation_quantity} />
+                                    </TableCell>
+                                  </TableRow>
+                                )
+                              }
+                            )}
+                          </TableBody>
+                        </Table>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
+              )
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Button onClick={handleVariantData} variant='tonal'>
+        Add
+      </Button>
+    </>
   )
 }

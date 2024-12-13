@@ -24,24 +24,28 @@ import SearchIcon from '@mui/icons-material/Search'
 import { toast } from 'react-toastify'
 import fetchData from '@/utils/fetchData'
 import CustomTextField from '@/@core/components/mui/TextField'
+import CustomerReviewCard from './CustomerReviewCard'
 
 export default function CustomerReview() {
   const [searchValue, setSearchValue] = useState('')
   const [loading, setLoading] = useState(false)
   const [options, setOptions] = useState([])
-  const [selectedCustomers, setSelectedCustomers] = useState([])
+  const [selectedCustomers, setSelectedCustomers] = useState(null)
   const [menuOpen, setMenuOpen] = useState(false) // New state to control menu visibility
-
   const fetchCustomers = useCallback(async () => {
-    if (!searchValue.trim()) return
+    if (!searchValue.trim()) {
+      toast.error('Please enter a search value.')
+      return
+    }
 
     setLoading(true)
     try {
       const getCustomerUrl = `/admin/customers/allcustomers?q=${searchValue}`
       const responseData = await fetchData(getCustomerUrl, 'GET')
       if (responseData.success) {
-        const customerNames = responseData.totalCustomer.map(customer => `${customer.firstname} ${customer.lastname}`)
-        setOptions(customerNames)
+        const customerObject = responseData.totalCustomer
+
+        setOptions(customerObject)
         setMenuOpen(true) // Automatically open menu after fetching options
       } else {
         toast.error('Failed to fetch options')
@@ -57,10 +61,20 @@ export default function CustomerReview() {
     fetchCustomers()
   }
 
-  const handleSelectionChange = event => {
-    setSelectedCustomers(event.target.value)
-  }
+  // const handleSelectionChange = event => {
+  //   const selectedCustomer = options.find(data => data._id === event.target.value)
 
+  //   setSelectedCustomers(selectedCustomer)
+
+  //   // setSelectedCustomers(event.target.value)
+  // }
+
+  const handleSelectionChange = event => {
+    const selectedId = event.target.value // Multiple selection support
+    const customer = options.find(data => data._id === selectedId)
+    setSelectedCustomers(customer)
+    setMenuOpen(false)
+  }
   return (
     <div>
       <CustomTextField
@@ -78,22 +92,23 @@ export default function CustomerReview() {
           )
         }}
         select={menuOpen}
+        // select
         SelectProps={{
           open: menuOpen, // Control menu visibility
           onOpen: () => setMenuOpen(true), // Allow manual opening
           onClose: () => setMenuOpen(false), // Close menu when needed
-          multiple: true,
-          value: selectedCustomers,
+          value: selectedCustomers?._id || '',
           onChange: handleSelectionChange,
-          renderValue: selected => (selected.length === 0 ? 'No customers selected' : selected.join(', '))
+          renderValue: selected =>
+            selected ? `${selectedCustomers.firstname} ${selectedCustomers.lastname}` : 'No customer selected'
         }}
       >
         {options.length > 0 ? (
           options.map(option => {
             console.log('option', option)
             return (
-              <MenuItem key={option} value={option}>
-                {option}
+              <MenuItem key={option._id} value={option._id}>
+                {`${option.firstname} ${option.lastname}`}
               </MenuItem>
             )
           })
@@ -103,6 +118,8 @@ export default function CustomerReview() {
           </MenuItem>
         )}
       </CustomTextField>
+
+      {selectedCustomers?._id && <CustomerReviewCard customerData={selectedCustomers} />}
     </div>
   )
 }

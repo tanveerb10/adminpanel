@@ -7,9 +7,9 @@ import { Chip, IconButton, Typography } from '@mui/material'
 import CustomTextField from '@core/components/mui/TextField'
 import Image from 'next/image'
 
-export default function ProductCard({ key, val, quantity, handleQuantity, handleRemoveOrder }) {
+export default function ProductCard({ val, quantity, handleQuantity, handleRemoveOrder }) {
   console.log('quantity card', quantity)
-  const { quantity: qty = 1, totalPrice: price } = quantity || {}
+  const { quantity: qty = 1, totalPrice: price = val.price } = quantity || {}
   return (
     <div className='flex items-center justify-between space-x-2 pr-2 mt-2 mb-2'>
       <Image height={70} width={70} className='rounded' src={val?.img || '/images/avatars/1.png'} alt='Product image' />

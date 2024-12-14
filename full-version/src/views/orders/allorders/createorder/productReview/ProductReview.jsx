@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 // MUI Imports
 import Grid from '@mui/material/Grid'
@@ -14,7 +14,6 @@ import Button from '@mui/material/Button'
 import { Chip } from '@mui/material'
 import ProductDialog from '@/views/orders/allorders/createorder/productReview/productDialog/ProductDialog'
 import OpenDialogOnElementClick from '@/components/dialogs/OpenDialogOnElementClick'
-import Image from 'next/image'
 import { useOrder } from '@/views/orders/allorders/orderContext/OrderStateManagement'
 import ProductCard from '@/views/orders/allorders/createorder/productReview/ProductCard'
 
@@ -26,43 +25,38 @@ const ProductReview = ({}) => {
     children: 'Select Order'
   }
 
-  const { removeOrder, orders } = useOrder()
-  // const { removeOrder } = useOrder()
-  const orders1 = [
-    {
-      variationName: 'Blue/2XL',
-      variationId: '6752bcec6d6c6164d55a6869',
-      price: 699,
-      available: 100,
-      productId: '6752bce96d6c6164d55a66de',
-      productTitle: 'Men Blue Denim Jeans - ABCD-12'
-    }
-  ]
-
-  const initialData = (orders || []).reduce((acc, data) => {
-    acc[data.variationId] = {
-      available: data.available,
-      price: data.price,
-      variationId: data.variationId,
-      totalPrice: data.price * 1,
-      quantity: 1
-    }
-    return acc
-  }, {})
-
-  const [quantity, setQuantity] = useState(initialData)
+  const { removeOrder, orders = [] } = useOrder()
+  const [quantity, setQuantity] = useState(() =>
+    (orders || []).reduce((acc, data) => {
+      acc[data.variationId] = {
+        available: data.available,
+        price: data.price,
+        variationId: data.variationId,
+        totalPrice: data.price * 1,
+        quantity: 1
+      }
+      return acc
+    }, {})
+  )
+  useEffect(() => {
+    const initialData = (orders || []).reduce((acc, data) => {
+      acc[data.variationId] = {
+        available: data.available,
+        price: data.price,
+        variationId: data.variationId,
+        totalPrice: data.price * 1,
+        quantity: 1
+      }
+      return acc
+    }, {})
+    setQuantity(initialData)
+  }, [orders])
 
   console.log('quantity', quantity)
   console.log('orders from price', orders)
 
-  // const handleQuantity = (index, newQuantity) => {
-  //   console.log('helloo')
-  //   const updatedQuantity = [...quantity]
-  //   updatedQuantity[index].quantity = newQuantity
-  //   updatedQuantity[index].totalPrice = updatedQuantity[index].price * newQuantity
-  //   setQuantity(updatedQuantity)
-  // }
   const handleQuantity = (variationId, newQuantity) => {
+    if (!quantity[variationId]) return
     setQuantity(prev => ({
       ...prev,
       [variationId]: {
@@ -73,10 +67,10 @@ const ProductReview = ({}) => {
     }))
   }
 
-  const grandTotal = Object.values(quantity).reduce((acc, item) => acc + item.totalPrice, 0)
+  const grandTotal = useMemo(() => Object.values(quantity).reduce((acc, item) => acc + item.totalPrice, 0), [quantity])
 
-  const handleRemoveOrder = variationId => {
-    removeOrder(variationId)
+  const handleRemoveOrder = async variationId => {
+    await removeOrder(variationId)
     setQuantity(prev => {
       const updated = { ...prev }
       delete updated[variationId]
@@ -94,8 +88,7 @@ const ProductReview = ({}) => {
           <ProductCard
             key={val.variationId}
             val={val}
-            // quantity={quantity}
-            quantity={quantity[val.variationId] || { quantity: 1, totalPrice: val.price }}
+            quantity={quantity[val.variationId] || { quantity: 1, totalPrice: val.price, available: val.available }}
             handleQuantity={handleQuantity}
             handleRemoveOrder={handleRemoveOrder}
           />

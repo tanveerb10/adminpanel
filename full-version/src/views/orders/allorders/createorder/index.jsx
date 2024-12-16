@@ -3,6 +3,7 @@ import React from 'react'
 import ProductReview from '@views/orders/allorders/createorder/productReview/ProductReview'
 import PaymentReview from '@views/orders/allorders/createorder/paymentReview/PaymentReview'
 import CustomerReview from '@views/orders/allorders/createorder/customerReview/CustomerReview'
+import NoteCard from '@views/orders/allorders/createorder/noteReview/NoteCard'
 import { Button, Grid, IconButton } from '@mui/material'
 import { useOrder } from '@/views/orders/allorders/orderContext/OrderStateManagement'
 import fetchData from '@/utils/fetchData'
@@ -11,7 +12,7 @@ import OptionMenu from '@core/components/option-menu'
 
 export default function CreateOrder() {
   // const { orders, customerAddress, handleAllReset } = useOrder()
-  const { orders, handleAllReset } = useOrder()
+  const { orders, handleAllReset, handlePaymentMethod, paymentMethod } = useOrder()
 
   const customerAddress = {
     _id: '66f7bcf9e633bc0aa52d21e2',
@@ -86,7 +87,7 @@ export default function CreateOrder() {
     location: '198.157.55'
   }
 
-  console.log('format data', orders, 'cutomer', customerAddress)
+  // console.log('format data', orders, 'cutomer', customerAddress)
   const formatData = {
     customerId: customerAddress._id,
     customerState: customerAddress.default_address.state,
@@ -141,24 +142,35 @@ export default function CreateOrder() {
       <Grid item xs={12} sm={6}>
         <PaymentReview />
       </Grid>
+      <Grid item xs={12} sm={6}>
+        <NoteCard />
+      </Grid>
       <Grid item xs={12} sm={6} className='gap-5' spacing={3}>
         <Button variant='tonal' color='error' onClick={() => handleAllReset()}>
           Reset
         </Button>
+
         <Button variant='tonal' color='primary'>
           Create Order
           <OptionMenu
             icon='tabler-chevron-down'
             options={[
               {
-                text: 'Prepaid'
+                text: 'Prepaid',
+                onClick: () => handlePaymentMethod('prepaid')
               },
               {
-                text: 'COD'
+                text: 'COD',
+                onClick: () => handlePaymentMethod('cod')
               }
             ]}
           />
         </Button>
+        {paymentMethod && (
+          <Typography variant='body2' color='textSecondary'>
+            Selected Payment Method: {paymentMethod.toUpperCase()}
+          </Typography>
+        )}
       </Grid>
     </Grid>
   )

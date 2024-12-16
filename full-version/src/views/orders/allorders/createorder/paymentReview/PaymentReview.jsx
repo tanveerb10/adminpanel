@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, Grid, Typography } from '@mui/material'
 import { useOrder } from '@/views/orders/allorders/orderContext/OrderStateManagement'
 
 export default function PaymentReview() {
-  const { productTotal } = useOrder()
+  const { grandTotal } = useOrder()
   return (
     <Card>
       <CardHeader title='Payment' />
@@ -31,7 +31,7 @@ export default function PaymentReview() {
           <Grid item xs={12} sm={6} className='flex justify-between'>
             <Typography>Total</Typography>
             <Typography>-</Typography>
-            <Typography>{`₹${productTotal}`}</Typography>
+            <Typography>{`₹${grandTotal}`}</Typography>
           </Grid>
         </Grid>
       </CardContent>

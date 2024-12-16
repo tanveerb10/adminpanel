@@ -1,7 +1,5 @@
 'use client'
 
-// React Imports
-
 // Components Imports
 import { Chip, IconButton, Typography } from '@mui/material'
 import CustomTextField from '@core/components/mui/TextField'
@@ -9,7 +7,7 @@ import Image from 'next/image'
 
 export default function ProductCard({ val, quantity, handleQuantity, handleRemoveOrder }) {
   if (!val) return null
-  console.log('quantity card', quantity)
+
   const { quantity: qty = 1, totalPrice: price = val.price || 0 } = quantity || {}
 
   return (

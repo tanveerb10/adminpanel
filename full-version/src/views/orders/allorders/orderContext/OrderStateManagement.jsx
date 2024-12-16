@@ -6,14 +6,32 @@ export const OrderProvider = ({ children }) => {
   const [orders, setOrders] = useState([])
   const [customerAddress, setCustomerAddress] = useState({})
   const [productTotal, setProductTotal] = useState(0)
+  const [note, setNote] = useState('')
+  const [wordCount, setWordCount] = useState(0)
+  const [paymentMethod, setPaymentMethod] = useState('')
+
+  const handleWordCount = newNote => {
+    if (/^\s*$/.test(newNote)) {
+      return
+    }
+    const words = newNote.trim().length
+
+    if (words <= 5000) {
+      setNote(newNote)
+      setWordCount(words)
+    }
+  }
+
   console.log('orders', orders)
   const addOrder = neworder => {
     console.log('new order', neworder, 'new order')
 
     setOrders(prevOrders => {
       const existingIds = new Set(prevOrders.map(order => order.variationId))
-      const uniqueOrders = neworder.filter(order => !existingIds.has(order.variationId))
-      return [...prevOrders, ...uniqueOrders]
+      const updatedOrders = neworder
+        .filter(order => !existingIds.has(order.variationId))
+        .map(order => ({ ...order, quantity: 1, totalPrice: order.price * 1 }))
+      return [...prevOrders, ...updatedOrders]
     })
   }
 
@@ -36,7 +54,13 @@ export const OrderProvider = ({ children }) => {
   const updateQuantity = (variationId, quantity) => {
     setOrders(prev =>
       prev.map(order =>
-        order.variationId === variationId ? { ...order, quantity, totalPrice: order.price * quantity } : order
+        order.variationId === variationId
+          ? {
+              ...order,
+              quantity: Math.max(0, Math.min(quantity, order.available)),
+              totalPrice: order.price * Math.max(0, Math.min(quantity, order.available))
+            }
+          : order
       )
     )
   }
@@ -47,6 +71,13 @@ export const OrderProvider = ({ children }) => {
     setOrders([])
     setCustomerAddress({})
     setProductTotal(0)
+    setNote('')
+    setWordCount(0)
+  }
+
+  const handlePaymentMethod = value => {
+    setPaymentMethod(value)
+    console.log('Selected Payment Method:', value)
   }
   const value = {
     orders,
@@ -60,7 +91,12 @@ export const OrderProvider = ({ children }) => {
     handleAllReset,
     setOrders,
     updateQuantity,
-    grandTotal
+    grandTotal,
+    wordCount,
+    handleWordCount,
+    note,
+    handlePaymentMethod,
+    paymentMethod
   }
   return <OrderContext.Provider value={value}>{children}</OrderContext.Provider>
 }

@@ -8,7 +8,7 @@ import CustomTextField from '@core/components/mui/TextField'
 import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
 import { getLocalizedUrl } from '@/utils/i18n'
-import fetchFormData from '@/utils/fetchFormData'
+import fetchData from '@/utils/fetchData'
 import dynamic from 'next/dynamic'
 const RichTextEditor = dynamic(() => import('@/libs/RichTextEditor'), { ssr: false })
 
@@ -118,7 +118,7 @@ const CategoriesDetailForm = ({ isAddCategories, categoryData }) => {
         formData.append('category_image_src', data.category_image_src)
       }
 
-      const response = await fetchFormData(apiUrl, isAddCategories ? 'POST' : 'PUT', formData, 'image')
+      const response = await fetchData(apiUrl, isAddCategories ? 'POST' : 'PUT', formData, 'image')
 
       console.log('API Response:', response)
 

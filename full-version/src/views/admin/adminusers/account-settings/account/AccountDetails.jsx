@@ -7,7 +7,6 @@ import { Card, CardContent, Button, Typography, Grid, MenuItem, InputAdornment, 
 import CustomTextField from '@core/components/mui/TextField'
 import { useParams } from 'next/navigation'
 import { toast } from 'react-toastify'
-import fetchFormData from '@/utils/fetchFormData'
 import fetchData from '@/utils/fetchData'
 import useLocalizedRedirect from '@/utils/useLocalizedRedirect'
 // STATES OF INDIA
@@ -174,7 +173,7 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin, isProfile, onlyView
     const uploadprofilebyself = `/admin/admins/uploadprofilebyself`
     const uploadprofilebysuperadmin = `/admin/admins/uploadprofilebysuperadmin`
     try {
-      const response = await fetchFormData(
+      const response = await fetchData(
         isProfile ? uploadprofilebyself : uploadprofilebysuperadmin,
         'PUT',
         formData,
@@ -193,7 +192,7 @@ const AccountDetails = ({ adminDetail, roleData, isAddAdmin, isProfile, onlyView
     const apiUrl = isAddAdmin ? `/admin/admins/adminsignup` : `/admin/admins/updateadmin/${id}`
 
     try {
-      const response = await fetchFormData(apiUrl, isAddAdmin ? 'POST' : 'PUT', data)
+      const response = await fetchData(apiUrl, isAddAdmin ? 'POST' : 'PUT', data)
       if (response.success || response.status) {
         if (isAddAdmin) {
           toast.success('Admin added successfully!')

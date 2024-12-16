@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
-import fetchFormData from '@/utils/fetchFormData'
+import fetchData from '@/utils/fetchData'
 import Loader from '@/libs/components/Loader'
 
 const AccountTab = dynamic(() => import('@/views/admin/adminusers/account-settings/account'))
@@ -12,7 +12,7 @@ const AccountSettings = dynamic(() => import('@views/admin/adminusers/account-se
 
 const viewData = async (setUserData, setError, setLoading) => {
   try {
-    const userResponse = await fetchFormData(`/admin/admins/Getselfdetails`, 'GET')
+    const userResponse = await fetchData(`/admin/admins/Getselfdetails`, 'GET')
 
     setUserData(userResponse)
   } catch (error) {

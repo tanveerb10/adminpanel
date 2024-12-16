@@ -25,31 +25,23 @@ const ProductReview = ({}) => {
     children: 'Select Order'
   }
 
-  const { removeOrder, orders = [] } = useOrder()
-  const [quantity, setQuantity] = useState(() =>
-    (orders || []).reduce((acc, data) => {
+  const { removeOrder, orders = [], handleProductTotal, setOrders, updateQuantity } = useOrder()
+
+  const generateInitialData = orders =>
+    orders.reduce((acc, data) => {
       acc[data.variationId] = {
-        available: data.available,
-        price: data.price,
+        available: data.available || 0,
+        price: data.price || 0,
         variationId: data.variationId,
-        totalPrice: data.price * 1,
+        totalPrice: (data.price || 0) * 1,
         quantity: 1
       }
       return acc
     }, {})
-  )
+
+  const [quantity, setQuantity] = useState(() => generateInitialData(orders))
   useEffect(() => {
-    const initialData = (orders || []).reduce((acc, data) => {
-      acc[data.variationId] = {
-        available: data.available,
-        price: data.price,
-        variationId: data.variationId,
-        totalPrice: data.price * 1,
-        quantity: 1
-      }
-      return acc
-    }, {})
-    setQuantity(initialData)
+    setQuantity(generateInitialData(orders))
   }, [orders])
 
   console.log('quantity', quantity)
@@ -67,16 +59,23 @@ const ProductReview = ({}) => {
     }))
   }
 
+  // const grandTotal = useMemo(() => Object.values(quantity).reduce((acc, item) => acc + item.totalPrice, 0), [quantity])
   const grandTotal = useMemo(() => Object.values(quantity).reduce((acc, item) => acc + item.totalPrice, 0), [quantity])
 
   const handleRemoveOrder = async variationId => {
-    await removeOrder(variationId)
-    setQuantity(prev => {
-      const updated = { ...prev }
-      delete updated[variationId]
-      return updated
-    })
+    try {
+      await removeOrder(variationId)
+      setQuantity(prev => {
+        const updated = { ...prev }
+        delete updated[variationId]
+        return updated
+      })
+    } catch (error) {
+      console.error(`Failed to remove order for variationId: ${variationId}`, error)
+    }
   }
+
+  handleProductTotal(grandTotal)
   return (
     <Card>
       <Grid className='flex justify-between items-center'>
@@ -88,7 +87,9 @@ const ProductReview = ({}) => {
           <ProductCard
             key={val.variationId}
             val={val}
-            quantity={quantity[val.variationId] || { quantity: 1, totalPrice: val.price, available: val.available }}
+            quantity={
+              quantity[val.variationId] || { quantity: 1, totalPrice: val.price || 0, available: val.available || 0 }
+            }
             handleQuantity={handleQuantity}
             handleRemoveOrder={handleRemoveOrder}
           />

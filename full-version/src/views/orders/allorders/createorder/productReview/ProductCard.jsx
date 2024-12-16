@@ -8,8 +8,10 @@ import CustomTextField from '@core/components/mui/TextField'
 import Image from 'next/image'
 
 export default function ProductCard({ val, quantity, handleQuantity, handleRemoveOrder }) {
+  if (!val) return null
   console.log('quantity card', quantity)
-  const { quantity: qty = 1, totalPrice: price = val.price } = quantity || {}
+  const { quantity: qty = 1, totalPrice: price = val.price || 0 } = quantity || {}
+
   return (
     <div className='flex items-center justify-between space-x-2 pr-2 mt-2 mb-2'>
       <Image height={70} width={70} className='rounded' src={val?.img || '/images/avatars/1.png'} alt='Product image' />
@@ -25,12 +27,17 @@ export default function ProductCard({ val, quantity, handleQuantity, handleRemov
           Available
         </Typography>
 
-        <Chip label={val?.available} color='secondary' variant='tonal' />
+        <Chip label={val?.available || 0} color='secondary' variant='tonal' />
       </div>
       <CustomTextField
         label='Quantity'
+        type='number'
         value={qty}
-        onChange={e => handleQuantity(val?.variationId, Number(e.target.value))}
+        onChange={e => {
+          const newQuantity = Math.max(0, Math.min(val?.available, Number(e.target.value)))
+          handleQuantity(val?.variationId, newQuantity)
+        }}
+        inputProps={{ min: 0, max: val?.available }}
         disabled={val?.available === 0}
         className='w-auto'
       />
@@ -42,8 +49,8 @@ export default function ProductCard({ val, quantity, handleQuantity, handleRemov
         <Chip label={`₹${price}`} color='success' variant='tonal' />
       </div>
 
-      <IconButton onClick={() => handleRemoveOrder(val?.variationId)}>
-        <i className='tabler-x text-[22px] ' />
+      <IconButton onClick={() => handleRemoveOrder(val?.variationId)} aria-label='Remove order'>
+        <i className='tabler-x' style={{ fontSize: '22px' }} />
       </IconButton>
     </div>
   )

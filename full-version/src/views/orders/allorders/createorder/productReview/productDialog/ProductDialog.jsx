@@ -8,7 +8,7 @@ import fetchData from '@/utils/fetchData'
 
 // Component Imports
 import DialogCloseButton from '@/components/dialogs/DialogCloseButton'
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Chip } from '@mui/material'
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Chip, TableHead } from '@mui/material'
 import Loader from '@/libs/components/Loader'
 import CustomTextField from '@/@core/components/mui/TextField'
 
@@ -32,7 +32,8 @@ const ProductDialog = ({ open, setOpen }) => {
   const [checked, setChecked] = useState(() => initialCheckedState(productData))
   const [disableVariant, setDisableVariant] = useState([])
 
-  const { addOrder, orders } = useOrder()
+  const { addOrder, orders, addOrderForProduct, addOrderForVariant, removeOrderForProduct, removeOrderForVariant } =
+    useOrder()
 
   useEffect(() => {
     setChecked(initialCheckedState(productData))
@@ -43,12 +44,42 @@ const ProductDialog = ({ open, setOpen }) => {
     [productData]
   )
 
+  const handleAddProductToOrder = (parentId, variantId, type) => {
+    const product = productData.find(p => p._id === parentId)
+    const variant = product?.product_variations.find(v => v._id === variantId)
+
+    if (product && variant) {
+      if (type === 'addVariant') {
+        addOrderForVariant({
+          parentId,
+          variantId,
+          product,
+          variant
+        })
+      }
+      if (type === 'addProduct') {
+        addOrderForProduct({
+          parentId,
+          variantId,
+          product,
+          variant
+        })
+      }
+    }
+  }
+
   const handleCheck = parentId => {
     const variations = getProductVariations(parentId).map(v => v._id)
     setChecked(prev =>
       prev.map(item => {
         if (item.parentId === parentId) {
           const isChecked = !item.isChecked
+
+          if (isChecked) {
+            handleAddProductToOrder(parentId, variations, 'addProduct')
+          } else {
+            removeOrderForProduct(parentId)
+          }
 
           return {
             ...item,
@@ -78,6 +109,12 @@ const ProductDialog = ({ open, setOpen }) => {
           const variations = getProductVariations(parentId).map(v => v._id)
           const newVariants = toggleSetValue(item.selectedVariants, variantId)
           const isChecked = newVariants.size === variations.length
+
+          if (newVariants.has(variantId)) {
+            handleAddProductToOrder(parentId, variantId, 'addVariant')
+          } else {
+            removeOrderForVariant(parentId, variantId)
+          }
 
           return {
             ...item,
@@ -133,6 +170,8 @@ const ProductDialog = ({ open, setOpen }) => {
   }, [checked, productData])
 
   const handleClose = () => {
+    resetCheckedState()
+    setDisableVariant([])
     setOpen(false)
   }
 
@@ -166,26 +205,9 @@ const ProductDialog = ({ open, setOpen }) => {
     setDisableVariant(variantIds)
   }
 
-  // useEffect(() => {
-  //   const updatedChecked = checked.map(item => {
-  //     const disableVariants = orders.map(order => order.variationId)
-  //     const isVariantDisabled = Array.from(item.selectedVariants).some(variantId => disableVariants.includes(variantId))
-
-  //     if (isVariantDisabled) {
-  //       return {
-  //         ...item,
-  //         selectedVariants: new Set(
-  //           Array.from(item.selectedVariants).filter(variantId => !disableVariants.includes(variantId))
-  //         ),
-  //         isChecked: false // Or determine based on remaining variants
-  //       }
-  //     }
-
-  //     return item
-  //   })
-
-  //   setChecked(updatedChecked)
-  // }, [orders, checked])
+  useEffect(() => {
+    handleDisableVariant()
+  }, [orders])
 
   return (
     <Dialog
@@ -282,7 +304,7 @@ const ProductDialog = ({ open, setOpen }) => {
                                     <TableRow key={_id}>
                                       <TableCell component='th' scope='row'>
                                         <Checkbox
-                                          checked={isVariantChecked}
+                                          checked={isVariantChecked || disableVariant.includes(_id)}
                                           onClick={() => handleVariantCheck(_id, row._id)}
                                           disabled={disableVariant.includes(_id)}
                                         />
@@ -322,6 +344,181 @@ const ProductDialog = ({ open, setOpen }) => {
             </TableBody>
           </Table>
         </TableContainer>
+        {/* <TableContainer component={Paper}>
+          <Table>
+            {productData.map(row => {
+              const { isChecked, selectedVariants } = checked.find(item => item.parentId === row._id) || {}
+              const variations = getProductVariations(row._id)
+              const parentIndeterminate =
+                !isChecked && selectedVariants?.size > 0 && selectedVariants?.size < variations.length
+
+              return (
+                <React.Fragment key={row._id}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>
+                        <Checkbox
+                          checked={isChecked}
+                          indeterminate={parentIndeterminate}
+                          onClick={() => handleCheck(row._id)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <img
+                          height={50}
+                          width={50}
+                          className='rounded'
+                          src={'/images/avatars/1.png'}
+                          alt={row.product_title}
+                        />
+                      </TableCell>
+                      <TableCell>{row.product_title}</TableCell>
+                      <TableCell>Available</TableCell>
+                      <TableCell>Price</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  {variations.length > 0 && (
+                    <TableRow>
+                      <TableCell colSpan={5}>
+                        <Box sx={{ margin: 1 }}>
+                          <Table size='small'>
+                            <TableBody>
+                              {variations.map(
+                                ({
+                                  _id,
+                                  variation1,
+                                  variation2,
+                                  variation3,
+                                  variation_selling_price,
+                                  variation_quantity
+                                }) => {
+                                  const isVariantChecked = selectedVariants?.has(_id)
+                                  return (
+                                    <TableRow key={_id}>
+                                      <TableCell>
+                                        <Checkbox
+                                          checked={isVariantChecked}
+                                          onClick={() => handleVariantCheck(_id, row._id)}
+                                          disabled={disableVariant.includes(_id)}
+                                        />
+                                      </TableCell>
+                                      <TableCell />
+                                      <TableCell>
+                                        {[
+                                          variation1?.variation_option_value,
+                                          variation2?.variation_option_value,
+                                          variation3?.variation_option_value
+                                        ]
+                                          .filter(Boolean)
+                                          .join('/')}
+                                      </TableCell>
+                                      <TableCell align='right'>
+                                        <Chip label={variation_quantity} color='secondary' variant='tonal' />
+                                      </TableCell>
+                                      <TableCell align='right'>
+                                        <Chip label={variation_selling_price} color='success' variant='tonal' />
+                                      </TableCell>
+                                    </TableRow>
+                                  )
+                                }
+                              )}
+                            </TableBody>
+                          </Table>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
+              )
+            })}
+
+            <TableBody>
+              {productData.map(row => {
+                const { isChecked, selectedVariants } = checked.find(item => item.parentId === row._id) || {}
+                const variations = getProductVariations(row._id)
+                const parentIndeterminate =
+                  !isChecked && selectedVariants?.size > 0 && selectedVariants?.size < variations.length
+
+                return (
+                  <React.Fragment key={row._id}>
+                    <TableRow>
+                      <TableCell>
+                        <Checkbox
+                          checked={isChecked}
+                          indeterminate={parentIndeterminate}
+                          onClick={() => handleCheck(row._id)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <img
+                          height={50}
+                          width={50}
+                          className='rounded'
+                          src={'/images/avatars/1.png'}
+                          alt={row.product_title}
+                        />
+                      </TableCell>
+                      <TableCell>{row.product_title}</TableCell>
+                      <TableCell>Available</TableCell>
+                      <TableCell>Price</TableCell>
+                    </TableRow>
+
+                    {variations.length > 0 && (
+                      <TableRow>
+                        <TableCell colSpan={5}>
+                          <Box sx={{ margin: 1 }}>
+                            <Table size='small'>
+                              <TableBody>
+                                {variations.map(
+                                  ({
+                                    _id,
+                                    variation1,
+                                    variation2,
+                                    variation3,
+                                    variation_selling_price,
+                                    variation_quantity
+                                  }) => {
+                                    const isVariantChecked = selectedVariants?.has(_id)
+                                    return (
+                                      <TableRow key={_id}>
+                                        <TableCell>
+                                          <Checkbox
+                                            checked={isVariantChecked}
+                                            onClick={() => handleVariantCheck(_id, row._id)}
+                                            disabled={disableVariant.includes(_id)}
+                                          />
+                                        </TableCell>
+                                        <TableCell>
+                                          {[
+                                            variation1?.variation_option_value,
+                                            variation2?.variation_option_value,
+                                            variation3?.variation_option_value
+                                          ]
+                                            .filter(Boolean)
+                                            .join('/')}
+                                        </TableCell>
+                                        <TableCell align='right'>
+                                          <Chip label={variation_quantity} color='secondary' variant='tonal' />
+                                        </TableCell>
+                                        <TableCell align='right'>
+                                          <Chip label={variation_selling_price} color='success' variant='tonal' />
+                                        </TableCell>
+                                      </TableRow>
+                                    )
+                                  }
+                                )}
+                              </TableBody>
+                            </Table>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </React.Fragment>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer> */}
       </DialogContent>
 
       <DialogActions className='justify-end pbs-0 sm:pbe-16 sm:pli-16'>

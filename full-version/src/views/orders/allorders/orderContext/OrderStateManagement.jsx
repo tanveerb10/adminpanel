@@ -9,6 +9,7 @@ export const OrderProvider = ({ children }) => {
   const [note, setNote] = useState('')
   const [wordCount, setWordCount] = useState(0)
   const [paymentMethod, setPaymentMethod] = useState('')
+  const [ipAddress, setIpAddress] = useState('')
 
   const handleWordCount = newNote => {
     if (/^\s*$/.test(newNote)) {
@@ -20,6 +21,70 @@ export const OrderProvider = ({ children }) => {
       setNote(newNote)
       setWordCount(words)
     }
+  }
+
+  const addOrderForProduct = (parentId, variations, product, variation) => {
+    const selectedVariants = variations.map(variationId => {
+      // const variation = product.product_variations.find(v => v._id === variationId)
+      return {
+        variationName: [
+          variation.variation1?.variation_option_value,
+          variation.variation2?.variation_option_value,
+          variation.variation3?.variation_option_value
+        ]
+          .filter(Boolean)
+          .join('/'),
+        variationId: variation._id,
+        price: variation.variation_selling_price,
+        available: variation.variation_quantity,
+        productId: parentId,
+        productTitle: product.product_title
+      }
+    })
+
+    setOrders(prevOrders => {
+      const updatedOrders = [...prevOrders, ...selectedVariants]
+      return updatedOrders
+    })
+  }
+
+  // Remove all orders for a particular product
+  const removeOrderForProduct = parentId => {
+    setOrders(prevOrders => prevOrders.filter(order => order.productId !== parentId))
+  }
+
+  // Add a variant order
+  const addOrderForVariant = ({ parentId, variantId, product, variant }) => {
+    const existingOrder = orders.find(order => order.variationId === variantId)
+
+    if (!existingOrder) {
+      setOrders(prevOrders => [
+        ...prevOrders,
+        {
+          productId: parentId,
+          variationId: variantId,
+          productTitle: product.product_title,
+          variationName: [
+            variant.variation1?.variation_option_value,
+            variant.variation2?.variation_option_value,
+            variant.variation3?.variation_option_value
+          ]
+            .filter(Boolean)
+            .join('/'),
+          price: variant.variation_selling_price,
+          quantity: 1,
+          available: variant.variation_quantity,
+          totalPrice: variant.variation_selling_price
+        }
+      ])
+    } else {
+      console.warn('Order for this variant already exists.')
+    }
+  }
+
+  // Remove a variant order
+  const removeOrderForVariant = (parentId, variantId) => {
+    setOrders(prevOrders => prevOrders.filter(order => order.variationId !== variantId))
   }
 
   console.log('orders', orders)
@@ -67,6 +132,8 @@ export const OrderProvider = ({ children }) => {
 
   const grandTotal = useMemo(() => orders.reduce((acc, o) => acc + o.totalPrice, 0), [orders])
 
+  const totalQuantity = useMemo(() => orders.reduce((acc, curr) => acc + curr.quantity, 0), [orders])
+
   const handleAllReset = () => {
     setOrders([])
     setCustomerAddress({})
@@ -78,6 +145,10 @@ export const OrderProvider = ({ children }) => {
   const handlePaymentMethod = value => {
     setPaymentMethod(value)
     console.log('Selected Payment Method:', value)
+  }
+
+  const handleIp = ip => {
+    setIpAddress(ip)
   }
   const value = {
     orders,
@@ -96,7 +167,14 @@ export const OrderProvider = ({ children }) => {
     handleWordCount,
     note,
     handlePaymentMethod,
-    paymentMethod
+    paymentMethod,
+    addOrderForProduct,
+    addOrderForVariant,
+    removeOrderForProduct,
+    removeOrderForVariant,
+    totalQuantity,
+    handleIp,
+    ipAddress
   }
   return <OrderContext.Provider value={value}>{children}</OrderContext.Provider>
 }

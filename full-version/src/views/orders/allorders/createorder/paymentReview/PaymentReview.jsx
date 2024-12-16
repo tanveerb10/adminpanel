@@ -3,6 +3,7 @@ import { useOrder } from '@/views/orders/allorders/orderContext/OrderStateManage
 import OptionMenu from '@core/components/option-menu'
 import { useEffect, useState } from 'react'
 import fetchData from '@/utils/fetchData'
+import { toast } from 'react-toastify'
 
 export default function PaymentReview() {
   const {
@@ -135,9 +136,11 @@ export default function PaymentReview() {
             <Typography className='font-bold'>
               {paymentMethod.length > 0 ? paymentMethod.toUpperCase() : 'Not Set'}
             </Typography>
-            <IconButton onClick={() => handleChangeMethod()}>
-              <i className='tabler-arrows-exchange text-[20px]' />
-            </IconButton>
+            {paymentMethod && (
+              <IconButton onClick={() => handleChangeMethod()}>
+                <i className='tabler-arrows-exchange text-[20px]' />
+              </IconButton>
+            )}
           </Grid>
 
           <Grid item xs={12} className='flex justify-between'>

@@ -6,7 +6,7 @@ import fetchData from '@/utils/fetchData'
 import CustomTextField from '@/@core/components/mui/TextField'
 import { useOrder } from '@/views/orders/allorders/orderContext/OrderStateManagement'
 
-export default function CustomerReviewSearch({ handleSelectedCustomer }) {
+export default function CustomerReviewSearch() {
   const [searchValue, setSearchValue] = useState('')
   const [loading, setLoading] = useState(false)
   const [options, setOptions] = useState([])
@@ -55,6 +55,7 @@ export default function CustomerReviewSearch({ handleSelectedCustomer }) {
       <CustomTextField
         fullWidth
         label='Search Customers'
+        placeholder='Add Customer by search '
         value={searchValue}
         onChange={e => setSearchValue(e.target.value)}
         InputProps={{

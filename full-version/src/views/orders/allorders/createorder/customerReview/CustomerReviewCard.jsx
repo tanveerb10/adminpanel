@@ -1,5 +1,6 @@
 import { Button, Card, CardContent, Typography } from '@mui/material'
 import { useOrder } from '@/views/orders/allorders/orderContext/OrderStateManagement'
+import OptionMenu from '@core/components/option-menu'
 
 export default function CustomerReviewCard() {
   const { customerAddress, removeCustomerAddress } = useOrder()
@@ -18,12 +19,24 @@ export default function CustomerReviewCard() {
   return (
     <CardContent>
       <div style={{ marginBottom: '1rem' }}>
-        <Typography variant='h6' className='font-semibold'>
-          Customer Information
-        </Typography>
-        <Button variant='tonal' color='error' onClick={() => removeCustomerAddress()}>
-          Remove
-        </Button>
+        <div className='flex justify-between'>
+          <Typography variant='h6' className='font-semibold'>
+            Customer Information
+          </Typography>
+
+          <OptionMenu
+            iconClassName='text-[20px] text-textSecondary'
+            options={[
+              {
+                text: 'Remove',
+                menuItemProps: {
+                  onClick: () => removeCustomerAddress()
+                },
+                icon: 'tabler-trash text-[15px] text-textSecondary'
+              }
+            ]}
+          />
+        </div>
         <Typography variant='body1'>
           {customerAddress?.firstname} {customerAddress?.lastname}
         </Typography>
@@ -36,9 +49,12 @@ export default function CustomerReviewCard() {
           Billing Address
         </Typography>
         <Typography variant='body2'>
-          {customerAddress?.default_address?.address1 || 'N/A'} {customerAddress?.default_address?.address2 || ''}
-          {customerAddress?.default_address?.pin || ''} {customerAddress?.default_address?.city || 'N/A'}{' '}
-          {customerAddress?.default_address?.country || 'N/A'}
+          <Typography>{customerAddress?.default_address?.address1 || 'N/A'}</Typography>
+          <Typography>{customerAddress?.default_address?.address2 || ''}</Typography>
+          <Typography>
+            {customerAddress?.default_address?.city || 'N/A'} {customerAddress?.default_address?.pin || ''}
+          </Typography>
+          <Typography>{customerAddress?.default_address?.country || 'N/A'}</Typography>
         </Typography>
       </div>
 

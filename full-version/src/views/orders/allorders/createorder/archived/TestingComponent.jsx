@@ -1,7 +1,6 @@
 'use client'
 
 import {
-  Grid,
   TableContainer,
   Paper,
   Table,
@@ -11,27 +10,14 @@ import {
   Checkbox,
   TableBody,
   Typography,
-  Card,
-  CardContent
+  Chip
 } from '@mui/material'
-import CustomTextField from '@/@core/components/mui/TextField'
-import React, { useEffect, useState, useCallback, useMemo } from 'react'
-import { toast } from 'react-toastify'
-import PropTypes from 'prop-types'
+import React, { useState, useCallback, useMemo } from 'react'
+
 import Box from '@mui/material/Box'
-import Collapse from '@mui/material/Collapse'
-import IconButton from '@mui/material/IconButton'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
-import SearchIcon from '@mui/icons-material/Search'
 // MUI Imports
-import FormGroup from '@mui/material/FormGroup'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import Button from '@mui/material/Button'
-import Accordion from '@mui/material/Accordion'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import { useOrder } from '../../orderContext/OrderStateManagement'
+import { useOrder } from '@/views/orders/allorders/orderContext/OrderStateManagement'
 
 const productData1 = [
   {
@@ -491,9 +477,9 @@ const initialCheckedState = data =>
   }))
 export const TestingComponent = () => {
   const [checked, setChecked] = useState(() => initialCheckedState(productData))
-  const [variantData, setVariantData] = useState([])
+  const [disableVariant, setDisableVariant] = useState([])
 
-  const { addOrder, removeOrder, orders } = useOrder()
+  const { addOrder, orders } = useOrder()
   const getProductVariations = useCallback(
     parentId => productData.find(product => product._id === parentId)?.product_variations || [],
     []
@@ -548,50 +534,10 @@ export const TestingComponent = () => {
 
   const resetCheckedState = () => setChecked(initialCheckedState(productData))
 
-  // const selectedData = useMemo(() => {
-  //   return checked
-  //     .filter(item => item.isChecked || item.selectedVariants.size > 0)
-  //     .map(val => ({ productId: val.parentId || null, variants: Array.from(val.selectedVariants || []) }))
-  //     .filter(data => data.productId && data.variants.length > 0)
-  // }, [checked])
-
-  // got correct data
-
-  // const selectedData = useMemo(() => {
-  //   return checked
-  //     .filter(item => item.isChecked || item.selectedVariants.size > 0)
-  //     .map(val => {
-  //       const product = productData.find(item => item._id === val.parentId)
-  //       if (!product) return null
-  //       console.log('sselectled val', product)
-
-  //       const selectedVariants = Array.from(val.selectedVariants || [])
-  //         .map(variantId => {
-  //           const variation = product.product_variations.find(v => v._id === variantId)
-  //           if (!variation) return null
-
-  //           return {
-  //             variationName: [
-  //               variation.variation1?.variation_option_value,
-  //               variation.variation2?.variation_option_value,
-  //               variation.variation3?.variation_option_value
-  //             ]
-  //               .filter(Boolean)
-  //               .join('/'),
-  //             price: variation.variation_selling_price,
-  //             available: variation.variation_quantity
-  //           }
-  //         })
-  //         .filter(Boolean)
-
-  //       return {
-  //         productId: val.parentId || null,
-  //         variants: selectedVariants,
-  //         productTitle: product.product_title
-  //       }
-  //     })
-  //     .filter(data => data.productId && data.variants.length > 0)
-  // }, [checked])
+  const handleDisableVariant = () => {
+    const variantIds = orders.map(val => val.variationId)
+    setDisableVariant(variantIds)
+  }
   const selectedData = useMemo(() => {
     const productMap = Object.fromEntries(productData.map(product => [product._id, product]))
     return checked
@@ -621,6 +567,7 @@ export const TestingComponent = () => {
               ]
                 .filter(Boolean)
                 .join('/'),
+              variationId: variation._id,
               price: variation.variation_selling_price,
               available: variation.variation_quantity,
               productId: val.parentId || null,
@@ -631,11 +578,7 @@ export const TestingComponent = () => {
       })
   }, [checked, productData])
 
-  const handleVariantData = () => {
-    // console.log('selected data', selectedData)
-    // setVariantData(selectedData)
-    addOrder(...selectedData)
-  }
+  console.log('checkece selected ', selectedData)
 
   return (
     <>
@@ -679,7 +622,19 @@ export const TestingComponent = () => {
                       </div>
                     </TableCell>
                     <TableCell component='th' scope='row' align='left'>
-                      <Typography>{row.product_title}</Typography>
+                      <Typography variant='h6' className='font-semibold'>
+                        {row.product_title}
+                      </Typography>
+                    </TableCell>
+                    <TableCell component='th' scope='row' align='left'>
+                      <Typography variant='h6' className='font-semibold'>
+                        Available
+                      </Typography>
+                    </TableCell>
+                    <TableCell component='th' scope='row' align='left'>
+                      <Typography variant='h6' className='font-semibold'>
+                        Price
+                      </Typography>
                     </TableCell>
                   </TableRow>
                   <TableRow>
@@ -703,6 +658,7 @@ export const TestingComponent = () => {
                                       <Checkbox
                                         checked={isVariantChecked}
                                         onClick={() => handleVariantCheck(_id, row._id)}
+                                        disabled={disableVariant.includes(_id)}
                                       />
                                     </TableCell>
 
@@ -715,11 +671,19 @@ export const TestingComponent = () => {
                                         .filter(Boolean)
                                         .join('/')}
                                     </TableCell>
-                                    <TableCell align='right'>
-                                      <CustomTextField label='Price' value={variation_selling_price} />
+                                    <TableCell />
+                                    <TableCell />
+                                    <TableCell />
+                                    <TableCell />
+                                    {/* <TableCell />
+                                    <TableCell /> */}
+                                    <TableCell component='th' scope='row' align='right'>
+                                      <Chip label={variation_quantity} color='secondary' variant='tonal' />
                                     </TableCell>
-                                    <TableCell align='right'>
-                                      <CustomTextField label='Available' value={variation_quantity} />
+                                    <TableCell component='th' scope='row' align='right'>
+                                      <Chip label={variation_selling_price} color='success' variant='tonal' />
+
+                                      {/* <CustomTextField label='Available' value={variation_quantity} /> */}
                                     </TableCell>
                                   </TableRow>
                                 )
@@ -736,7 +700,13 @@ export const TestingComponent = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Button onClick={handleVariantData} variant='tonal'>
+      <Button
+        onClick={() => {
+          addOrder(selectedData)
+          handleDisableVariant()
+        }}
+        variant='tonal'
+      >
         Add
       </Button>
     </>

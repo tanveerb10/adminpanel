@@ -25,7 +25,6 @@ export const OrderProvider = ({ children }) => {
 
   const addOrderForProduct = (parentId, variations, product, variation) => {
     const selectedVariants = variations.map(variationId => {
-      // const variation = product.product_variations.find(v => v._id === variationId)
       return {
         variationName: [
           variation.variation1?.variation_option_value,

@@ -79,10 +79,8 @@ export default function BulkHistoryTable({ callAgain, TabValue }) {
     let isMounted = true
     const fetchHistoryData = async () => {
       const urls = API_URLS[TabValue]
-      const url = `${baseUrl}${urls}`
       try {
-        // const apiUrl = `/admin/products/getUploadHistory`
-        const responseData = await fetchData(url, 'GET')
+        const responseData = await fetchData(urls, 'GET')
         setHistoryLogData(responseData)
       } catch (error) {
         setError(error)

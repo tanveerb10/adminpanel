@@ -33,7 +33,7 @@ const ProductReview = ({}) => {
     className: 'cursor-pointer bs-full mr-5',
     variant: 'tonal',
     size: 'medium',
-    children: 'Select Order'
+    children: 'Add Product'
   }
   return (
     <Card>
@@ -51,7 +51,6 @@ const ProductReview = ({}) => {
             handleRemoveOrder={handleRemoveOrder}
           />
         ))}
-        <Chip label={`Grand Total: ₹${grandTotal.toFixed(2)}`} />
       </CardContent>
     </Card>
   )

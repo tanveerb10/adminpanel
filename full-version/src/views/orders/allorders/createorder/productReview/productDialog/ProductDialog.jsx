@@ -139,9 +139,6 @@ const ProductDialog = ({ open, setOpen }) => {
           console.warn(`Product with ID ${val.parentId} not found in productData.`)
           return []
         }
-
-        console.log('sselectled val', product)
-
         return Array.from(val.selectedVariants)
           .map(variantId => {
             const variation = product.product_variations.find(v => v._id === variantId)
@@ -181,7 +178,7 @@ const ProductDialog = ({ open, setOpen }) => {
     try {
       setLoading(true)
       const responseData = await fetchData(productUrl, 'GET')
-      console.log('Get products data', responseData)
+
       setProductData(responseData.data)
 
       // setError(null)
@@ -197,8 +194,6 @@ const ProductDialog = ({ open, setOpen }) => {
   useEffect(() => {
     fetchProducts()
   }, [])
-
-  console.log('checked', selectedData)
 
   const handleDisableVariant = () => {
     const variantIds = orders.map(val => val.variationId)

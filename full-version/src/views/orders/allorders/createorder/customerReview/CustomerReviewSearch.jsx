@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { InputAdornment, IconButton, MenuItem, CircularProgress, CardContent } from '@mui/material'
+import { InputAdornment, IconButton, MenuItem, CircularProgress, CardContent, Typography } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import { toast } from 'react-toastify'
 import fetchData from '@/utils/fetchData'
@@ -82,7 +82,10 @@ export default function CustomerReviewSearch() {
         {options.length > 0 ? (
           options.map(option => (
             <MenuItem key={option._id} value={option._id}>
-              {`${option.firstname} ${option.lastname}`}
+              <div>
+                <Typography>{`${option.firstname} ${option.lastname}`}</Typography>
+                <Typography>{`${option.email}`}</Typography>
+              </div>
             </MenuItem>
           ))
         ) : (

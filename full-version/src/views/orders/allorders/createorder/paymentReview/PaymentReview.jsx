@@ -18,24 +18,25 @@ export default function PaymentReview() {
     note
   } = useOrder()
 
-  const [responseData, setResponseData] = useState([])
+  const [responseData, setResponseData] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   const fetchTaxApi = async () => {
     const data = {
       products: orders.map(order => ({ variationId: order.variationId, quantity: order.quantity })),
-      userstates: customerAddress?.default_address?.state
+      customerState: customerAddress?.default_address?.state,
+      customerId: customerAddress?._id
     }
     setLoading(true)
     setError(null)
     try {
-      const taxUrl = `/admin/cms/getAllStorySettings`
+      const taxUrl = `/admin/orders/calculateTaxAndShippingCost`
 
       const responseData = await fetchData(taxUrl, 'POST', data)
-
+      console.log(responseData)
       if (responseData.success) {
-        setResponseData(responseData.data)
+        setResponseData(responseData)
       }
     } catch (error) {
       console.log('error got', error.message)
@@ -44,9 +45,10 @@ export default function PaymentReview() {
       setLoading(false)
     }
   }
+  console.log(responseData, 'tax api data')
 
   useEffect(() => {
-    // fetchTaxApi()
+    fetchTaxApi()
   }, [orders])
 
   const handleChangeMethod = () => {
@@ -105,6 +107,7 @@ export default function PaymentReview() {
     }
   }
 
+  const finalTotal = grandTotal + responseData.ShippingCost || grandTotal
   return (
     <Card>
       <CardHeader title='Payment' />
@@ -113,7 +116,7 @@ export default function PaymentReview() {
           <Grid item xs={12} className='flex justify-between'>
             <Typography>Subtotal</Typography>
             <Typography>{`${totalQuantity} items`}</Typography>
-            <Typography>₹0</Typography>
+            <Typography>{`₹${grandTotal}`}</Typography>
           </Grid>
           <Grid item xs={12} className='flex justify-between'>
             <Typography>Add discount</Typography>
@@ -123,12 +126,12 @@ export default function PaymentReview() {
           <Grid item xs={12} className='flex justify-between'>
             <Typography>Add shipping</Typography>
             <Typography>-</Typography>
-            <Typography>₹0</Typography>
+            <Typography>{`₹${responseData.ShippingCost}` || 'N/A'}</Typography>
           </Grid>
           <Grid item xs={12} className='flex justify-between'>
             <Typography>Estimated tax</Typography>
             <Typography>-</Typography>
-            <Typography>₹0</Typography>
+            <Typography>{`₹${responseData.totalTax}` || 'N/A'}</Typography>
           </Grid>
 
           <Grid item xs={12} className='flex justify-between'>
@@ -145,7 +148,7 @@ export default function PaymentReview() {
 
           <Grid item xs={12} className='flex justify-between'>
             <Typography className='font-bold'>Total</Typography>
-            <Chip color='success' label={`₹${grandTotal}`} variant='tonal' />
+            <Chip color='success' label={`₹${finalTotal}`} variant='tonal' />
           </Grid>
           <Divider />
           <Grid item xs={12} className='flex justify-between'>
@@ -168,7 +171,7 @@ export default function PaymentReview() {
                     {
                       text: 'COD',
                       menuItemProps: {
-                        onClick: () => handlePaymentMethod('cod')
+                        onClick: () => handlePaymentMethod('cash_on_delivery')
                       }
                     }
                   ]}

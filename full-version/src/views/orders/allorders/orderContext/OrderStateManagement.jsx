@@ -86,10 +86,7 @@ export const OrderProvider = ({ children }) => {
     setOrders(prevOrders => prevOrders.filter(order => order.variationId !== variantId))
   }
 
-  console.log('orders', orders)
   const addOrder = neworder => {
-    console.log('new order', neworder, 'new order')
-
     setOrders(prevOrders => {
       const existingIds = new Set(prevOrders.map(order => order.variationId))
       const updatedOrders = neworder
@@ -143,7 +140,6 @@ export const OrderProvider = ({ children }) => {
 
   const handlePaymentMethod = value => {
     setPaymentMethod(value)
-    console.log('Selected Payment Method:', value)
   }
 
   const handleIp = ip => {

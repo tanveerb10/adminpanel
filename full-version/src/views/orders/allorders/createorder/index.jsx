@@ -1,14 +1,11 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import ProductReview from '@views/orders/allorders/createorder/productReview/ProductReview'
 import PaymentReview from '@views/orders/allorders/createorder/paymentReview/PaymentReview'
 import CustomerReview from '@views/orders/allorders/createorder/customerReview/CustomerReview'
 import NoteCard from '@views/orders/allorders/createorder/noteReview/NoteCard'
-import { Button, Grid, IconButton } from '@mui/material'
+import { Grid } from '@mui/material'
 import { useOrder } from '@/views/orders/allorders/orderContext/OrderStateManagement'
-import fetchData from '@/utils/fetchData'
-import { toast } from 'react-toastify'
-import OptionMenu from '@core/components/option-menu'
 
 export default function CreateOrder() {
   const { orders, customerAddress, handleIp } = useOrder()
@@ -35,18 +32,15 @@ export default function CreateOrder() {
       <Grid item xs={12} sm={12}>
         <ProductReview />
       </Grid>
-
       <Grid item xs={12} sm={6}>
         <CustomerReview />
       </Grid>
       <Grid item xs={12} sm={6}>
+        {customerAddress['_id'] && !!orders.length && <PaymentReview />}
+      </Grid>
+      <Grid item xs={12} sm={6}>
         <NoteCard />
       </Grid>
-      {customerAddress['_id'] && orders.length && (
-        <Grid item xs={12} sm={6}>
-          <PaymentReview />
-        </Grid>
-      )}
     </Grid>
   )
 }

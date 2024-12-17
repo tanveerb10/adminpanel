@@ -9,7 +9,7 @@ import MenuItem from '@mui/material/MenuItem'
 // Component Imports
 import CustomTextField from '@core/components/mui/TextField'
 
-const CategoriesTableFilters = ({ setData, tableData, selectStatus, handleSelectStatus }) => {
+const OrderTableFilter = ({ setData, tableData, selectStatus, handleSelectStatus }) => {
   // States
 
   const [status, setStatus] = useState('')
@@ -36,8 +36,8 @@ const CategoriesTableFilters = ({ setData, tableData, selectStatus, handleSelect
             SelectProps={{ displayEmpty: true }}
           >
             <MenuItem value=''>Select Status</MenuItem>
-            <MenuItem value={true}>Active</MenuItem>
-            <MenuItem value={false}>Inactive</MenuItem>
+            <MenuItem value='true'>Active</MenuItem>
+            <MenuItem value='false'>Inactive</MenuItem>
           </CustomTextField>
         </Grid>
       </Grid>
@@ -45,4 +45,4 @@ const CategoriesTableFilters = ({ setData, tableData, selectStatus, handleSelect
   )
 }
 
-export default CategoriesTableFilters
+export default OrderTableFilter

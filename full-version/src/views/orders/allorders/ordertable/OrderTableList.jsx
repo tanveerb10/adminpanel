@@ -1,24 +1,28 @@
 'use client'
 
 // React Imports
-import { useEffect, useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 
 // Next Imports
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 
 // MUI Imports
-import Card from '@mui/material/Card'
-import CardHeader from '@mui/material/CardHeader'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import Chip from '@mui/material/Chip'
-import Checkbox from '@mui/material/Checkbox'
-import IconButton from '@mui/material/IconButton'
-import { styled } from '@mui/material'
-import TablePagination from '@mui/material/TablePagination'
-import MenuItem from '@mui/material/MenuItem'
-import InputAdornment from '@mui/material/InputAdornment'
+
+import {
+  styled,
+  TablePagination,
+  CardHeader,
+  Card,
+  MenuItem,
+  InputAdornment,
+  Button,
+  IconButton,
+  Checkbox,
+  Chip,
+  Typography
+} from '@mui/material'
+
 import SearchIcon from '@mui/icons-material/Search'
 // Third-party Imports
 import classnames from 'classnames'
@@ -37,7 +41,7 @@ import {
 } from '@tanstack/react-table'
 
 // Component Imports
-import CategoriesTableFilter from '@views/products/Categories/CategoriesTableFilter'
+import OrderTableFilter from '@views/orders/allorders/ordertable/OrderTableFilter'
 import TablePaginationComponent from '@components/TablePaginationComponent'
 import CustomTextField from '@core/components/mui/TextField'
 import CustomAvatar from '@core/components/mui/Avatar'
@@ -65,38 +69,19 @@ const fuzzyFilter = (row, columnId, value, addMeta) => {
   return itemRank.passed
 }
 
-const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...props }) => {
-  // States
-  const [value, setValue] = useState(initialValue)
-
-  useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value)
-    }, debounce)
-
-    return () => clearTimeout(timeout)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
-
-  return <CustomTextField {...props} value={value} onChange={e => setValue(e.target.value)} />
-}
-
-// Column Definitions
 const columnHelper = createColumnHelper()
 
-const CustomerTableList = ({
+const ASCENDING = 'asc'
+
+const OrderTableList = ({
   tableData,
-  totalCustomer,
-  handlePageChange,
-  totalPages,
-  handleLimitChange,
+  totalOrders,
   limit,
+  handlePageChange,
+  handleLimitChange,
   currentPage,
-  value,
   handleSearch,
+  value,
   setValue,
   resetFilter,
   handleSorting,
@@ -105,18 +90,15 @@ const CustomerTableList = ({
   handleSelectStatus,
   isSortingActive
 }) => {
-  console.log(tableData, 'table daata abhi walwa')
   // States
   const [rowSelection, setRowSelection] = useState({})
 
-  const [data, setData] = useState(tableData)
+  const [data, setData] = useState([...tableData])
   const [globalFilter, setGlobalFilter] = useState('')
 
   // Hooks
   const { lang: locale } = useParams()
   const router = useRouter()
-  const params = useParams()
-  const { id } = params // Destructure id from params
 
   const SortableHeader = ({ field, label }) => (
     <div onClick={() => handleSorting(field)} className='cursor-pointer flex items-center'>
@@ -154,81 +136,111 @@ const CustomerTableList = ({
           />
         )
       },
-      columnHelper.accessor('customerId', {
-        header: 'Sr.no',
+      columnHelper.accessor('orderId', {
+        header: 'order Id',
         cell: ({ row }) => (
-          <div className='flex items-center gap-2'>
+          <div className='flex items-center justify-center gap-2'>
             <Typography className='capitalize' color='text.primary'>
-              {row.original.customerId}
+              {row.original.orderId}
             </Typography>
           </div>
         )
       }),
 
       columnHelper.accessor('fullName', {
-        header: 'User',
-        cell: ({ row }) => (
-          <div className='flex items-center gap-4'>
-            {getAvatar({ avatar: row.original.avatar, fullName: row.original.fullName })}
-            <div className='flex flex-col'>
-              <Typography color='text.primary' className='font-medium capitalize'>
-                {row.original.fullName}
-              </Typography>
-              <Typography variant='body2'>{row.original.email}</Typography>
+        header: 'Customer',
+        cell: ({ row }) => {
+          return (
+            <div className='flex items-center gap-4'>
+              {getAvatar({ avatar: row.original.imageSrc, fullName: row.original.fullName })}
+              <div className='flex flex-col'>
+                <Typography color='text.primary' className='font-bold capitalize'>
+                  {row.original.fullName}
+                </Typography>
+                <Typography variant='body2'>{row.original.email}</Typography>
+              </div>
             </div>
-          </div>
-        )
+          )
+        },
+        enableSorting: false
+      }),
+      columnHelper.accessor('channel', {
+        // header: <SortableHeader field='coupon_code' label='channel' />,
+        header: 'channel',
+        cell: ({ row }) => <Chip label={row.original.channel} variant='tonal' className='font-bold' color='primary' />,
+        enableSorting: false
+      }),
+      columnHelper.accessor('orderStatus', {
+        header: 'Delivery Status',
+        cell: ({ row }) => <Typography className='capitalize text-center'>{row.original.orderStatus}</Typography>,
+        enableSorting: false
       }),
 
-      columnHelper.accessor('contact', {
-        header: 'Contact',
-        cell: ({ row }) => (
-          <Typography className='capitalize' color='text.primary'>
-            {row.original.contact}
-          </Typography>
-        )
+      columnHelper.accessor('orderDate', {
+        header: 'Order Date',
+        cell: ({ row }) => <Typography className='text-center'>{row.original.orderDate}</Typography>,
+        enableSorting: false
       }),
-      columnHelper.accessor('city', {
-        header: 'Address',
+      columnHelper.accessor('fulfillmentStatus', {
+        header: 'Fulfillment status',
         cell: ({ row }) => (
-          <div className='flex flex-col'>
-            <Typography color='text.primary' className='font-medium capitalize'>
-              {row.original.city}
-            </Typography>
-            <Typography variant='body2'>{row.original.state}</Typography>
-          </div>
-        )
-      }),
-
-      columnHelper.accessor('isDeleted', {
-        header: 'Status',
-        cell: ({ row }) => (
-          <div className='flex items-center gap-3'>
+          <div className='flex items-center justify-center gap-3'>
             <Chip
               variant='tonal'
               className='capitalize'
-              label={row.original.isDeleted ? 'Active' : 'Inactive'}
-              color={row.original.isDeleted ? 'success' : 'error'}
+              label={row.original.fulfillmentStatus ? 'Fulfilled' : 'Unfulfilled'}
+              color={row.original.fulfillmentStatus ? 'success' : 'secondary'}
               size='small'
             />
           </div>
-        )
+        ),
+        enableSorting: false
+      }),
+      columnHelper.accessor('financialStatus', {
+        header: 'Payment status',
+        cell: ({ row }) => (
+          <div className='flex items-center justify-center gap-3'>
+            <Chip
+              variant='tonal'
+              className='capitalize'
+              label={row.original.financialStatus ? 'Paid' : 'Unpaid'}
+              color={row.original.financialStatus ? 'success' : 'error'}
+              size='small'
+            />
+          </div>
+        ),
+        enableSorting: false
+      }),
+      columnHelper.accessor('orderItem', {
+        // header: <SortableHeader field='coupon_code' label='channel' />,
+        header: 'Item',
+        cell: ({ row }) => (
+          <Chip label={row.original.orderItem} variant='tonal' className='font-bold' color='primary' />
+        ),
+        enableSorting: false
+      }),
+      columnHelper.accessor('orderTotal', {
+        header: 'Total',
+        cell: ({ row }) => <Typography className='text-center'>₹ {row.original.orderTotal}</Typography>,
+        enableSorting: false
       }),
 
       columnHelper.accessor('action', {
         header: 'Action',
         cell: ({ row }) => (
-          <IconButton>
-            <Link href={getLocalizedUrl(`/customers/allcustomers/${row.original.id}`, locale)} className='flex'>
-              <i className='tabler-edit text-[25px] text-textSecondary' />
-            </Link>
-          </IconButton>
+          <div className='flex items-center justify-center'>
+            <IconButton>
+              <Link href={getLocalizedUrl(`/orders/allorders/${row.original.id}`, locale)} className='flex'>
+                <i className='tabler-edit text-[22px] text-textSecondary' />
+              </Link>
+            </IconButton>
+          </div>
         ),
         enableSorting: false
       })
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [handleSorting]
   )
 
   const table = useReactTable({
@@ -274,19 +286,17 @@ const CustomerTableList = ({
     <>
       <Card>
         <CardHeader title='Filters' className='pbe-4' />
-        <CategoriesTableFilter
+        <OrderTableFilter
           setData={setData}
           tableData={tableData}
-          handleSelectStatus={handleSelectStatus}
           selectStatus={selectStatus}
+          handleSelectStatus={handleSelectStatus}
         />
         <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
           <CustomTextField
             select
             value={limit}
             onChange={e => handleLimitChange(Number(e.target.value))}
-            // value={table.getState().pagination.pageSize}
-            // onChange={e => table.setPageSize(Number(e.target.value))}
             className='is-[70px]'
           >
             {[2, 3, 4].map(size => (
@@ -295,17 +305,16 @@ const CustomerTableList = ({
               </MenuItem>
             ))}
           </CustomTextField>
-
           <div>
-            Total Customer:
-            <Chip variant='outlined' label={totalCustomer} color='warning' size='small' className='ml-2' />
+            Total Order:
+            <Chip variant='outlined' label={totalOrders} color='warning' size='small' className='ml-2' />
           </div>
 
           <div className='flex flex-col sm:flex-row is-full sm:is-auto items-start sm:items-center gap-4'>
             <CustomTextField
               value={value}
               onChange={e => setValue(e.target.value)}
-              placeholder='Search Customer'
+              placeholder='Search Order'
               className='is-full sm:is-auto'
               InputProps={{
                 endAdornment: (
@@ -337,10 +346,10 @@ const CustomerTableList = ({
             <Button
               variant='contained'
               startIcon={<i className='tabler-plus' />}
-              onClick={() => router.push(getLocalizedUrl(`/customers/allcustomers/addnewcustomer`, locale))}
+              onClick={() => router.push(getLocalizedUrl(`/orders/allorders/addneworder`, locale))}
               className='is-full sm:is-auto'
             >
-              Add New Customer
+              Add Order
             </Button>
           </div>
         </div>
@@ -402,7 +411,7 @@ const CustomerTableList = ({
         <TablePagination
           component={() => (
             <TablePaginationComponent
-              total={totalCustomer}
+              total={totalOrders}
               currentPage={currentPage}
               limit={limit}
               handlePageChange={handlePageChange}
@@ -411,7 +420,8 @@ const CustomerTableList = ({
           // count={table.getFilteredRowModel().rows.length}
           // rowsPerPage={table.getState().pagination.pageSize}
           // page={table.getState().pagination.pageIndex}
-          count={totalCustomer}
+
+          count={totalOrders}
           rowsPerPage={limit}
           page={currentPage - 1}
           onPageChange={(_, page) => {
@@ -424,4 +434,4 @@ const CustomerTableList = ({
   )
 }
 
-export default CustomerTableList
+export default OrderTableList

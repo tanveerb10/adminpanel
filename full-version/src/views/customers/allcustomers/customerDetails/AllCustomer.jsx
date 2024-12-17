@@ -7,7 +7,16 @@ export default function AllCustomer({
   handlePageChange,
   currentPage,
   handleLimitChange,
-  totalCustomer
+  totalCustomer,
+  value,
+  handleSearch,
+  setValue,
+  resetFilter,
+  handleSorting,
+  sortMethod,
+  selectStatus,
+  handleSelectStatus,
+  isSortingActive
 }) {
   console.log('api se aaya hua data', customerData)
   const tableData = customerData?.map(customer => ({
@@ -35,6 +44,15 @@ export default function AllCustomer({
         totalPages={totalPages}
         handlePageChange={handlePageChange}
         handleLimitChange={handleLimitChange}
+        value={value}
+        handleSearch={handleSearch}
+        setValue={setValue}
+        resetFilter={resetFilter}
+        handleSorting={handleSorting}
+        sortMethod={sortMethod}
+        selectStatus={selectStatus}
+        handleSelectStatus={handleSelectStatus}
+        isSortingActive={isSortingActive}
       />
     </div>
   )

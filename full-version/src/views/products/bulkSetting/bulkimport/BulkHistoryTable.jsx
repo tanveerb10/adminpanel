@@ -12,7 +12,7 @@ import {
   Paper,
   Chip
 } from '@mui/material'
-import fetchFormData from '@/utils/fetchFormData'
+import fetchData from '@/utils/fetchData'
 import Loader from '@/libs/components/Loader'
 const columns = [
   { id: 'csvId', label: 'Sr no.', minWidth: 170 },
@@ -82,7 +82,7 @@ export default function BulkHistoryTable({ callAgain, TabValue }) {
       const url = `${baseUrl}${urls}`
       try {
         // const apiUrl = `/admin/products/getUploadHistory`
-        const responseData = await fetchFormData(url, 'GET')
+        const responseData = await fetchData(url, 'GET')
         setHistoryLogData(responseData)
       } catch (error) {
         setError(error)

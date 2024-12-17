@@ -5,7 +5,7 @@ import ProjectDropZone from '@/libs/components/ProjectDropZone'
 import Typography from '@mui/material/Typography'
 import { toast } from 'react-toastify'
 import BulkHistoryTable from '@views/products/bulkSetting/bulkimport/BulkHistoryTable'
-import fetchFormData from '@/utils/fetchFormData'
+import fetchData from '@/utils/fetchData'
 import BulkHeader from '@views/products/bulkSetting/bulkimport/BulkHeader'
 
 const API_URLS = {
@@ -69,7 +69,7 @@ const Bulkimport = ({ TabValue, HeaderValue }) => {
       }
       const methods = ['productUploadTab', 'metasTab'].includes(TabValue) ? 'POST' : 'PUT'
 
-      const response = await fetchFormData(url, methods, formData, 'file', progress => {
+      const response = await fetchData(url, methods, formData, 'file', progress => {
         console.log(`upload Progress ${progress}%`)
         setUploadProgress(progress)
       })
@@ -122,7 +122,7 @@ const Bulkimport = ({ TabValue, HeaderValue }) => {
         return
       }
 
-      const response = await fetchFormData(url, 'GET')
+      const response = await fetchData(url, 'GET')
       if (!response.success) {
         throw new Error('Got an error while exporting: ', response.message)
       }

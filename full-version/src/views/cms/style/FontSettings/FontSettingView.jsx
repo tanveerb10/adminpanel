@@ -40,7 +40,7 @@ export default function FontSettingView({ getFontData }) {
                     </Typography>
                     <Chip label={value} color='primary' variant='outlined' />
                   </Grid>
-                ))}{' '}
+                ))}
               </Grid>
             ) : (
               <Typography>Not Available</Typography>

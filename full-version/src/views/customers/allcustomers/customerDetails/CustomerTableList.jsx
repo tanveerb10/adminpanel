@@ -48,6 +48,7 @@ import { getLocalizedUrl } from '@/utils/i18n'
 
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
+// import CategoriesTableFilters from '@/views/products/Categories/CategoriesTableFilter'
 
 // Styled Components
 const Icon = styled('i')({})
@@ -328,7 +329,7 @@ const CustomerTableList = ({
             <Button
               color='error'
               variant='tonal'
-              startIcon={<i className='tabler-upload' />}
+              startIcon={<i className='tabler-restore' />}
               className='is-full sm:is-auto'
               onClick={resetFilter}
             >

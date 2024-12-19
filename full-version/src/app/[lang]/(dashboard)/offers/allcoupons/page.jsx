@@ -1,8 +1,9 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import AllCoupons from '@/views/offers/allcoupons/AllCoupons'
+
 import fetchData from '@/utils/fetchData'
 import Loader from '@/libs/components/Loader'
+import AllCoupons from '@/views/offers/allcoupons/Allcoupons'
 
 const ASCENDING = 'asc'
 const DESCENDING = 'dsc'

@@ -1,255 +1,7 @@
-// 'use client'
-
-// // React Imports
-// import { useState, useMemo } from 'react'
-
-// // Next Imports
-// import Link from 'next/link'
-// import { useParams } from 'next/navigation'
-
-// // MUI Imports
-// import Card from '@mui/material/Card'
-// import Typography from '@mui/material/Typography'
-// import Chip from '@mui/material/Chip'
-// import Checkbox from '@mui/material/Checkbox'
-// import IconButton from '@mui/material/IconButton'
-// import TablePagination from '@mui/material/TablePagination'
-// import MenuItem from '@mui/material/MenuItem'
-
-// // Third-party Imports
-// import classnames from 'classnames'
-// import {
-//   createColumnHelper,
-//   flexRender,
-//   getCoreRowModel,
-//   useReactTable,
-
-// } from '@tanstack/react-table'
-
-// // Component Imports
-
-// import TablePaginationComponent from '@components/TablePaginationComponent'
-// import CustomTextField from '@core/components/mui/TextField'
-
-// import { getLocalizedUrl } from '@/utils/i18n'
-
-// // Style Imports
-// import tableStyles from '@core/styles/table.module.css'
-// import Image from 'next/image'
-
-// // Column Definitions
-// const columnHelper = createColumnHelper()
-
-// const MediaTableList = ({ totalMedia, tableData = [], handlePageChange, handleLimitChange, limit, currentPage }) => {
-//   // States
-//   const [rowSelection, setRowSelection] = useState({})
-//   // Hooks
-//   const { lang: locale } = useParams()
-
-//   const columns = useMemo(
-//     () => [
-//       {
-//         id: 'select',
-//         header: ({ table }) => (
-//           <Checkbox
-//             {...{
-//               checked: table.getIsAllRowsSelected(),
-//               indeterminate: table.getIsSomeRowsSelected(),
-//               onChange: table.getToggleAllRowsSelectedHandler()
-//             }}
-//           />
-//         ),
-//         cell: ({ row }) => (
-//           <Checkbox
-//             {...{
-//               checked: row.getIsSelected(),
-//               disabled: !row.getCanSelect(),
-//               indeterminate: row.getIsSomeSelected(),
-//               onChange: row.getToggleSelectedHandler()
-//             }}
-//           />
-//         )
-//       },
-//       columnHelper.accessor('downloadLink', {
-//         header: 'Image',
-//         cell: ({ row }) => (
-//           <div className='flex items-center text-center gap-2'>
-//             <Image
-//               height={50}
-//               width={50}
-//               className='rounded'
-//               // src={row.original.downloadLink || '/images/avatars/1.png'}
-//               src={'/images/avatars/1.png'}
-//               alt={row.original.name}
-//             />
-//           </div>
-//         )
-//       }),
-//       columnHelper.accessor('name', {
-//         header: 'Name',
-//         cell: ({ row }) => (
-//           <div className='flex items-center flex-col '>
-//             <Typography color='text.primary' className='font-medium'>
-//               {row.original.name}
-//             </Typography>
-//             <Typography color='text.primary' className='font-medium'>
-//               {row.original.type}
-//             </Typography>
-//           </div>
-//         )
-//       }),
-
-//       columnHelper.accessor('date', {
-//         header: 'Date',
-//         cell: ({ row }) => <Chip label={row.original.date} />
-//       }),
-//       columnHelper.accessor('status', {
-//         header: 'Status',
-//         cell: ({ row }) => (
-//           <div className='flex items-center gap-3'>
-//             <Chip
-//               variant='tonal'
-//               className='capitalize'
-//               label={row.original.status ? 'Inactive' : 'Active'}
-//               color={row.original.status ? 'error' : 'success'}
-//               size='small'
-//             />
-//           </div>
-//         )
-//       }),
-//       columnHelper.accessor('size', {
-//         header: 'Size',
-//         cell: ({ row }) => (
-//           <div className='flex items-center gap-3'>
-//             <Chip variant='tonal' className='capitalize' label={row.original.size} color='success' size='small' />
-//           </div>
-//         )
-//       }),
-
-//       columnHelper.accessor('action', {
-//         header: 'Action',
-//         cell: ({ row }) => (
-//           <div className='flex items-center'>
-//             <IconButton>
-//               <Link href={getLocalizedUrl(`/products/brands/${row.original.id}`, locale)} className='flex'>
-//                 <i className='tabler-edit text-[22px] text-textSecondary' />
-//               </Link>
-//             </IconButton>
-//           </div>
-//         )
-//       })
-//     ],
-//     []
-//   )
-
-//   const table = useReactTable({
-//     data: tableData,
-//     columns,
-
-//     state: {
-//       rowSelection
-//     },
-//     initialState: {
-//       pagination: {
-//         pageSize: 10
-//       }
-//     },
-
-//     onRowSelectionChange: setRowSelection,
-//     getCoreRowModel: getCoreRowModel()
-
-//   })
-
-//   return (
-//     <>
-//       <Card>
-//         <div className='flex justify-between items-start md:flex-row md:items-center p-6 border-bs gap-4'>
-//           <CustomTextField
-//             select
-//             value={limit}
-//             onChange={e => handleLimitChange(Number(e.target.value))}
-//             className='is-[70px]'
-//           >
-//             {[1, 2, 3].map(size => (
-//               <MenuItem key={size} value={size}>
-//                 {size}
-//               </MenuItem>
-//             ))}
-//           </CustomTextField>
-//           <Chip variant='outlined' label={`Total Media: ${totalMedia}`} color='warning' size='small' className='ml-2' />
-//         </div>
-//         <div className='overflow-x-auto'>
-//           <table className={tableStyles.table}>
-//             <thead>
-//               {table.getHeaderGroups().map(headerGroup => (
-//                 <tr key={headerGroup.id}>
-//                   {headerGroup.headers.map(header => (
-//                     <th key={header.id}>
-//                       {header.isPlaceholder ? null : (
-//                         <>{flexRender(header.column.columnDef.header, header.getContext())}</>
-//                       )}
-//                     </th>
-//                   ))}
-//                 </tr>
-//               ))}
-//             </thead>
-//             {table.getFilteredRowModel().rows.length === 0 ? (
-//               <tbody>
-//                 <tr>
-//                   <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
-//                     No data available
-//                   </td>
-//                 </tr>
-//               </tbody>
-//             ) : (
-//               <tbody>
-//                 {table
-//                   .getRowModel()
-//                   .rows.slice(0, table.getState().pagination.pageSize)
-//                   .map(row => {
-//                     return (
-//                       <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
-//                         {row.getVisibleCells().map(cell => (
-//                           <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
-//                         ))}
-//                       </tr>
-//                     )
-//                   })}
-//               </tbody>
-//             )}
-//           </table>
-//         </div>
-//         <TablePagination
-//           component={() => (
-//             <TablePaginationComponent
-//               total={totalMedia}
-//               currentPage={currentPage}
-//               limit={limit}
-//               handlePageChange={handlePageChange}
-//             />
-//           )}
-//           count={totalMedia}
-//           rowsPerPage={limit}
-//           page={currentPage - 1}
-//           onPageChange={(_, page) => {
-//             handlePageChange(page + 1)
-//           }}
-//         />
-//       </Card>
-//     </>
-//   )
-// }
-
-// export default MediaTableList
-
 'use client'
 
 // React Imports
 import { useState, useMemo } from 'react'
-
-// Next Imports
-import Link from 'next/link'
-import { useParams } from 'next/navigation'
 
 // MUI Imports
 import Card from '@mui/material/Card'
@@ -257,7 +9,6 @@ import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
 import Checkbox from '@mui/material/Checkbox'
 import IconButton from '@mui/material/IconButton'
-import TablePagination from '@mui/material/TablePagination'
 import MenuItem from '@mui/material/MenuItem'
 
 // Third-party Imports
@@ -273,8 +24,6 @@ import {
 // Component Imports
 import TablePaginationComponent from '@components/TablePaginationComponent'
 import CustomTextField from '@core/components/mui/TextField'
-// Util Imports
-import { getLocalizedUrl } from '@/utils/i18n'
 
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
@@ -287,7 +36,15 @@ import SingleMediaViewDialog from '@/views/cms/media/SingleMediaViewDialog'
 // Column Definitions
 const columnHelper = createColumnHelper()
 
-const MediaTableList = ({ totalMedia, tableData, handlePageChange, handleLimitChange, limit, currentPage }) => {
+const MediaTableList = ({
+  totalMedia,
+  tableData,
+  handlePageChange,
+  handleLimitChange,
+  limit,
+  currentPage,
+  fetchMediaDelete
+}) => {
   // States
   const [rowSelection, setRowSelection] = useState({})
 
@@ -336,8 +93,8 @@ const MediaTableList = ({ totalMedia, tableData, handlePageChange, handleLimitCh
               height={50}
               width={50}
               className='rounded'
-              // src={row.original.downloadLink || '/images/avatars/1.png'}
-              src={'/images/avatars/1.png'}
+              src={row.original.downloadLink || '/images/avatars/1.png'}
+              // src={'/images/avatars/1.png'}
               alt={row.original.name}
             />
           </div>
@@ -470,7 +227,11 @@ const MediaTableList = ({ totalMedia, tableData, handlePageChange, handleLimitCh
           </div>
           <div>
             {!!Object.keys(rowSelection).length && (
-              <Button variant='tonal' color='error' startIcon={<i className='tabler-trash' />}>
+              <Button
+                variant='tonal'
+                color='error'
+                startIcon={<i className='tabler-trash' onClick={() => fetchMediaDelete()} />}
+              >
                 Delete
               </Button>
             )}
@@ -523,23 +284,6 @@ const MediaTableList = ({ totalMedia, tableData, handlePageChange, handleLimitCh
           limit={limit}
           handlePageChange={handlePageChange}
         />
-
-        {/* <TablePagination
-          component={() => (
-            <TablePaginationComponent
-              total={totalMedia}
-              currentPage={currentPage}
-              limit={limit}
-              handlePageChange={handlePageChange}
-            />
-          )}
-          count={totalMedia}
-          rowsPerPage={limit}
-          page={currentPage - 1}
-          onPageChange={(_, page) => {
-            handlePageChange(page + 1)
-          }}
-        /> */}
       </Card>
     </>
   )

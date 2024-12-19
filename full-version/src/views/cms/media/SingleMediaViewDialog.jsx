@@ -106,7 +106,7 @@ const SingleMediaViewDialog = ({
                             Download Link
                           </Typography>
                           <div
-                            className='font-semibold text-pretty bg-gray-900 rounded p-2 text-xs hover:text-linkedin'
+                            className='font-semibold text-pretty bg-gray-900 rounded p-2 cursor-pointer text-xs hover:text-linkedin'
                             style={{
                               display: 'block',
                               maxWidth: '100%',
@@ -131,7 +131,7 @@ const SingleMediaViewDialog = ({
                       width={500}
                       className='rounded object-contain max-w-full max-h-full'
                       layout='intrinsic'
-                      src={'/images/avatars/1.png'}
+                      src={downloadLink || '/images/avatars/1.png'}
                       alt={name}
                     />
                   </div>
@@ -146,7 +146,7 @@ const SingleMediaViewDialog = ({
                       width={500}
                       className='rounded object-contain max-w-full max-h-full'
                       layout='intrinsic'
-                      src={'/images/avatars/1.png'}
+                      src={downloadLink || '/images/avatars/1.png'}
                       alt={name}
                     />
                   </div>
@@ -169,7 +169,7 @@ const SingleMediaViewDialog = ({
                             Download Link
                           </Typography>
                           <div
-                            className='font-semibold text-pretty bg-gray-900 rounded p-2 text-xs hover:text-linkedin'
+                            className='font-semibold text-pretty bg-gray-900 rounded p-2 cursor-pointer text-xs hover:text-linkedin'
                             style={{
                               display: 'block',
                               maxWidth: '100%',

@@ -1,10 +1,9 @@
 'use client'
 
-import { Button, Chip, Grid } from '@mui/material'
+import { Button } from '@mui/material'
 import AddHeader from '@/libs/components/AddHeader'
 import OpenDialogOnElementClick from '@/components/dialogs/OpenDialogOnElementClick'
 import AddMediaDialog from '@/views/cms/media/AddMediaDialog'
-import SingleMediaViewDialog from '@/views/cms/media/SingleMediaViewDialog'
 import MediaTableList from '@/views/cms/media/MediaTableList'
 
 export default function Media({
@@ -14,7 +13,9 @@ export default function Media({
   handlePageChange,
   handleLimitChange,
   currentPage,
-  totalMedia
+  totalMedia,
+  fetchMediaDelete,
+  fetchMediaData
 }) {
   const ButtonProps = {
     className: 'cursor-pointer bs-full',
@@ -61,11 +62,15 @@ export default function Media({
   )
   return (
     <>
-      {/* <Grid container spacing={6}> */}
       <div className='flex justify-between items-center w-full' item xs={12}>
         <AddHeader title='All Media' />
 
-        <OpenDialogOnElementClick element={Button} elementProps={ButtonProps} dialog={AddMediaDialog} />
+        <OpenDialogOnElementClick
+          element={Button}
+          elementProps={ButtonProps}
+          dialog={AddMediaDialog}
+          dialogProps={{ fetchMediaData }}
+        />
       </div>
 
       <MediaTableList
@@ -76,6 +81,7 @@ export default function Media({
         handleLimitChange={handleLimitChange}
         totalMedia={totalMedia}
         tableData={tableData}
+        fetchMediaDelete={fetchMediaDelete}
       />
     </>
   )

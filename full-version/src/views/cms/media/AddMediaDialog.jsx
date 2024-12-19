@@ -14,7 +14,7 @@ import { toast } from 'react-toastify'
 import { Dialog, DialogContent, Button, Typography } from '@mui/material'
 import Loader from '@/libs/components/Loader'
 
-const AddMediaDialog = ({ open, setOpen }) => {
+const AddMediaDialog = ({ open, setOpen, fetchMediaData }) => {
   const [imgSrc, setImgSrc] = useState('/images/avatars/1.png')
   const [selectedFile, setSelectedFile] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -44,6 +44,7 @@ const AddMediaDialog = ({ open, setOpen }) => {
       if (responseData.success) {
         toast.success('Media added successfully')
         handleFileInputReset()
+        fetchMediaData()
       }
       if (!responseData.success) {
         console.log(responseData.message, 'fail response')
@@ -77,7 +78,7 @@ const AddMediaDialog = ({ open, setOpen }) => {
   return (
     <Dialog
       fullWidth
-      maxWidth='md'
+      maxWidth='xs'
       scroll='body'
       open={open}
       onClose={handleClose}
@@ -93,34 +94,34 @@ const AddMediaDialog = ({ open, setOpen }) => {
       </Typography>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogContent>
-          <div className='flex max-sm:flex-col items-center gap-6'>
-            <img height={150} width={150} className='rounded' src={imgSrc} alt='Profile' />
-            <div className='flex flex-col sm:flex-row gap-4'>
-              {selectedFile === null ? (
-                <Button component='label' variant='tonal' htmlFor='account-settings-upload-image'>
-                  Upload
-                  <input
-                    hidden
-                    type='file'
-                    accept='image/png, image/jpeg'
-                    onChange={handleFileInputChange}
-                    id='account-settings-upload-image'
-                  />
+        {/* <DialogContent> */}
+        <div className='flex flex-col pb-4 max-sm:flex-col items-center gap-6'>
+          <img height={150} width={150} className='rounded' src={imgSrc} alt='Profile' />
+          <div className='flex flex-col sm:flex-row gap-4'>
+            {selectedFile === null ? (
+              <Button component='label' variant='tonal' htmlFor='account-settings-upload-image'>
+                Upload
+                <input
+                  hidden
+                  type='file'
+                  accept='image/png, image/jpeg'
+                  onChange={handleFileInputChange}
+                  id='account-settings-upload-image'
+                />
+              </Button>
+            ) : (
+              <>
+                <Button variant='tonal' color='error' onClick={handleFileInputReset}>
+                  Reset
                 </Button>
-              ) : (
-                <>
-                  <Button variant='tonal' color='error' onClick={handleFileInputReset}>
-                    Reset
-                  </Button>
-                  <Button variant='tonal' type='submit' disabled={loading}>
-                    {loading ? <Loader size={20} /> : 'Submit'}
-                  </Button>
-                </>
-              )}
-            </div>
+                <Button variant='tonal' type='submit' disabled={loading}>
+                  {loading ? <Loader size={20} /> : 'Submit'}
+                </Button>
+              </>
+            )}
           </div>
-        </DialogContent>
+        </div>
+        {/* </DialogContent> */}
       </form>
     </Dialog>
   )

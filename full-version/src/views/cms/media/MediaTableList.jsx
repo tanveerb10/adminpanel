@@ -29,13 +29,14 @@ import CustomTextField from '@core/components/mui/TextField'
 import tableStyles from '@core/styles/table.module.css'
 import Image from 'next/image'
 import { toast } from 'react-toastify'
-import { Button } from '@mui/material'
+import { Button, InputAdornment } from '@mui/material'
 import OpenDialogOnElementClick from '@/components/dialogs/OpenDialogOnElementClick'
 import SingleMediaViewDialog from '@/views/cms/media/SingleMediaViewDialog'
+import SearchIcon from '@mui/icons-material/Search'
 
 // Column Definitions
 const columnHelper = createColumnHelper()
-
+const ASCENDING = 'asc'
 const MediaTableList = ({
   totalMedia,
   tableData,
@@ -43,12 +44,33 @@ const MediaTableList = ({
   handleLimitChange,
   limit,
   currentPage,
-  fetchMediaDelete
+  fetchMediaDelete,
+  handleSearch,
+  value,
+  setValue,
+  resetFilter,
+  handleSorting,
+  sortMethod,
+  isSortingActive
 }) => {
   // States
   const [rowSelection, setRowSelection] = useState({})
 
+  // const selectedArray = Object.keys(rowSelection)
+
   console.log('rowSelection', rowSelection)
+  // console.log('Selection array', selectedArray)
+  const SortableHeader = ({ field, label }) => (
+    <div onClick={() => handleSorting(field)} className='cursor-pointer flex items-center'>
+      {label}
+      {isSortingActive &&
+        (sortMethod === ASCENDING ? (
+          <i className='tabler-chevron-up text-xl' />
+        ) : (
+          <i className='tabler-chevron-down text-xl' />
+        ))}
+    </div>
+  )
 
   function copyToClipboard(value) {
     navigator.clipboard
@@ -102,44 +124,45 @@ const MediaTableList = ({
       }),
       columnHelper.accessor('name', {
         header: 'Name',
+        header: <SortableHeader field='image_name' label='Name' />,
         cell: ({ row }) => (
           <div className='flex items-left flex-col '>
-            <div className='flex '>
-              <Typography color='text.primary' variant='h5' className='font-bold text-center'>
+            <div className='flex items-center'>
+              <Typography color='text.primary' variant='h6' className='font-bold text-center'>
                 {row.original.name}
               </Typography>
               <span className='ml-2 pt-0'>
                 <IconButton className='text-start p-0' onClick={() => copyToClipboard(row.original.downloadLink)}>
-                  <i className='tabler-link text-[15px] text-textSecondary' />
+                  <i className='tabler-link text-[13px] text-textSecondary' />
                 </IconButton>
               </span>
             </div>
-            <Typography color='text.primary' className='font-medium'>
+            <Typography color='text.primary' variant='body2' className='font-medium'>
               {row.original.type}
             </Typography>
           </div>
         )
       }),
       columnHelper.accessor('date', {
-        header: 'Date',
+        header: <SortableHeader field='createdAt' label='Date' />,
         cell: ({ row }) => <Chip label={row.original.date} />
       }),
       columnHelper.accessor('status', {
-        header: 'Status',
+        header: <SortableHeader field='enable' label='Status' />,
         cell: ({ row }) => (
           <div className='flex items-center gap-3'>
             <Chip
               variant='tonal'
               className='capitalize'
-              label={row.original.status ? 'Inactive' : 'Active'}
-              color={row.original.status ? 'error' : 'success'}
+              label={row.original.status ? 'Active' : 'Inactive'}
+              color={row.original.status ? 'success' : 'error'}
               size='small'
             />
           </div>
         )
       }),
       columnHelper.accessor('size', {
-        header: 'Size',
+        header: <SortableHeader field='size' label='Size' />,
         cell: ({ row }) => (
           <div className='flex items-center gap-3'>
             <Chip variant='tonal' className='capitalize' label={row.original.size} color='success' size='small' />
@@ -201,7 +224,7 @@ const MediaTableList = ({
   return (
     <>
       <Card>
-        <div className='flex justify-between items-start md:flex-row md:items-center p-6 border-bs gap-4'>
+        <div className='flex justify-between items-center md:flex-row md:items-center p-6 border-bs gap-4'>
           <div>
             <CustomTextField
               select
@@ -217,25 +240,56 @@ const MediaTableList = ({
             </CustomTextField>
           </div>
           <div>
+            <CustomTextField
+              value={value}
+              onChange={e => setValue(e.target.value)}
+              placeholder='Search Media'
+              className='is-full sm:is-auto'
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton onClick={() => handleSearch(value)} edge='end'>
+                      <SearchIcon />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
+          </div>
+          <div>
             <Chip
               variant='outlined'
-              label={`Total Media: ${totalMedia}`}
-              color='warning'
+              label={`Total Media: ${totalMedia || 0}`}
+              color='primary'
               size='small'
               className='ml-2'
             />
           </div>
-          <div>
-            {!!Object.keys(rowSelection).length && (
+
+          {!Object.keys(rowSelection).length ? (
+            <div>
+              <Button
+                color='error'
+                variant='tonal'
+                startIcon={<i className='tabler-restore' />}
+                className='is-full sm:is-auto'
+                onClick={resetFilter}
+              >
+                Reset
+              </Button>
+            </div>
+          ) : (
+            <div>
               <Button
                 variant='tonal'
                 color='error'
-                startIcon={<i className='tabler-trash' onClick={() => fetchMediaDelete()} />}
+                onClick={() => fetchMediaDelete(Object.keys(rowSelection))}
+                startIcon={<i className='tabler-trash' />}
               >
                 Delete
               </Button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
         <div className='overflow-x-auto'>
           <table className={tableStyles.table}>

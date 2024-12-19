@@ -37,7 +37,7 @@ const AddMediaDialog = ({ open, setOpen, fetchMediaData }) => {
 
     formData.append('other_image_src', selectedFile)
 
-    const url = '/admin/cms/addOtherFiles'
+    const url = '/admin/otherfiles/addOtherFiles'
     setLoading(true)
     try {
       const responseData = await fetchData(url, 'POST', formData, 'image')

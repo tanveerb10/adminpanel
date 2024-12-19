@@ -15,7 +15,14 @@ export default function Media({
   currentPage,
   totalMedia,
   fetchMediaDelete,
-  fetchMediaData
+  fetchMediaData,
+  handleSearch,
+  value,
+  setValue,
+  resetFilter,
+  handleSorting,
+  sortMethod,
+  isSortingActive
 }) {
   const ButtonProps = {
     className: 'cursor-pointer bs-full',
@@ -82,6 +89,13 @@ export default function Media({
         totalMedia={totalMedia}
         tableData={tableData}
         fetchMediaDelete={fetchMediaDelete}
+        handleSearch={handleSearch}
+        value={value}
+        setValue={setValue}
+        resetFilter={resetFilter}
+        handleSorting={handleSorting}
+        sortMethod={sortMethod}
+        isSortingActive={isSortingActive}
       />
     </>
   )

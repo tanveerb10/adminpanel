@@ -341,7 +341,7 @@ const RolesTable = ({
           <Button
             color='error'
             variant='tonal'
-            startIcon={<i className='tabler-upload' />}
+            startIcon={<i className='tabler-restore' />}
             className='is-full sm:is-auto'
             onClick={resetFilter}
           >

@@ -13,7 +13,6 @@ export default function page() {
   const [totalBrands, setTotalBrands] = useState(0)
 
   const fetchBrands = async (page = 1, limit = 3) => {
-    // setBrands([])
     setLoading(true)
     setError(null)
     try {
@@ -65,27 +64,11 @@ export default function page() {
   const brandsProps = {
     brandsData: brands,
     limit,
-    // setPage,
     totalPages,
     handlePageChange,
     handleLimitChange,
     currentPage,
     totalBrands
   }
-  return (
-    <div>
-      {brands.length > 0 ? <Brands {...brandsProps} /> : <Loader />}
-      {/* <Brands brandsData={brands} setLimit={setLimit} totalPages={totalPages} setPage={setPage} /> */}
-    </div>
-  )
-
-  // return (
-  //   <>
-  //     {pageData.length > 0 ? (
-  //       <Table data={pageData} />
-  //     ) : (
-  //       <p>Loading...</p>
-  //     )}
-  //   </>
-  // );
+  return <div>{brands.length > 0 ? <Brands {...brandsProps} /> : <Loader />}</div>
 }
